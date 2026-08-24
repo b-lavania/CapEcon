@@ -15,8 +15,10 @@ Decision-grade analytics IP for agentic software systems.
 | --- | --- |
 | `capability_lifecycle` | Ship / throttle / kill capabilities |
 | `agent_runtime` | Runtime trust, loops, cost (stricter; destructive → rollback) |
-| `orchestration` | Multi-agent handoffs (P7 sample rules) |
-| `eval_governance` | Eval gate / regression (P7 sample rules) |
+| `orchestration` | Multi-agent handoffs, coordination cost; destructive → kill subgraph (always `requires_review`) |
+| `eval_governance` | Eval gate / regression |
+| `marketplace_commerce` | Agent-assisted GMV margin at risk |
+| `clinical_runtime` | Clinical SDK review labor + residual risk (OpenMed v2.2 case study) |
 
 ## Governing decisions from data
 

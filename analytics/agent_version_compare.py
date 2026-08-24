@@ -9,6 +9,7 @@ from scipy.stats import norm
 import numpy as np
 
 from analytics.drift import js_divergence
+from analytics.inference.sprt import sprt_two_proportion
 from core.workspace import Workspace
 
 

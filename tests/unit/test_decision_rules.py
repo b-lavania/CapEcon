@@ -171,8 +171,15 @@ def test_propose_action_reads_same_yaml():
     assert "rollback" in rationale.lower() or "Runtime" in rationale or "harm" in rationale.lower()
 
 
-def test_emit_validates_against_schema():
-    profile = get_preset("ops_mission")
+def test_emit_internal_budget_has_price_block_no_list():
+    profile = get_preset("assistant_heavy")
     ws = _mini_workspace(profile)
     records = emit_records(ws, ws.profile, validate=True)
-    assert all("decision" in r and "verdict" in r["decision"] for r in records)
+    assert records
+    econ = records[0]["economics"]
+    assert econ["pricing_mode"] == "internal_budget"
+    assert econ["primary_metric_label"] == "cost_of_leaving_live_usd"
+    assert "list_usd" not in econ
+    overlay = {"economics.primary_metric_label": "price_per_verified_outcome_usd"}
+    relabeled = emit_records(ws, ws.profile, validate=True, semantics_overlay=overlay)
+    assert relabeled[0]["economics"]["primary_metric_label"] == "price_per_verified_outcome_usd"

@@ -15,7 +15,9 @@ pip install -r requirements.txt -r requirements-dev.txt
 streamlit run app.py
 ```
 
-Then: **Product Profile** → pick `assistant_heavy` → **Generate workspace** → open **Radar**.
+Then: **Product Profile** → pick `assistant_heavy` → **Generate workspace** → **Version Gate** or **Radar**.
+
+Optional HTTP surface (same library): `uvicorn service.app:app --port 8088`.
 
 > Remote repo is still named `churn-analysis` on GitHub; the product name is **churnOS**.
 
@@ -38,7 +40,7 @@ pip install -r requirements-dev.txt   # pytest + hypothesis (for tests)
 pip install -r requirements-mmm.txt
 ```
 
-Core install is enough for **Product Profile → generate workspace → Radar**.
+Core install is enough for **Product Profile → generate workspace → Version Gate / Radar**.
 
 ---
 
@@ -50,9 +52,9 @@ streamlit run app.py
 
 ### 5-minute agentic path
 
-1. **Product Profile** — pick a preset (e.g. `assistant_heavy`) → **Generate workspace**
-2. **Radar** — ranked GrowthDecisionRecords (capabilities + accounts)
-3. **Semantics Console** — optional policy overlay → reclassify
+1. **Product Profile** — pick a preset (e.g. `assistant_heavy`) → **Generate workspace** (or **Data Connect**)
+2. **Version Gate** — ship / hold / rollback
+3. **Decision Inbox** / **Radar** — ranked GDRs
 4. **Outcome Flywheel** — write synthetic outcomes back to close the loop
 
 No Business Model setup required for the agentic path.

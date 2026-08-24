@@ -52,3 +52,17 @@ decision:
       recommended_action: hold
       requires_review: true
       rationale: "Eval governance requires human sign-off."
+
+  commercial_action_map:
+    mesh_leak:
+      commercial_action: reallocate
+      rationale: "The new version is retrying more, not costing more per call. Reroute before repricing."
+    below_floor:
+      commercial_action: raise_list
+      rationale: "This version ships every verified outcome below what it costs to produce."
+    over_cap:
+      commercial_action: split_tier
+      rationale: "Floor breaches the policy cap — fence the cohort driving it."
+    severely_over_cap:
+      commercial_action: hold_sku
+      rationale: "Floor is a multiple of the cap. Do not sell more of this version."

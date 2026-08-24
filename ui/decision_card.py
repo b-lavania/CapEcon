@@ -6,10 +6,20 @@ from typing import Any, Callable
 
 import streamlit as st
 
+from analytics.price_block import display_metric_label, format_usd, price_sentence
 from ontology.exception_taxonomy import ACTIONS, CATEGORIES
-from ui.evidence_chrome import render_evidence_block, account_risk_so_what
+from ui.evidence_chrome import render_evidence_block, account_risk_so_what, render_claim_badge
 from ui.explain import ACTION_GLOSS, VERDICT_GLOSS
 from ui.magazine import load_magazine_css
+
+
+def _cost_label(economics: dict[str, Any], entity_type: str) -> str:
+    label = display_metric_label(economics)
+    if economics.get("primary_metric_label"):
+        return label
+    if entity_type in ("seller", "workflow"):
+        return "Platform margin at risk"
+    return "Cost of leaving live"
 
 
 def _evidence_line(record: dict[str, Any]) -> str:
@@ -25,6 +35,20 @@ def _evidence_line(record: dict[str, Any]) -> str:
     if gloss:
         return f"{' · '.join(parts)} — {gloss}"
     return " · ".join(parts)
+
+
+def _headline_amount(economics: dict[str, Any]) -> tuple[str, str]:
+    """Whole dollars for Radar-scale ranking; unit floor when ranking rounds to $0."""
+    ranking = economics.get("primary_metric_usd")
+    floor = economics.get("floor_usd")
+    ranking_note = "— ranking total" if floor is not None else "— teaching estimate if you do nothing"
+    if ranking is not None and abs(float(ranking)) >= 1:
+        return f"${float(ranking):,.0f}", ranking_note
+    if floor is not None:
+        return format_usd(floor), "— unit floor"
+    if ranking is not None:
+        return format_usd(ranking), ranking_note
+    return "$0", ranking_note
 
 
 def render_decision_card(
@@ -43,6 +67,7 @@ def render_decision_card(
     subject = record.get("subject", {})
     verdict = decision.get("verdict", "unknown")
     cost = economics.get("primary_metric_usd", 0)
+    cost_txt, cost_note = _headline_amount(economics)
     entity_type = subject.get("entity_type", "capability")
     cap_id = subject.get("capability_id", "—")
     acc_id = subject.get("account_id", "—")
@@ -60,23 +85,23 @@ def render_decision_card(
             risk = record.get("risk_score")
             risk_part = f" · risk {risk:.2f}" if risk is not None else ""
         meta_line = f"Account · {record.get('vertical', '')}{risk_part}"
-        cost_label = "Cost of leaving live"
+        cost_label = _cost_label(economics, entity_type)
     elif entity_type == "seller":
         title = subject.get("seller_id", "—")
         meta_line = f"Seller · {record.get('vertical', 'marketplace_commerce')}"
-        cost_label = "Platform margin at risk"
+        cost_label = _cost_label(economics, entity_type)
     elif entity_type == "workflow":
         title = subject.get("capability_id", cap_id)
         assist = subject.get("assist_type", "agent_assist")
         meta_line = f"Workflow · {assist}"
-        cost_label = "Platform margin at risk"
+        cost_label = _cost_label(economics, entity_type)
     else:
         title = cap_id
         meta_line = f"Version {cap_ver} · Capability · {record.get('vertical', '')}"
-        cost_label = "Cost of leaving live"
+        cost_label = _cost_label(economics, entity_type)
 
     summary = (
-        f"{title}  ·  {verdict}  ·  ${cost:,.0f}  ·  "
+        f"{title}  ·  {verdict}  ·  {cost_txt}  ·  "
         f"{rec_action}  ·  {len(excs)} exceptions"
     )
     claim = (record.get("evidence") or {}).get("claim_type")
@@ -93,21 +118,26 @@ def render_decision_card(
                 <p class="mag-card-meta">{meta_line}</p>
                 <p class="mag-evidence">{_evidence_line(record)}</p>
                 <p class="mag-card-deck">{decision.get('rationale', '')}</p>
-                <p class="mag-card-cost">${cost:,.0f}</p>
+                <p class="mag-card-cost">{cost_txt}</p>
                 <p class="mag-card-cost-label">{cost_label}
                   <span style="font-weight:400; text-transform:none; letter-spacing:0;">
-                  — teaching estimate if you do nothing</span>
+                  {cost_note}</span>
                 </p>
             </article>
             """,
             unsafe_allow_html=True,
         )
 
+        sentence = price_sentence(economics, record.get("evidence"))
+        if economics.get("pricing_mode") or economics.get("floor_usd") is not None:
+            st.caption(sentence)
+
         cost_ci = economics.get("primary_metric_ci95_usd")
         if cost_ci:
             st.caption(f"95% band: ${cost_ci[0]:,.0f}–${cost_ci[1]:,.0f}")
 
         if record.get("evidence"):
+            render_claim_badge(record["evidence"].get("claim_type") or "associational")
             with st.expander("Evidence", expanded=False):
                 render_evidence_block(record["evidence"])
         elif excs and any(e.get("evidence") for e in excs):
@@ -140,6 +170,13 @@ def render_decision_card(
         if decision.get("requires_review") and record.get("evsi", {}).get("evsi_usd"):
             st.caption(
                 f"EVSI ${record['evsi']['evsi_usd']:,.0f} — uncertainty worth a human review."
+            )
+
+        if decision.get("commercial_action"):
+            owner = decision.get("commercial_owner_role", "packaging")
+            st.warning(
+                f"Commercial ask · **{decision['commercial_action']}** → `{owner}`  \n"
+                f"{decision.get('commercial_rationale', '')}"
             )
 
         trace = decision.get("rule_trace")
@@ -221,7 +258,9 @@ def render_decision_card(
                     st.error("Override reason required when final ≠ recommended.")
                 else:
                     on_override(record, final, reason or "")
-                    st.success("Decision recorded (session + JSONL store).")
+                    st.success("Decision recorded (session + SQLite store).")
+
+        st.page_link("pages/19_Decision_Inbox.py", label="View in Inbox")
 
         outcome = record.get("outcome")
         if outcome:

@@ -17,3 +17,6 @@ htmlcov/
 .vscode/
 .kiro/
 .cursor/
+data/records/*.sqlite
+data/records/*.jsonl
+

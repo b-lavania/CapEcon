@@ -1,0 +1,3 @@
+{"trace_id":"aaa111","span_id":"s1","parent_span_id":null,"capability_id":"CAP-001","loop_iteration":1,"tokens_used":400,"success":true,"model_id":"gpt-4o","prompt":"DROP THIS","response":"DROP THIS TOO","messages":[{"role":"user","content":"secret"}]}
+{"trace_id":"aaa111","span_id":"s2","parent_span_id":"s1","capability_id":"CAP-001","loop_iteration":2,"tokens_used":800,"success":true,"model_id":"gpt-4o","gen_ai.prompt":"also drop"}
+{"trace_id":"bbb222","span_id":"s3","parent_span_id":null,"capability_id":"CAP-002","loop_iteration":1,"tokens_used":1200,"success":false,"model_id":"gpt-4o-mini","input":"nope"}

@@ -6,6 +6,7 @@
   "properties": {
     "primary_metric_usd": { "type": "number" },
     "primary_metric_label": { "type": "string" },
+    "primary_metric_display": { "type": "string" },
     "currency": { "type": "string", "default": "USD" },
     "breakdown": {
       "type": "array",
@@ -18,6 +19,33 @@
           "notes": { "type": "string" }
         }
       }
-    }
+    },
+    "pricing_mode": {
+      "type": "string",
+      "enum": ["internal_budget", "product_sku", "marketplace_take"]
+    },
+    "floor_usd": { "type": ["number", "null"] },
+    "risk_usd": { "type": ["number", "null"] },
+    "cost_basis": {
+      "type": "string",
+      "enum": ["metered", "allocated", "estimated", "simulated"]
+    },
+    "charged_basis": {
+      "type": "string",
+      "enum": ["invoiced", "reconstructed"]
+    },
+    "attributed_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+    "cap_usd": { "type": ["number", "null"] },
+    "list_usd": { "type": ["number", "null"] },
+    "list_basis": {
+      "type": "string",
+      "enum": ["contracted", "implied"]
+    },
+    "charged_usd": { "type": ["number", "null"] },
+    "baseline_usd": { "type": ["number", "null"] },
+    "margin_usd": { "type": ["number", "null"] },
+    "ranking_metric_usd": { "type": "number" },
+    "ranking_metric_label": { "type": "string" },
+    "n_verified": { "type": "integer", "minimum": 0 }
   }
 }

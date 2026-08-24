@@ -1,0 +1,71 @@
+case_study_id: openmed_v2_2
+sdk: openmed
+release: "2.2.0"
+source_url: https://github.com/maziyarpanahi/openmed/releases/tag/v2.2.0
+honesty: >-
+  Synthetic warehouse authored from OpenMed 2.2.0 public API contracts.
+  Not vendor telemetry. No PHI, model weights, or licensed vocabularies bundled.
+
+capabilities:
+  - id: pii_deidentify
+    label: PII de-identification
+    openmed_surface: POST /pii/deidentify/stream
+    connector: local_mlx
+    capability_kind: tool
+  - id: clinical_ner
+    label: Clinical NER
+    openmed_surface: POST /analyze
+    connector: cpu_int8
+    capability_kind: tool
+  - id: concept_grounding
+    label: Concept grounding
+    openmed_surface: openmed.clinical.grounding.ground
+    connector: athena_vocab
+    capability_kind: workflow
+  - id: fhir_export
+    label: FHIR R4 export
+    openmed_surface: to_fhir
+    connector: rest_service
+    capability_kind: workflow
+  - id: omop_map
+    label: FHIR-to-OMOP CDM 5.4
+    openmed_surface: to_omop
+    connector: athena_vocab
+    capability_kind: workflow
+  - id: document_intake
+    label: Document intake
+    openmed_surface: MIME quarantine + form extraction
+    connector: rest_service
+    capability_kind: automation
+  - id: maple_clinical
+    label: Maple clinical assistant
+    openmed_surface: MapleClinicalAssistant
+    connector: local_mlx
+    capability_kind: agent
+  - id: compass_vlm
+    label: Compass vision-language
+    openmed_surface: openmed.mlx Compass
+    connector: local_mlx
+    capability_kind: agent
+  - id: mcp_tools
+    label: MCP clinical tools
+    openmed_surface: MCP protected-resource boundaries
+    connector: mcp
+    capability_kind: tool
+  - id: privacy_gateway
+    label: Privacy gateway egress
+    openmed_surface: POST /privacy-gateway/complete
+    connector: rest_service
+    capability_kind: tool
+
+planted_negatives:
+  - capability_id: pii_deidentify
+    exception: phi_leakage
+  - capability_id: concept_grounding
+    exception: abstention_collapse
+  - capability_id: maple_clinical
+    exception: run_cost_blowout
+  - capability_id: fhir_export
+    exception: fhir_integrity_fail
+  - capability_id: omop_map
+    exception: vocab_snapshot_drift

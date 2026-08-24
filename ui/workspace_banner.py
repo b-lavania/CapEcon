@@ -28,10 +28,11 @@ def empty_workspace_panel(*, page_label: str | None = None) -> None:
         f"""
         <div class="mag-empty-workspace">
             <p class="mag-deck">
-                Generate a teaching warehouse that simulates the traces × revenue join before using
+                Generate a teaching warehouse (traces × revenue join) before using
                 <strong>{target}</strong>.
                 Open <strong>Product Profile</strong>, pick a preset, then
-                <strong>Generate workspace</strong>.
+                <strong>Generate workspace</strong> — or overlay files on
+                <strong>Data Connect</strong>.
             </p>
         </div>
         """,
@@ -47,7 +48,7 @@ def render_sidebar_brand_and_status(session_state: Any) -> None:
         if ws is None:
             status_html = (
                 '<p class="mag-sidebar-status mag-sidebar-status--empty">'
-                "No workspace — generate from Product Profile"
+                "No workspace — Profile or Data Connect"
                 "</p>"
             )
         else:
@@ -75,6 +76,7 @@ def render_sidebar_brand_and_status(session_state: Any) -> None:
 
         if ws is None:
             st.page_link(PROFILE_PAGE, label="→ Product Profile", icon="⚙️")
+            st.page_link("pages/01_Data_Connect.py", label="→ Data Connect")
         elif st.button("Regenerate workspace", key="ws_banner_regen", type="secondary"):
             session_state.pop("workspace", None)
             session_state.pop("growth_records", None)

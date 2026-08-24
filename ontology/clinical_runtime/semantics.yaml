@@ -1,0 +1,125 @@
+vertical: clinical_runtime
+ontology_version: clinical_runtime_v1
+taxonomy_module: ontology.exception_taxonomy
+
+subject:
+  workspace_id: "Health-system deployment / tenant"
+  capability_id: "Clinical SDK capability (de-id, grounding, FHIR, …)"
+  capability_version: "Pinned model or service version"
+  agent_id: "Parent runtime agent"
+
+decision.verdict:
+  healthy: "Clinical runtime within policy"
+  leaking: "Review backlog or abstention leak"
+  destructive: "PHI, integrity, or injection signal"
+  uneconomic: "Inference or review labor exceeds budget"
+  underpowered: "Insufficient clinical run volume"
+  needs_review: "Assist mode — qualified review required"
+
+decision.recommended_action:
+  ship: "Promote capability after review gate"
+  hold: "Freeze rollout; gather evidence"
+  throttle: "Cap traffic or model cache"
+  shadow: "Run offline without user-visible effects"
+  rollback: "Revert to last known-good artifact"
+  revise: "Policy or prompt change; re-qualify"
+
+economics.primary_metric_label: residual_clinical_risk_usd
+
+classification:
+  thresholds:
+    capability_dead:
+      max_run_count_exclusive: 4
+    activation_leak:
+      success_rate_prior_multiplier: 0.55
+    capability_harm:
+      harm_score_min: 0.06
+      check_harm_correlation: true
+    approval_fatigue:
+      dismiss_rate_prior_multiplier: 0.85
+    trust_break:
+      trust_rate_prior_multiplier: 1.15
+    run_cost_blowout:
+      run_cost_prior_multiplier: 1.6
+    loop_exhaustion:
+      use_profile_max_loops: true
+    quality_drift:
+      min_slope_per_week: 0.04
+    outcome_confirmation_gap:
+      max_confirm_rate: 0.5
+      min_success_rate: 0.45
+    phi_leakage:
+      phi_log_rate_min: 0.02
+    abstention_collapse:
+      abstention_rate_max: 0.12
+    grounding_conflict:
+      conflict_rate_min: 0.08
+    fhir_integrity_fail:
+      integrity_fail_rate_min: 0.05
+    vocab_snapshot_drift:
+      snapshot_mismatch_min: 1
+    prompt_injection:
+      injection_rate_min: 0.03
+    review_sla_breach:
+      p_wait_min: 0.35
+      review_wait_hr_min: 4.0
+
+decision:
+  verdict_default: needs_review
+  verdict_rules:
+    - verdict: destructive
+      when_any_category: [phi_leakage, prompt_injection, fhir_integrity_fail, capability_harm, trust_break]
+    - verdict: uneconomic
+      when_any_category: [run_cost_blowout, review_sla_breach]
+    - verdict: leaking
+      when_any_category: [abstention_collapse, grounding_conflict, activation_leak, approval_fatigue]
+    - verdict: underpowered
+      when_exception_count_lt: 1
+    - verdict: needs_review
+      when_any_category: [vocab_snapshot_drift]
+    - verdict: needs_review
+      default: true
+
+  action_map:
+    healthy:
+      recommended_action: ship
+      requires_review: true
+      rationale: "Clinical runtime within policy — promote after routine review."
+    leaking:
+      recommended_action: shadow
+      requires_review: true
+      rationale: "Abstention or grounding leak — shadow until re-qualified."
+    destructive:
+      recommended_action: rollback
+      requires_review: true
+      rationale: "PHI, injection, or integrity signal — rollback immediately."
+    uneconomic:
+      recommended_action: throttle
+      requires_review: false
+      rationale: "Review labor or inference exceeds budget — throttle traffic."
+    underpowered:
+      recommended_action: hold
+      requires_review: false
+      rationale: "Thin clinical exposure — gather more runs."
+    needs_review:
+      recommended_action: hold
+      requires_review: true
+      rationale: "Vocabulary snapshot or mixed signals — hold until qualified review."
+
+  # Internal budget: there is no SKU to reprice, so never raise_list here.
+  # Route cheaper before asking a health system for more budget.
+  commercial_thresholds:
+    severe_overage_multiple: 1.5
+  commercial_action_map:
+    mesh_leak:
+      commercial_action: reallocate
+      rationale: "Retries in the de-id pass, not the unit price. Fix routing before budget."
+    over_baseline:
+      commercial_action: hold_sku
+      rationale: "Costs more per reviewed note than the clinician it was meant to relieve."
+    over_cap:
+      commercial_action: reallocate
+      rationale: "Over budget per outcome — try a cheaper first pass before requesting more."
+    severely_over_cap:
+      commercial_action: hold_sku
+      rationale: "Well past budget. Freeze expansion of this clinical workload."

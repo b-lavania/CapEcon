@@ -156,6 +156,61 @@ CATEGORIES: dict[str, dict[str, Any]] = {
         "default_severity": "medium",
         "playbook_hint": "Outcome mix shifted — investigate version or policy change.",
     },
+    "handoff_failure": {
+        "owner_role": "engineering",
+        "default_severity": "high",
+        "playbook_hint": "A→B agent handoff fails or retries — inspect routing policy and subgraph ownership.",
+    },
+    "trust_boundary": {
+        "owner_role": "founder",
+        "default_severity": "high",
+        "playbook_hint": "Agent called a connector/capability outside its declared trust boundary.",
+    },
+    "orphaned_subtask": {
+        "owner_role": "engineering",
+        "default_severity": "high",
+        "playbook_hint": "Subagent started and never completed — kill subgraph or add a timeout gate.",
+    },
+    "coordination_cost": {
+        "owner_role": "finance",
+        "default_severity": "medium",
+        "playbook_hint": "Multi-agent coordination cost exceeds outcome value — simplify the graph.",
+    },
+    "phi_leakage": {
+        "owner_role": "engineering",
+        "default_severity": "critical",
+        "playbook_hint": "Raw PHI in logs, diagnostics, or GDR — rollback and scrub before any egress.",
+    },
+    "abstention_collapse": {
+        "owner_role": "data_science",
+        "default_severity": "high",
+        "playbook_hint": "Calibrated abstention rate crashed — false-present findings flood review.",
+    },
+    "grounding_conflict": {
+        "owner_role": "data_science",
+        "default_severity": "high",
+        "playbook_hint": "Terminology conflict without explicit resolution — shadow until reconciled.",
+    },
+    "fhir_integrity_fail": {
+        "owner_role": "engineering",
+        "default_severity": "high",
+        "playbook_hint": "Bundle reference integrity or assertion-context loss — do not ship export.",
+    },
+    "vocab_snapshot_drift": {
+        "owner_role": "engineering",
+        "default_severity": "medium",
+        "playbook_hint": "Checksum-pinned vocabulary snapshot mismatch — hold until snapshots align.",
+    },
+    "prompt_injection": {
+        "owner_role": "engineering",
+        "default_severity": "critical",
+        "playbook_hint": "MCP or prompt-injection guard tripped — rollback tool surface.",
+    },
+    "review_sla_breach": {
+        "owner_role": "product",
+        "default_severity": "high",
+        "playbook_hint": "HITL review queue exceeds SLA — throttle intake or add reviewer capacity.",
+    },
 }
 
 CHURN_REASON_CODES = [
@@ -169,7 +224,23 @@ CHURN_REASON_CODES = [
 ]
 
 VERDICTS = ["healthy", "leaking", "destructive", "uneconomic", "underpowered", "needs_review"]
-ACTIONS = ["ship", "hold", "throttle", "shadow", "rollback", "kill", "experiment", "revise"]
+
+OPS_ACTIONS = ["ship", "hold", "throttle", "shadow", "rollback", "kill", "experiment", "revise"]
+
+# Commercial actions change the price or the packaging, never the runtime.
+# Every one of these is a request into someone else's system and always requires review.
+COMMERCIAL_ACTIONS = [
+    "hold_sku",
+    "raise_list",
+    "split_tier",
+    "cut_credits",
+    "kill_all_inclusive",
+    "reallocate",
+]
+
+ACTIONS = OPS_ACTIONS + COMMERCIAL_ACTIONS
+
+COMMERCIAL_OWNER_ROLES = ["packaging", "finance", "deal_desk"]
 
 
 def get_category(key: str) -> dict[str, Any]:

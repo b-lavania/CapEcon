@@ -25,6 +25,7 @@ masthead(
     "Should you roll back the latest agent version?",
 )
 page_help("experiments")
+st.page_link("pages/24_Version_Gate.py", label="Prefer Version Gate (ship / hold / rollback)")
 
 ws = require_workspace(st.session_state, page_label="Agent Version Comparison")
 cmp = compare_agent_versions(ws)

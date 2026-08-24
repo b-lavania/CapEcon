@@ -73,3 +73,19 @@ decision:
       recommended_action: hold
       requires_review: true
       rationale: "GMV concentration or policy review required."
+
+  # Marketplace: sellers set the job price, the platform only sets the take and
+  # the subsidy. So "raise_list" means raise the take rate.
+  commercial_action_map:
+    mesh_leak:
+      commercial_action: reallocate
+      rationale: "Agent retries are eating the take. Reroute before touching seller economics."
+    below_floor:
+      commercial_action: raise_list
+      rationale: "Take per verified transaction is under the agent cost of producing it."
+    over_cap:
+      commercial_action: cut_credits
+      rationale: "The promo or credit subsidy is what pushes this over cap."
+    severely_over_cap:
+      commercial_action: hold_sku
+      rationale: "Agent cost is a multiple of the take. Stop routing new demand here."

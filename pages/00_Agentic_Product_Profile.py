@@ -28,10 +28,13 @@ tool_stack_explainer(expanded=False)
 render_loop_stepper(st.session_state, highlight="profile")
 
 st.info(
-    "**Required before any chart works:** pick a preset and click **Generate workspace**. "
+    "**Required before any chart works:** pick a preset and click **Generate workspace**, "
+    "or skip synthetic data and use **Data Connect**. "
     "The first build takes about **30–90 seconds** — wait for the spinner to finish.",
     icon="ℹ️",
 )
+st.page_link("pages/01_Data_Connect.py", label="Connect real traces / CSVs instead")
+st.page_link("pages/02_Outcome_Definition.py", label="Define verified outcomes")
 
 preset_id = st.selectbox(
     "Profile preset",
@@ -44,6 +47,11 @@ preset_id = st.selectbox(
 
 profile = get_preset(preset_id)
 st.markdown(f"**{profile['description']}**")
+if profile.get("case_study_id"):
+    st.caption(
+        f"Case study: `{profile['case_study_id']}` — catalog-driven capability names; "
+        "not vendor telemetry."
+    )
 section_kicker("Ontology")
 st.write(
     f"Vertical: `{profile['ontology_vertical']}` · Version: `{profile['ontology_version']}` · "
@@ -51,7 +59,12 @@ st.write(
 )
 
 seed = st.number_input("Workspace seed", min_value=1, max_value=99999, value=int(st.session_state.get("workspace_seed", 42)))
-data_source = st.selectbox("Data source", ["synthetic", "otel"], index=0)
+data_source = st.selectbox(
+    "Demo data source",
+    ["synthetic", "otel"],
+    index=0,
+    help="Synthetic warehouse, or synthetic + mock OTel spans. Real files: Data Connect.",
+)
 math_mode = st.selectbox(
     "Math mode",
     ["heuristic", "rigorous"],
@@ -82,6 +95,9 @@ if st.button("Generate workspace", type="primary"):
 
 workspace = get_workspace_from_session(st.session_state)
 if workspace:
+    src = workspace.meta.get("data_source", "synthetic")
+    if src in ("synthetic", "otel"):
+        st.warning("Using synthetic / mock-OTel demo mode. Data Connect overlays real tables when you have them.")
     render_loop_stepper(st.session_state, highlight="warehouse")
     section_kicker("Warehouse summary")
     c1, c2, c3, c4, c5 = st.columns(5)
@@ -113,4 +129,4 @@ if workspace:
 
     render_instrumentation_checklist(workspace)
 
-    st.caption("Next: open **Radar** from the sidebar DECIDE group.")
+    st.caption("Next: **Version Gate** (ship/hold/rollback) or **Radar** from DECIDE.")

@@ -279,6 +279,22 @@ def resolve_metric(name: str, workspace: Workspace, *, registry: list | None = N
         }
         if name in _challenge_map:
             value, display, meta = _challenge_map[name]()
+        elif name == "handoff_success_rate":
+            from analytics.orchestration import handoff_success_rate
+            value = handoff_success_rate(workspace)
+            display = f"{value:.1f}%"
+        elif name == "coordination_cost_ratio":
+            from analytics.orchestration import coordination_cost_ratio
+            value = coordination_cost_ratio(workspace)
+            display = f"{value:.1f}%"
+        elif name == "orphaned_subtask_rate":
+            from analytics.orchestration import orphaned_subtask_rate
+            value = orphaned_subtask_rate(workspace)
+            display = f"{value:.1f}%"
+        elif name == "trust_boundary_violation_rate":
+            from analytics.orchestration import trust_boundary_violations
+            value = trust_boundary_violations(workspace)
+            display = f"{value:.1f}%"
         elif name not in lex:
             value, display = None, "—"
 

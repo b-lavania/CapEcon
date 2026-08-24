@@ -5,7 +5,7 @@ Every rigorous method in churnOS ships as:
 1. **Pure function** in `analytics/` (no Streamlit)
 2. **Unit + property tests** in `tests/`
 3. **Math Lab** page under LEARN nav (optional for backlog items)
-4. **DECIDE/LEARN hook** — operator-facing so-what on Radar, Version Compare, or Flywheel
+4. **DECIDE/LEARN hook** — operator-facing so-what on Radar, Version Gate, or Flywheel
 5. **Optional `evidence` block** on GDR exceptions when `profile.priors.math_mode == "rigorous"`
 
 ## Ground truth
@@ -28,7 +28,7 @@ Every rigorous method in churnOS ships as:
 | `analytics/knapsack.py` | intervention selection under HITL capacity | Radar, Run Economics |
 | `analytics/bandits.py` | YAML Thompson traffic + regret | Version Compare |
 | `analytics/experimentation.py` | clustered sample size, CUPED, FDR | Math Lab Power |
-| `analytics/agent_version_compare.py` | SPRT version decision | Version Compare |
+| `analytics/agent_version_compare.py` | SPRT version decision | Version Gate |
 | `analytics/causal_uplift.py` | uplift_pp | capability_harm evidence |
 | `analytics/clv_probabilistic.py` | BG/NBD CLV (legacy) | Math Lab CLV |
 | `analytics/queueing.py` | Erlang-C HITL wait | Run Economics |

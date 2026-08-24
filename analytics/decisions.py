@@ -12,6 +12,12 @@ from typing import Any
 
 import pandas as pd
 
+from analytics.commercial import attach_commercial
+from analytics.price_block import (
+    display_metric_label,
+    fill_price_block,
+    primary_metric_label,
+)
 from core.workspace import Workspace
 from ontology.decision_rules import (
     build_rule_trace,
@@ -591,18 +597,34 @@ def rank_exceptions(exceptions: list[dict[str, Any]]) -> list[dict[str, Any]]:
 def price_exceptions(
     exceptions: list[dict[str, Any]],
     profile: dict[str, Any],
+    *,
+    semantics: dict[str, Any] | None = None,
+    workspace: Workspace | None = None,
+    capability_id: str | None = None,
+    account_id: str | None = None,
 ) -> dict[str, Any]:
     total = sum(e.get("impact", {}).get("cost_usd", 0) for e in exceptions)
     breakdown = [
         {"label": e["category"], "amount_usd": e.get("impact", {}).get("cost_usd", 0), "notes": e.get("title", "")}
         for e in exceptions[:5]
     ]
-    return {
+    if semantics is None:
+        vertical = profile.get("ontology_vertical", "capability_lifecycle")
+        semantics = load_rules_for_vertical(vertical)
+    economics = {
         "primary_metric_usd": round(total, 2),
-        "primary_metric_label": "cost_of_leaving_live_usd",
+        "primary_metric_label": primary_metric_label(semantics),
         "currency": "USD",
         "breakdown": breakdown,
     }
+    return fill_price_block(
+        economics,
+        semantics=semantics,
+        profile=profile,
+        workspace=workspace,
+        capability_id=capability_id,
+        account_id=account_id,
+    )
 
 
 def _emit_subject_records(
@@ -634,7 +656,16 @@ def _emit_subject_records(
     for subject_id, excs in by_subject.items():
         rec_idx += 1
         ranked = rank_exceptions(excs)
-        economics = price_exceptions(ranked, profile)
+        cap_id = subject_id if entity_type == "capability" else None
+        acc_id = subject_id if entity_type == "account" else None
+        economics = price_exceptions(
+            ranked,
+            profile,
+            semantics=semantics,
+            workspace=workspace,
+            capability_id=cap_id,
+            account_id=acc_id,
+        )
         verdict = resolve_verdict(ranked, semantics)
         decision = resolve_action(verdict, semantics)
 
@@ -662,10 +693,16 @@ def _emit_subject_records(
                 )
 
         decision["rule_trace"] = build_rule_trace(ranked, semantics, verdict, decision)
+        attach_commercial(
+            decision, economics, semantics=semantics, workspace=workspace, profile=profile
+        )
+        cost_name = display_metric_label(economics)
         decision["rationale"] = (
             f"{decision['rationale']} Ranked {len(ranked)} exception(s); "
-            f"headline cost of leaving live ${economics['primary_metric_usd']:,.0f}."
+            f"headline {cost_name} ${economics['primary_metric_usd']:,.0f}."
         )
+        src = (workspace.meta or {}).get("data_source", "synthetic")
+        claim = "simulated" if src in ("synthetic", None, "") else "associational"
 
         if entity_type == "capability":
             cap_row = caps.loc[subject_id] if subject_id in caps.index else None
@@ -696,8 +733,11 @@ def _emit_subject_records(
         }
         if record_stub.get("p_churn_30d") is not None:
             record["p_churn_30d"] = record_stub["p_churn_30d"]
-        if record_stub.get("evidence"):
-            record["evidence"] = record_stub["evidence"]
+        evidence = dict(record_stub.get("evidence") or {})
+        if subject.get("experiment_id"):
+            claim = "causal"
+        evidence.setdefault("claim_type", claim)
+        record["evidence"] = evidence
         from ui.viz.viz_receipts import attach_viz_receipt
 
         attach_viz_receipt(record, workspace)
@@ -944,18 +984,34 @@ def _normalize_exceptions(exceptions: list[dict[str, Any]]) -> list[dict[str, An
     return out
 
 
-def _price_marketplace_exceptions(exceptions: list[dict[str, Any]]) -> dict[str, Any]:
+def _price_marketplace_exceptions(
+    exceptions: list[dict[str, Any]],
+    *,
+    semantics: dict[str, Any],
+    profile: dict[str, Any],
+    workspace: Workspace | None = None,
+    capability_id: str | None = None,
+    seller_id: str | None = None,
+) -> dict[str, Any]:
     total = sum(e.get("impact", {}).get("cost_usd", 0) for e in exceptions)
     breakdown = [
         {"label": e["category"], "amount_usd": e.get("impact", {}).get("cost_usd", 0), "notes": e.get("title", "")}
         for e in exceptions[:5]
     ]
-    return {
+    economics = {
         "primary_metric_usd": round(total, 2),
-        "primary_metric_label": "platform_margin_at_risk_usd",
+        "primary_metric_label": primary_metric_label(semantics, "platform_margin_at_risk_usd"),
         "currency": "USD",
         "breakdown": breakdown,
     }
+    return fill_price_block(
+        economics,
+        semantics=semantics,
+        profile=profile,
+        workspace=workspace,
+        capability_id=capability_id,
+        account_id=seller_id,
+    )
 
 
 def emit_marketplace_records(
@@ -982,10 +1038,22 @@ def emit_marketplace_records(
     records: list[dict[str, Any]] = []
     for rec_idx, (subject_id, excs) in enumerate(by_subject.items(), start=1):
         ranked = rank_exceptions(_normalize_exceptions(excs))
-        economics = _price_marketplace_exceptions(ranked)
+        cap_id = subject_id if entity_type == "workflow" else None
+        seller_id = subject_id if entity_type == "seller" else None
+        economics = _price_marketplace_exceptions(
+            ranked,
+            semantics=semantics,
+            profile=profile,
+            workspace=workspace,
+            capability_id=cap_id,
+            seller_id=seller_id,
+        )
         verdict = resolve_verdict(ranked, semantics)
         decision = resolve_action(verdict, semantics)
         decision["rule_trace"] = build_rule_trace(ranked, semantics, verdict, decision)
+        attach_commercial(
+            decision, economics, semantics=semantics, workspace=workspace, profile=profile
+        )
 
         if entity_type == "workflow":
             assist = next((e.get("title", "") for e in ranked), "")
@@ -1018,6 +1086,264 @@ def emit_marketplace_records(
             errors = validate_record(record, vertical)
             if errors:
                 raise ValueError(f"Invalid marketplace GDR {record['record_id']}: {errors}")
+        records.append(record)
+
+    records.sort(key=lambda r: -r["economics"]["primary_metric_usd"])
+    return records
+
+
+def classify_clinical(
+    workspace: Workspace,
+    profile: dict[str, Any],
+    *,
+    semantics_overlay: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    from analytics.clinical_runtime import capability_clinical_economics
+
+    cr = getattr(workspace, "clinical_runs", None)
+    if cr is None or cr.empty:
+        return []
+
+    vertical = profile.get("ontology_vertical", "clinical_runtime")
+    semantics = load_rules_for_vertical(vertical, overlay=semantics_overlay)
+    thresh = get_classification_thresholds(semantics, profile)
+    priors = profile.get("priors", {})
+    base = {
+        "workspace_id": workspace.workspaces["workspace_id"].iloc[0]
+        if len(workspace.workspaces)
+        else "WS-0000"
+    }
+    exceptions: list[dict[str, Any]] = []
+
+    arrival = float(priors.get("review_arrival_per_hr", 18.0))
+    service = float(priors.get("review_service_per_hr", 6.0))
+    servers = max(1, int(priors.get("reviewer_count", 3)))
+    from analytics.queueing import erlang_c
+
+    queue = erlang_c(arrival, service, servers)
+    p_wait_min = float(thresh.get("review_sla_breach", {}).get("p_wait_min", 0.35))
+    wait_min = float(thresh.get("review_sla_breach", {}).get("review_wait_hr_min", 4.0))
+
+    for cap_id, grp in cr.groupby("capability_id"):
+        cap_id = str(cap_id)
+        econ = capability_clinical_economics(workspace, cap_id)
+        phi_rate = float(grp["phi_in_logs"].mean())
+        abstention = float(grp["abstention_rate"].mean())
+        conflict_rate = float(grp["grounding_conflict"].mean())
+        fhir_fail = 1.0 - float(grp["fhir_integrity_ok"].mean())
+        vocab_bad = int((~grp["vocab_snapshot_ok"].astype(bool)).sum())
+        injection_rate = float(grp["prompt_injection_flag"].mean())
+        backlog = float(grp.loc[grp["review_required"] & ~grp["review_completed"], "review_wait_hr"].mean())
+        if pd.isna(backlog):
+            backlog = 0.0
+
+        phi_min = float(thresh.get("phi_leakage", {}).get("phi_log_rate_min", 0.02))
+        if phi_rate >= phi_min:
+            exceptions.append({
+                **base,
+                "category": "phi_leakage",
+                "title": f"{cap_id} — PHI in diagnostics",
+                "confidence": min(0.98, 0.7 + phi_rate),
+                "rank": 1,
+                "impact": {"cost_usd": econ["expected_harm_usd"]},
+                "capability_id": cap_id,
+            })
+
+        abst_max = float(thresh.get("abstention_collapse", {}).get("abstention_rate_max", 0.12))
+        if abstention <= abst_max:
+            exceptions.append({
+                **base,
+                "category": "abstention_collapse",
+                "title": f"{cap_id} — abstention collapsed",
+                "confidence": 0.82,
+                "rank": 1,
+                "impact": {"cost_usd": econ["review_labor_usd"] * 1.2},
+                "capability_id": cap_id,
+            })
+
+        conflict_min = float(thresh.get("grounding_conflict", {}).get("conflict_rate_min", 0.08))
+        if conflict_rate >= conflict_min:
+            exceptions.append({
+                **base,
+                "category": "grounding_conflict",
+                "title": f"{cap_id} — terminology conflicts",
+                "confidence": 0.76,
+                "rank": 2,
+                "impact": {"cost_usd": econ["review_labor_usd"] * 0.5},
+                "capability_id": cap_id,
+            })
+
+        fhir_min = float(thresh.get("fhir_integrity_fail", {}).get("integrity_fail_rate_min", 0.05))
+        if fhir_fail >= fhir_min:
+            exceptions.append({
+                **base,
+                "category": "fhir_integrity_fail",
+                "title": f"{cap_id} — FHIR integrity failures",
+                "confidence": 0.85,
+                "rank": 1,
+                "impact": {"cost_usd": econ["expected_harm_usd"] * 0.4},
+                "capability_id": cap_id,
+            })
+
+        snap_min = int(thresh.get("vocab_snapshot_drift", {}).get("snapshot_mismatch_min", 1))
+        if vocab_bad >= snap_min:
+            exceptions.append({
+                **base,
+                "category": "vocab_snapshot_drift",
+                "title": f"{cap_id} — vocabulary snapshot drift",
+                "confidence": 0.7,
+                "rank": 3,
+                "impact": {"cost_usd": 250.0},
+                "capability_id": cap_id,
+            })
+
+        inj_min = float(thresh.get("prompt_injection", {}).get("injection_rate_min", 0.03))
+        if injection_rate >= inj_min:
+            exceptions.append({
+                **base,
+                "category": "prompt_injection",
+                "title": f"{cap_id} — prompt injection guard",
+                "confidence": 0.9,
+                "rank": 1,
+                "impact": {"cost_usd": econ["expected_harm_usd"]},
+                "capability_id": cap_id,
+            })
+
+        if queue.get("p_wait", 0) >= p_wait_min and backlog >= wait_min:
+            exceptions.append({
+                **base,
+                "category": "review_sla_breach",
+                "title": f"{cap_id} — review SLA breach",
+                "confidence": 0.74,
+                "rank": 2,
+                "impact": {"cost_usd": econ["review_labor_usd"]},
+                "capability_id": cap_id,
+            })
+
+        run_cost_mean = float(grp["inference_usd"].mean())
+        blow_mult = float(thresh.get("run_cost_blowout", {}).get("run_cost_prior_multiplier", 1.6))
+        baseline = float(priors.get("run_cost_per_success", 0.5))
+        if run_cost_mean > baseline * blow_mult:
+            exceptions.append({
+                **base,
+                "category": "run_cost_blowout",
+                "title": f"{cap_id} — inference cost blowout",
+                "confidence": 0.78,
+                "rank": 2,
+                "impact": {"cost_usd": econ["inference_usd"]},
+                "capability_id": cap_id,
+            })
+
+    return exceptions
+
+
+def _price_clinical_exceptions(
+    exceptions: list[dict[str, Any]],
+    workspace: Workspace,
+    *,
+    semantics: dict[str, Any],
+    profile: dict[str, Any],
+) -> dict[str, Any]:
+    from analytics.clinical_runtime import capability_clinical_economics
+
+    cap_ids = {e.get("capability_id") for e in exceptions if e.get("capability_id")}
+    inference = review = harm = 0.0
+    n_runs = 0
+    cr = getattr(workspace, "clinical_runs", None)
+    for cap_id in cap_ids:
+        econ = capability_clinical_economics(workspace, str(cap_id))
+        inference += econ["inference_usd"]
+        review += econ["review_labor_usd"]
+        harm += econ["expected_harm_usd"]
+        if cr is not None and not cr.empty:
+            n_runs += int((cr["capability_id"].astype(str) == str(cap_id)).sum())
+    total = inference + review + harm
+    if total <= 0:
+        total = sum(e.get("impact", {}).get("cost_usd", 0) for e in exceptions)
+    breakdown = [
+        {"label": "inference", "amount_usd": round(inference, 2)},
+        {"label": "review_labor", "amount_usd": round(review, 2)},
+        {"label": "expected_harm", "amount_usd": round(harm, 2)},
+    ]
+    economics = {
+        "primary_metric_usd": round(total, 2),
+        "primary_metric_label": primary_metric_label(semantics, "residual_clinical_risk_usd"),
+        "currency": "USD",
+        "breakdown": breakdown,
+    }
+    cap_id = next(iter(cap_ids)) if len(cap_ids) == 1 else None
+    return fill_price_block(
+        economics,
+        semantics=semantics,
+        profile=profile,
+        workspace=workspace,
+        capability_id=str(cap_id) if cap_id else None,
+        production_usd=inference + review,
+        risk_usd=harm,
+        n_verified=n_runs or None,
+    )
+
+
+def emit_clinical_records(
+    workspace: Workspace,
+    profile: dict[str, Any],
+    *,
+    validate: bool = True,
+    semantics_overlay: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    raw = classify_clinical(workspace, profile, semantics_overlay=semantics_overlay)
+    vertical = profile.get("ontology_vertical", "clinical_runtime")
+    ontology_version = profile.get("ontology_version", f"{vertical}_v1")
+    semantics = load_rules_for_vertical(vertical, overlay=semantics_overlay)
+    ws_id = workspace.workspaces["workspace_id"].iloc[0] if len(workspace.workspaces) else "WS-0000"
+
+    by_cap: dict[str, list[dict]] = {}
+    for e in raw:
+        key = e.get("capability_id")
+        if key:
+            by_cap.setdefault(str(key), []).append(e)
+
+    caps = workspace.capabilities.set_index("capability_id")
+    versions = workspace.capability_versions.groupby("capability_id")["capability_version_id"].last()
+
+    records: list[dict[str, Any]] = []
+    for rec_idx, (cap_id, excs) in enumerate(by_cap.items(), start=1):
+        ranked = rank_exceptions(_normalize_exceptions(excs))
+        economics = _price_clinical_exceptions(
+            ranked, workspace, semantics=semantics, profile=profile,
+        )
+        verdict = resolve_verdict(ranked, semantics)
+        decision = resolve_action(verdict, semantics)
+        decision["rule_trace"] = build_rule_trace(ranked, semantics, verdict, decision)
+        attach_commercial(
+            decision, economics, semantics=semantics, workspace=workspace, profile=profile
+        )
+        cap_row = caps.loc[cap_id] if cap_id in caps.index else None
+        agent_id = cap_row["agent_id"] if cap_row is not None else "AGT-000"
+        subject = {
+            "workspace_id": ws_id,
+            "entity_type": "capability",
+            "capability_id": cap_id,
+            "capability_version": versions.get(cap_id, f"{cap_id}-v1"),
+            "agent_id": agent_id,
+        }
+        record = {
+            "record_id": f"gdr_cln_{rec_idx:04d}",
+            "vertical": vertical,
+            "schema_version": "1.0.0",
+            "ontology_version": ontology_version,
+            "evaluated_at": datetime.now(timezone.utc).isoformat(),
+            "evaluator_id": "churnos_emitter",
+            "subject": subject,
+            "exceptions": [{k: v for k, v in e.items() if k != "capability_id"} for e in ranked],
+            "economics": economics,
+            "decision": decision,
+            "evidence": {"claim_type": "simulated"},
+        }
+        if validate:
+            errors = validate_record(record, vertical)
+            if errors:
+                raise ValueError(f"Invalid clinical GDR {record['record_id']}: {errors}")
         records.append(record)
 
     records.sort(key=lambda r: -r["economics"]["primary_metric_usd"])

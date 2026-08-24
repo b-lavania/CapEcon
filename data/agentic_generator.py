@@ -106,16 +106,24 @@ def generate_agentic_warehouse(
 
     cap_rows = []
     ver_rows = []
-    for i in range(n_caps):
-        cap_id = f"CAP-{i:03d}"
-        kind = rng.choice(CAPABILITY_KINDS)
+    catalog_ids = priors.get("capability_ids")
+    if catalog_ids and len(catalog_ids) >= n_caps:
+        cap_id_list = [str(c) for c in catalog_ids[:n_caps]]
+    else:
+        cap_id_list = [f"CAP-{i:03d}" for i in range(n_caps)]
+
+    catalog_meta = {str(c.get("id", "")): c for c in (priors.get("capability_catalog") or []) if c.get("id")}
+
+    for i, cap_id in enumerate(cap_id_list):
+        meta = catalog_meta.get(cap_id, {})
+        kind = meta.get("capability_kind") or str(rng.choice(CAPABILITY_KINDS))
         harm = rng.random() < 0.15
         dead = rng.random() < 0.1
         cap_rows.append(
             {
                 "capability_id": cap_id,
                 "agent_id": rng.choice(agents["agent_id"].values),
-                "name": f"{kind.title()} {i}",
+                "name": meta.get("label") or meta.get("id") or f"{kind.title()} {i}",
                 "capability_kind": kind,
                 "harm_correlation": harm,
                 "is_dead": dead,

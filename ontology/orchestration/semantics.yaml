@@ -10,6 +10,8 @@ subject:
 decision.verdict:
   healthy: "Orchestration within policy"
   leaking: "Multi-agent handoff failures"
+  destructive: "Subgraph blast radius — kill path"
+  uneconomic: "Coordination cost exceeds outcome value"
   needs_review: "A2A consent or human gate required"
 
 economics.primary_metric_label: cost_of_leaving_live_usd
@@ -24,14 +26,22 @@ classification:
       trust_rate_prior_multiplier: 1.3
     loop_exhaustion:
       use_profile_max_loops: true
+    handoff_failure:
+      min_success_rate: 0.75
+    coordination_cost:
+      max_ratio: 0.35
+    orphaned_subtask:
+      max_rate: 0.08
 
 decision:
   verdict_default: needs_review
   verdict_rules:
     - verdict: destructive
-      when_any_category: [trust_break, loop_exhaustion]
+      when_any_category: [trust_break, loop_exhaustion, trust_boundary, orphaned_subtask]
+    - verdict: uneconomic
+      when_any_category: [coordination_cost, run_cost_blowout]
     - verdict: leaking
-      when_any_category: [activation_leak, connector_fragility]
+      when_any_category: [activation_leak, connector_fragility, handoff_failure]
     - verdict: underpowered
       when_exception_count_lt: 2
     - verdict: needs_review
@@ -41,7 +51,7 @@ decision:
     healthy:
       recommended_action: ship
       requires_review: false
-      rationale: "Orchestration graph healthy — expand agent mesh."
+      rationale: "Agent mesh healthy — expand routing carefully."
     leaking:
       recommended_action: experiment
       requires_review: true
@@ -49,7 +59,15 @@ decision:
     destructive:
       recommended_action: kill
       requires_review: true
-      rationale: "Orchestration failure with blast radius — kill subgraph."
+      rationale: "Orchestration failure with blast radius — kill subgraph after review."
+    uneconomic:
+      recommended_action: throttle
+      requires_review: true
+      rationale: "Coordination economics broken — throttle subgraph traffic."
+    underpowered:
+      recommended_action: hold
+      requires_review: false
+      rationale: "Insufficient handoff exposure for auto-act."
     needs_review:
       recommended_action: hold
       requires_review: true

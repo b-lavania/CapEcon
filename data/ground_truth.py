@@ -34,6 +34,7 @@ class GroundTruth:
     planted_verification_gap_rate: float = 0.0
     planted_eb_global_mean: float = 0.08
     planted_change_point_week: str | None = None
+    planted_clinical_negatives: dict[str, str] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -54,6 +55,7 @@ class GroundTruth:
             "planted_verification_gap_rate": self.planted_verification_gap_rate,
             "planted_eb_global_mean": self.planted_eb_global_mean,
             "planted_change_point_week": self.planted_change_point_week,
+            "planted_clinical_negatives": dict(self.planted_clinical_negatives),
         }
 
 

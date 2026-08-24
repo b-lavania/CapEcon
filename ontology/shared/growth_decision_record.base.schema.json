@@ -16,7 +16,7 @@
     "record_id": { "type": "string" },
     "vertical": {
       "type": "string",
-      "enum": ["capability_lifecycle", "agent_runtime", "orchestration", "eval_governance", "marketplace_commerce"]
+      "enum": ["capability_lifecycle", "agent_runtime", "orchestration", "eval_governance", "marketplace_commerce", "clinical_runtime"]
     },
     "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
     "ontology_version": { "type": "string" },
@@ -52,6 +52,14 @@
     },
     "economics": { "$ref": "economics.schema.json" },
     "decision": { "$ref": "decision.schema.json" },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "claim_type": { "type": "string", "enum": ["associational", "causal", "simulated"] },
+        "caption": { "type": "string" },
+        "n": { "type": "integer", "minimum": 0 }
+      }
+    },
     "outcome": {
       "type": "object",
       "properties": {

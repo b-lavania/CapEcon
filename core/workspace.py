@@ -7,6 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 from data.agentic_generator import DATA_VERSION, SEED, generate_agentic_warehouse
@@ -103,12 +104,59 @@ class Workspace:
     buyers: pd.DataFrame = field(default_factory=pd.DataFrame)
     marketing: pd.DataFrame = field(default_factory=pd.DataFrame)
     agent_transactions: pd.DataFrame = field(default_factory=pd.DataFrame)
+    clinical_runs: pd.DataFrame = field(default_factory=pd.DataFrame)
     default_experiment_id: str = "EXP-CAP-VERSION-001"
     meta: dict[str, Any] = field(default_factory=dict)
 
     @property
     def model_config(self) -> dict[str, Any]:
         return self.profile
+
+
+def _merge_uploaded(agentic: dict[str, Any], uploaded: dict[str, Any] | None) -> dict[str, Any]:
+    """Overlay adapter tables onto a generated warehouse (real ingest on teaching spine)."""
+    if not uploaded:
+        return agentic
+    rng = np.random.default_rng(0)
+    seats = agentic.get("seats", pd.DataFrame())
+    for key, frame in uploaded.items():
+        if frame is None:
+            continue
+        if isinstance(frame, pd.DataFrame) and frame.empty:
+            continue
+        if key in ("runs", "agent_runs") and isinstance(frame, pd.DataFrame):
+            runs = frame.copy()
+            if "run_id" not in runs.columns and "agent_run_id" in runs.columns:
+                runs["run_id"] = runs["agent_run_id"]
+            spine = agentic.get("runs", pd.DataFrame())
+            if "seat_id" not in runs.columns and not seats.empty:
+                runs["seat_id"] = [
+                    seats["seat_id"].iloc[int(rng.integers(0, len(seats)))] for _ in range(len(runs))
+                ]
+            if "started_at" not in runs.columns and not spine.empty and "started_at" in spine.columns:
+                runs["started_at"] = spine["started_at"].iloc[0]
+            if "run_cost_usd" not in runs.columns:
+                runs["run_cost_usd"] = 0.0
+            if "trust_incident" not in runs.columns:
+                runs["trust_incident"] = False
+            if not spine.empty:
+                agentic["runs"] = pd.concat([spine, runs], ignore_index=True, sort=False)
+            else:
+                agentic["runs"] = runs
+            ar = agentic["runs"].copy()
+            ar["agent_run_id"] = ar["run_id"] if "run_id" in ar.columns else ar.index.astype(str)
+            agentic["agent_runs"] = ar
+            continue
+        if key == "spans" and isinstance(frame, pd.DataFrame):
+            existing = agentic.get("spans", pd.DataFrame())
+            agentic["spans"] = (
+                pd.concat([existing, frame], ignore_index=True, sort=False)
+                if existing is not None and len(existing)
+                else frame
+            )
+            continue
+        agentic[key] = frame
+    return agentic
 
 
 def build_workspace(
@@ -119,11 +167,21 @@ def build_workspace(
     price_runs: bool = True,
     data_source: str = "synthetic",
     otel_path: str | None = None,
+    uploaded_tables: dict[str, Any] | None = None,
 ) -> Workspace:
     """Build agentic warehouse from profile; attach legacy bundle for LEGACY pages."""
     if profile is None:
         from analytics.agentic_profile import get_preset
         profile = get_preset("assistant_heavy")
+
+    profile = dict(profile)
+    if profile.get("case_study_id"):
+        from data.case_studies import apply_case_study_to_profile, load_case_study
+
+        catalog = load_case_study(profile["case_study_id"])
+        profile = apply_case_study_to_profile(profile)
+        priors = profile.setdefault("priors", {})
+        priors["capability_catalog"] = catalog.get("capabilities", [])
 
     agentic = generate_agentic_warehouse(profile, seed=seed)
     runs = agentic["runs"]
@@ -139,6 +197,10 @@ def build_workspace(
         from data.ingestion import ingest_otel_into_agentic
 
         agentic = ingest_otel_into_agentic(agentic, profile, seed=seed, otel_path=otel_path)
+
+    if data_source in ("uploaded", "otel", "langfuse", "vision") and uploaded_tables:
+        agentic = _merge_uploaded(agentic, uploaded_tables)
+        runs = agentic["runs"]
 
     graph = build_connector_capability_graph(
         agentic["connector_events"],
@@ -170,14 +232,26 @@ def build_workspace(
             runs, agentic["seats"], agentic["capabilities"], profile, seed=seed,
         )
 
+    clinical_runs = pd.DataFrame()
+    if profile.get("ontology_vertical") == "clinical_runtime" and profile.get("case_study_id"):
+        from data.case_studies import load_case_study
+        from data.clinical_generator import generate_clinical_runs
+
+        catalog = load_case_study(profile["case_study_id"])
+        clinical_runs = generate_clinical_runs(
+            runs, agentic["capabilities"], catalog, profile, seed=seed,
+        )
+
     legacy = generate_all_data(seed=seed)
     funnel = generate_funnel_events(n_sessions=n_sessions, seed=seed)
 
     challenge_meta = agentic.get("challenge_meta", {})
+    ingest_tables = sorted((uploaded_tables or {}).keys()) if uploaded_tables else []
     meta = {
         "data_version": DATA_VERSION,
         "n_sessions": n_sessions,
         "data_source": data_source,
+        "uploaded_tables": ingest_tables,
         **challenge_meta,
     }
 
@@ -221,6 +295,7 @@ def build_workspace(
         buyers=legacy["buyers"],
         marketing=legacy["marketing"],
         agent_transactions=agent_transactions,
+        clinical_runs=clinical_runs,
         meta=meta,
     )
 
@@ -266,6 +341,7 @@ def workspace_to_dict(ws: Workspace) -> dict[str, Any]:
         "buyers": ws.buyers,
         "marketing": ws.marketing,
         "agent_transactions": ws.agent_transactions,
+        "clinical_runs": ws.clinical_runs,
         "default_experiment_id": ws.default_experiment_id,
         "meta": ws.meta,
     }
@@ -316,6 +392,7 @@ def workspace_from_dict(data: dict[str, Any]) -> Workspace:
         buyers=data["buyers"],
         marketing=data.get("marketing", pd.DataFrame()),
         agent_transactions=data.get("agent_transactions", pd.DataFrame()),
+        clinical_runs=data.get("clinical_runs", pd.DataFrame()),
         default_experiment_id=data.get("default_experiment_id", "EXP-CAP-VERSION-001"),
         meta=data.get("meta", {}),
     )

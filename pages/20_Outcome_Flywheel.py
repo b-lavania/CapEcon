@@ -108,4 +108,5 @@ for i, rec in enumerate(st.session_state.get("growth_records", records)[:5]):
     if rec.get("outcome"):
         render_decision_card(rec, key_prefix=f"out_{i}", show_override=False, workspace=ws)
 
-st.caption("Return to **Radar** from the sidebar after writing outcomes.")
+st.caption("Return to **Decision Inbox** or **Radar** after writing outcomes.")
+st.page_link("pages/19_Decision_Inbox.py", label="Decision Inbox")

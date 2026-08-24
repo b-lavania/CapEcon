@@ -1,6 +1,6 @@
 # The Agentic Retention System: Detailed Build Plan
 
-> **Demo honesty:** churnOS ships synthetic data and teaching formulas. For what is simulated vs associational vs causal, see [`honesty.md`](honesty.md).
+> **Demo honesty:** churnOS ships synthetic data and teaching formulas. For what is simulated vs associational vs causal, see [`honesty.md`](honesty.md). The app's Version Gate / Data Connect / Outcome Definition pages are the short version of this writeup. Longer argument in [`positioning.md`](positioning.md).
 
 ## Part 1 — The Problem, Grounded in Data
 

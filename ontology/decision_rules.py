@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ontology.exception_taxonomy import ACTIONS, VERDICTS
+from ontology.exception_taxonomy import ACTIONS, COMMERCIAL_ACTIONS, VERDICTS
 from ontology.semantics import load_semantics
 
 
@@ -117,12 +117,17 @@ def resolve_action(verdict: str, semantics: dict[str, Any]) -> dict[str, Any]:
 
     verdict_val = verdict if verdict in VERDICTS else "needs_review"
 
+    requires_review = bool(spec.get("requires_review", verdict_val in ("needs_review", "destructive")))
+    # A price or packaging change lands in someone else's system. YAML cannot waive the review.
+    if action in COMMERCIAL_ACTIONS:
+        requires_review = True
+
     return {
         "verdict": verdict_val,
         "recommended_action": action,
         "final_action": action,
         "rationale": spec.get("rationale", f"Rule-guided action for {verdict_val}."),
-        "requires_review": bool(spec.get("requires_review", verdict_val in ("needs_review", "destructive"))),
+        "requires_review": requires_review,
     }
 
 

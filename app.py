@@ -182,17 +182,24 @@ nav_structure = {
             url_path="profile",
             default=True,
         ),
+        st.Page("pages/01_Data_Connect.py", title="Data Connect", url_path="data_connect"),
+        st.Page("pages/02_Outcome_Definition.py", title="Outcome Definition", url_path="outcomes"),
     ],
     "DECIDE": [
+        st.Page("pages/24_Version_Gate.py", title="Version Gate", url_path="version_gate"),
+        st.Page("pages/19_Decision_Inbox.py", title="Decision Inbox", url_path="inbox"),
         st.Page(capability_risk_radar, title="Radar", url_path="radar"),
+        st.Page("pages/27_Subgraph_Health.py", title="Subgraph Health", url_path="subgraph"),
         st.Page("pages/15_Activation_Habit.py", title="Activation & Habit", url_path="activation"),
         st.Page("pages/16_Trust_Approval.py", title="Trust & Approval", url_path="trust"),
         st.Page("pages/17_Run_Economics.py", title="Run Economics", url_path="run_economics"),
         st.Page("pages/18_Connector_Blast_Radius.py", title="Connectors", url_path="connectors"),
         st.Page("pages/35_Marketplace_Radar.py", title="Marketplace Radar", url_path="marketplace_radar"),
+        st.Page("pages/41_Clinical_Radar.py", title="Clinical Radar", url_path="clinical_radar"),
         st.Page("pages/26_Agent_Version_Compare.py", title="Version Compare", url_path="version_compare"),
     ],
     "LEARN": [
+        st.Page("pages/37_Executive_Summary.py", title="Executive Summary", url_path="executive"),
         st.Page("pages/3_Conversion.py", title="Experiments", url_path="experiments"),
         st.Page("pages/25_Agentic_Flags.py", title="Agentic Flags", url_path="agentic_flags"),
         st.Page("pages/20_Outcome_Flywheel.py", title="Outcome Flywheel", url_path="flywheel"),
@@ -204,6 +211,9 @@ nav_structure = {
         st.Page("pages/36_Math_Lab_Drift.py", title="Lab · Drift", url_path="math_drift"),
         *_REFERENCE_PAGES,
         *_LEGACY_PAGES,
+    ],
+    "CONFIG": [
+        st.Page("pages/40_Integrations.py", title="Integrations", url_path="integrations"),
     ],
 }
 

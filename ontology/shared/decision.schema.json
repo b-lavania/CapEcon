@@ -11,6 +11,37 @@
     "requires_review": { "type": "boolean" },
     "override_reason": { "type": "string" },
     "decided_by": { "type": "string" },
-    "decided_at": { "type": "string", "format": "date-time" }
+    "decided_at": { "type": "string", "format": "date-time" },
+    "price_signal": {
+      "type": ["string", "null"],
+      "enum": [
+        "unpriceable",
+        "within_policy",
+        "mesh_leak",
+        "below_floor",
+        "over_baseline",
+        "flat_bucket_over_cap",
+        "severely_over_cap",
+        "over_cap",
+        null
+      ]
+    },
+    "commercial_action": {
+      "type": ["string", "null"],
+      "enum": [
+        "hold_sku",
+        "raise_list",
+        "split_tier",
+        "cut_credits",
+        "kill_all_inclusive",
+        "reallocate",
+        null
+      ]
+    },
+    "commercial_rationale": { "type": "string" },
+    "commercial_owner_role": {
+      "type": "string",
+      "enum": ["packaging", "finance", "deal_desk", "platform"]
+    }
   }
 }

@@ -156,6 +156,33 @@ metrics:
     resolver: retry_amplification_factor
     unit: ratio
 
+  handoff_success_rate:
+    label: "Handoff success rate"
+    type: guardrail
+    resolver: handoff_success_rate
+    unit: percent
+    caveats: "A→B sequential capability success on the same seat (teaching proxy)."
+
+  coordination_cost_ratio:
+    label: "Coordination cost ratio"
+    type: economics
+    resolver: coordination_cost_ratio
+    unit: percent
+    caveats: "Share of run cost in multi-capability sequences."
+
+  orphaned_subtask_rate:
+    label: "Orphaned subtask rate"
+    type: guardrail
+    resolver: orphaned_subtask_rate
+    unit: percent
+
+  trust_boundary_violation_rate:
+    label: "Trust-boundary violation rate"
+    type: guardrail
+    resolver: trust_boundary_violation_rate
+    unit: percent
+    caveats: "Connector edges with fail rate > 35%."
+
   unattributed_spend_percentage:
     label: "Unattributed spend %"
     type: guardrail

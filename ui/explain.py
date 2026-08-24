@@ -63,6 +63,14 @@ SURFACE_EXPLAINERS: dict[str, dict[str, str]] = {
             "and throttle uneconomic agent assists."
         ),
     },
+    "clinical_radar": {
+        "title": "What this measures",
+        "body": (
+            "Clinical SDK capabilities (OpenMed v2.2 case study): residual risk priced as "
+            "inference + review labor + expected harm. Cards use `residual_clinical_risk_usd`. "
+            "Separate from main Radar — same capability may appear on both surfaces."
+        ),
+    },
     "math_drift": {
         "title": "What this measures",
         "body": (
@@ -106,7 +114,64 @@ SURFACE_EXPLAINERS: dict[str, dict[str, str]] = {
         "title": "What this is",
         "body": (
             "Raw `GrowthDecisionRecord` inspection: validate against schema, override "
-            "actions, see JSONL persistence. Audit surface for the decision object."
+            "actions, see SQLite + JSONL persistence. Audit surface for the decision object."
+        ),
+    },
+    "data_connect": {
+        "title": "What this screen is",
+        "body": (
+            "Upload an OTel JSONL or Langfuse dump (prompt bodies get stripped), a Vision "
+            "bakeoff `run.json` plus historic jobs JSONL, and optional CSVs for accounts / "
+            "outcomes / subscriptions. Vision Agent is two records: bakeoff API $ is the "
+            "agent floor (`estimated`); historic `price_dollars` is the move invoice. "
+            "If subscriptions are missing, CM-NRR just isn't available — that's fine. "
+            "There's a synthetic demo button if you don't have files yet."
+        ),
+    },
+    "outcome_kit": {
+        "title": "What this screen is",
+        "body": (
+            "What does success mean, in a way you can verify? If you can't name that, "
+            "don't pretend Version Gate is doing retention. `verified_by` is "
+            "`deterministic_stage`, `human_confirmation`, `llm_judge`, or `webhook`."
+        ),
+    },
+    "version_gate": {
+        "title": "What this screen is",
+        "body": (
+            "Should this version **ship, hold, or roll back**? Eval delta, canary SPRT, "
+            "then a GDR you can drop in the Inbox. CI can hit the same function at "
+            "`POST /version-gate`."
+        ),
+    },
+    "inbox": {
+        "title": "What this screen is",
+        "body": (
+            "Same GrowthDecisionRecords as Radar, with a status (pending / in review / resolved). "
+            "Filter by owner. The knapsack line is 'you only have N HITL slots this week.'"
+        ),
+    },
+    "subgraph": {
+        "title": "What this measures",
+        "body": (
+            "When one agent hands to another: success rate on that edge, extra cost of "
+            "coordination, retries, tasks that never finish, connector blast radius. "
+            "A subgraph GDR can recommend kill, but it still `requires_review`."
+        ),
+    },
+    "executive": {
+        "title": "What this screen is",
+        "body": (
+            "The 3–5 decisions with the highest cost of leaving live, plus a handful of "
+            "pinned metrics. Every number keeps its claim type. Download markdown, or copy "
+            "the Slack JSON — print-to-PDF if you need a file."
+        ),
+    },
+    "integrations": {
+        "title": "What this screen is",
+        "body": (
+            "Slack first, then require_review, then PagerDuty, then a CI check. "
+            "I will not write your feature flags. This page stores URLs and logs that you asked."
         ),
     },
     "concepts": {
@@ -136,6 +201,13 @@ ACTION_GLOSS = {
     "kill": "Remove from the product surface.",
     "experiment": "Force a governed test before further ship.",
     "revise": "Change prompt/tool/policy; re-enter eval.",
+    # Commercial — change the price or the packaging, not the runtime. Always reviewed.
+    "hold_sku": "Freeze this outcome SKU; stop selling more of it on this version.",
+    "raise_list": "List sits below the floor — open a price-book change.",
+    "split_tier": "Fence the expensive cohort; all-inclusive is subsidising it.",
+    "cut_credits": "The included bucket or credit grant is the leak.",
+    "kill_all_inclusive": "A flat bucket cannot cover this capability.",
+    "reallocate": "Routing / retry tax is the leak — change routing before price.",
 }
 
 PAIN_MAP_ROWS: list[tuple[str, str, str, str]] = [
@@ -282,11 +354,11 @@ def how_it_works(*, expanded: bool = True) -> None:
             """
 **One loop**
 
-1. **Agentic Product Profile** — pick product shape → sets ontology + fake rates  
-2. **Generate workspace** — seats, capabilities, runs, approvals, connectors, churn marks  
-3. **Decision engine** — finds exceptions per capability, prices *cost of leaving live*  
-4. **This Radar** — ranked Decision Cards → you override ship / hold / throttle…  
-5. **Outcome Flywheel** — write retention Δ / churn back onto the record (simulated)
+1. **Product Profile** — pick product shape → sets ontology + fake rates (or **Data Connect** real traces)
+2. **Generate / ingest warehouse** — seats, capabilities, runs, approvals, connectors, outcomes
+3. **Version Gate** — ship / hold / rollback this version (SPRT + eval)
+4. **Decision Inbox / Radar** — ranked GrowthDecisionRecords → override
+5. **Outcome Flywheel** — write retention Δ / churn back onto the record (simulated unless real outcomes)
 
 In production the warehouse is LangSmith-class traces + ChartMogul-class billing; today it is authored so you can learn the decision object.
 
@@ -300,10 +372,11 @@ In production the warehouse is LangSmith-class traces + ChartMogul-class billing
 
 **Sidebar map**
 
-- **START** — Product Profile (pick preset → generate workspace)  
-- **DECIDE** — Radar + filtered decision surfaces (activation, trust, cost, connectors)  
-- **LEARN** — Experiments + Outcome Flywheel (close the loop)  
-- **Reference** (collapsed) — Concepts, Architecture, Semantics, Taxonomy, Record Inspector  
+- **START** — Product Profile, Data Connect, Outcome Definition
+- **DECIDE** — Version Gate, Inbox, Radar, then the filtered surfaces
+- **LEARN** — Executive Summary, Experiments, Outcome Flywheel
+- **CONFIG** — Integrations (hooks)
+- **Reference** (collapsed) — Concepts, Architecture, Semantics, Taxonomy, Record Inspector
 - **Legacy** (collapsed) — Pre-agentic ecomm / marketplace modules
             """
         )

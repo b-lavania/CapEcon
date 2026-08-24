@@ -1,0 +1,59 @@
+{
+  "record_id": "gdr_cln_0001",
+  "vertical": "clinical_runtime",
+  "schema_version": "1.0.0",
+  "ontology_version": "clinical_runtime_v1",
+  "evaluated_at": "2026-08-22T12:00:00Z",
+  "evaluator_id": "churnos_emitter",
+  "subject": {
+    "workspace_id": "WS-0001",
+    "entity_type": "capability",
+    "capability_id": "pii_deidentify",
+    "capability_version": "pii_deidentify-v2",
+    "agent_id": "AGT-001"
+  },
+  "exceptions": [
+    {
+      "exception_id": "exc_0001",
+      "category": "phi_leakage",
+      "title": "PHI-safe log rate below policy",
+      "description": "Raw identifier spans detected in service diagnostics — rollback until scrubbed.",
+      "confidence": 0.91,
+      "rank": 1,
+      "severity": "critical",
+      "owner": "engineering",
+      "blocks_subject": true,
+      "blocked_entity": { "entity_type": "capability", "entity_id": "pii_deidentify" },
+      "impact": { "cost_usd": 12500 },
+      "evidence": {
+        "claim_type": "simulated",
+        "estimand": "phi_log_incident_cost_usd",
+        "n": 240
+      }
+    }
+  ],
+    "economics": {
+      "primary_metric_usd": 14200,
+      "primary_metric_label": "residual_clinical_risk_usd",
+      "currency": "USD",
+      "pricing_mode": "internal_budget",
+      "cost_basis": "simulated",
+      "floor_usd": 7.08,
+      "risk_usd": 52.08,
+      "cap_usd": 8.0,
+      "baseline_usd": 45.0,
+      "n_verified": 240,
+      "ranking_metric_usd": 14200,
+      "breakdown": [
+        { "label": "inference", "amount_usd": 420, "notes": "Streaming de-id run cost" },
+        { "label": "review_labor", "amount_usd": 1280, "notes": "Qualified review backlog" },
+        { "label": "expected_harm", "amount_usd": 12500, "notes": "PHI incident tail" }
+      ]
+    },
+  "decision": {
+    "verdict": "destructive",
+    "recommended_action": "rollback",
+    "requires_review": true,
+    "rationale": "PHI leakage signal — rollback until diagnostics are hash-only."
+  }
+}
