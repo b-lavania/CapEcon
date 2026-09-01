@@ -8,7 +8,8 @@ from typing import Any
 from analytics.agent_version_compare import compare_agent_versions
 from analytics.commercial import attach_commercial, commercial_sentence, resolve_commercial_action
 from analytics.metrics import resolve_metric
-from analytics.price_block import fill_price_block, primary_metric_label
+from analytics.price_block import fill_price_block, primary_metric_label, price_sentence
+from analytics.value_ledger import fill_value_block, value_sentence
 from core.workspace import Workspace
 from ontology.decision_rules import build_rule_trace, load_rules_for_vertical, resolve_action
 from ontology.exception_taxonomy import get_category
@@ -173,6 +174,12 @@ def evaluate_version_gate(workspace: Workspace, *, semantics_overlay: dict[str, 
         semantics=semantics,
         profile=workspace.profile,
         workspace=workspace,
+        capability_id=capability_id,
+    )
+    economics = fill_value_block(
+        economics,
+        workspace=workspace,
+        profile=workspace.profile,
         capability_id=capability_id,
     )
     commercial = resolve_commercial_action(

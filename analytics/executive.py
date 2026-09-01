@@ -38,6 +38,17 @@ def claim_type_of(record: dict[str, Any]) -> str:
     return "associational"
 
 
+def mean_surplus_usd(records: list[dict[str, Any]]) -> float | None:
+    vals = [
+        float((r.get("economics") or {}).get("surplus_usd"))
+        for r in records
+        if (r.get("economics") or {}).get("surplus_usd") is not None
+    ]
+    if not vals:
+        return None
+    return round(sum(vals) / len(vals), 4)
+
+
 def executive_summary(workspace: Workspace, records: list[dict[str, Any]]) -> dict[str, Any]:
     pins = []
     for name in PINNED:
@@ -46,9 +57,11 @@ def executive_summary(workspace: Workspace, records: list[dict[str, Any]]) -> di
         except Exception:
             pins.append({"name": name, "display": "—", "value": None})
     top = top_decisions(records, 5)
+    surplus_mean = mean_surplus_usd(records)
     return {
         "headline": f"{len(top)} decision(s) worth leadership time this week",
         "pins": pins,
+        "mean_surplus_usd": surplus_mean,
         "top_decisions": [
             {
                 "record_id": r.get("record_id"),
@@ -56,6 +69,7 @@ def executive_summary(workspace: Workspace, records: list[dict[str, Any]]) -> di
                 "verdict": r.get("decision", {}).get("verdict"),
                 "action": r.get("decision", {}).get("recommended_action"),
                 "cost_usd": r.get("economics", {}).get("primary_metric_usd"),
+                "surplus_usd": (r.get("economics") or {}).get("surplus_usd"),
                 "claim_type": claim_type_of(r),
                 "rationale": r.get("decision", {}).get("rationale", ""),
             }
@@ -68,8 +82,10 @@ def executive_summary(workspace: Workspace, records: list[dict[str, Any]]) -> di
 def slack_blocks(summary: dict[str, Any]) -> dict[str, Any]:
     lines = [f"*{summary['headline']}*"]
     for d in summary.get("top_decisions") or []:
+        surplus = d.get("surplus_usd")
+        surplus_txt = f" · surplus {surplus:+.2f}/outcome" if surplus is not None else ""
         lines.append(
-            f"• `{d.get('verdict')}` → *{d.get('action')}* (${d.get('cost_usd') or 0:,.0f}) "
+            f"• `{d.get('verdict')}` → *{d.get('action')}* (${d.get('cost_usd') or 0:,.0f}{surplus_txt}) "
             f"[{d.get('claim_type')}]"
         )
     return {"text": "\n".join(lines), "blocks": [{"type": "section", "text": {"type": "mrkdwn", "text": "\n".join(lines)}}]}

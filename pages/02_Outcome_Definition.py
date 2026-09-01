@@ -4,8 +4,9 @@ from pathlib import Path
 
 import streamlit as st
 
-from core.workspace import get_workspace_from_session
+from core.workspace import get_workspace_from_session, sync_workspace_to_session
 from ontology.outcome_contract import TEMPLATES, VERIFIED_BY, apply_template, default_contract, validate_outcomes
+from analytics.value_ledger import sync_outcome_contract_to_workspace
 from ui.explain import page_help
 from ui.magazine import load_magazine_css, masthead, section_kicker
 
@@ -64,9 +65,44 @@ contract["min_verified_share"] = st.slider(
     float(contract.get("min_verified_share", 0.4)),
 )
 
+section_kicker("4. Task tier (S / M / L)")
+tier_options = ["skip", "S", "M", "L"]
+current_tier = contract.get("task_tier") or "skip"
+tier_pick = st.radio(
+    "Scoped task tier",
+    tier_options,
+    index=tier_options.index(current_tier) if current_tier in tier_options else 0,
+    horizontal=True,
+)
+task_tiers = dict(contract.get("task_tiers") or TEMPLATES[template_id].get("task_tiers") or {})
+contract["task_tiers"] = task_tiers
+if tier_pick != "skip":
+    contract["task_tier"] = tier_pick
+    spec = task_tiers.get(tier_pick, {})
+    st.caption(f"{spec.get('footprint', '')} · list ${spec.get('list_usd', '—')}")
+else:
+    contract.pop("task_tier", None)
+    st.caption("Skip tier scoping (OK for internal_budget; SKU/marketplace presets should pick a tier).")
+
+section_kicker("5. Default value per outcome_type")
+value_map = dict(contract.get("outcome_value_map") or {})
+for t in types:
+    value_map[t] = st.number_input(
+        f"{t} prior value USD (0 = unset)",
+        min_value=0.0,
+        value=float(value_map.get(t, 0) or 0),
+        step=0.01,
+        key=f"val_{t}",
+    )
+contract["outcome_value_map"] = {k: v for k, v in value_map.items() if v > 0}
+
 if st.button("Save contract", type="primary"):
     st.session_state["outcome_contract"] = contract
-    st.success("Contract saved in session. Wire this to warehouse.outcomes in production.")
+    ws = get_workspace_from_session(st.session_state)
+    if ws is not None:
+        sync_outcome_contract_to_workspace(ws, contract)
+        sync_workspace_to_session(st.session_state, ws)
+    st.success("Contract saved to session and workspace meta.")
 
 ws = get_workspace_from_session(st.session_state)
 section_kicker("Readiness gate")
@@ -76,11 +112,12 @@ if ws is None:
     st.page_link("pages/00_Agentic_Product_Profile.py", label="Product Profile")
 else:
     report = validate_outcomes(getattr(ws, "outcomes", None), contract)
-    c1, c2, c3, c4 = st.columns(4)
+    c1, c2, c3, c4, c5 = st.columns(5)
     c1.metric("Outcomes", report["n"])
     c2.metric("Verified share", f"{report['verified_share']:.0%}")
     c3.metric("Known types", f"{report['known_types_share']:.0%}")
-    c4.metric("Ready", "yes" if report["ready"] else "no")
+    c4.metric("Tier", contract.get("task_tier") or "—")
+    c5.metric("Ready", "yes" if report["ready"] else "no")
     if report["blockers"]:
         st.warning(" · ".join(report["blockers"]))
         st.caption("If you cannot define outcomes, stop here — the offer is an instrumentation audit, not Version Gate theater.")

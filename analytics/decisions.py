@@ -18,6 +18,8 @@ from analytics.price_block import (
     fill_price_block,
     primary_metric_label,
 )
+from analytics.value_ledger import fill_value_block, outcome_contract
+from analytics.wtp_priors import apply_wtp_to_price_block, wtp_cap_from_data
 from core.workspace import Workspace
 from ontology.decision_rules import (
     build_rule_trace,
@@ -594,6 +596,44 @@ def rank_exceptions(exceptions: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return ranked
 
 
+def _finalize_economics(
+    economics: dict[str, Any],
+    *,
+    semantics: dict[str, Any] | None,
+    profile: dict[str, Any] | None,
+    workspace: Workspace | None = None,
+    capability_id: str | None = None,
+    account_id: str | None = None,
+    production_usd: float | None = None,
+    risk_usd: float | None = None,
+    n_verified: int | None = None,
+    cost_basis: str | None = None,
+) -> dict[str, Any]:
+    economics = fill_price_block(
+        economics,
+        semantics=semantics,
+        profile=profile,
+        workspace=workspace,
+        capability_id=capability_id,
+        account_id=account_id,
+        production_usd=production_usd,
+        risk_usd=risk_usd,
+        n_verified=n_verified,
+        cost_basis=cost_basis,
+    )
+    economics = fill_value_block(
+        economics,
+        workspace=workspace,
+        profile=profile,
+        capability_id=capability_id,
+        account_id=account_id,
+    )
+    if workspace is not None and (profile or {}).get("priors", {}).get("math_mode") == "rigorous":
+        wtp = wtp_cap_from_data(workspace, profile)
+        economics = apply_wtp_to_price_block(economics, wtp, profile)
+    return economics
+
+
 def price_exceptions(
     exceptions: list[dict[str, Any]],
     profile: dict[str, Any],
@@ -617,7 +657,7 @@ def price_exceptions(
         "currency": "USD",
         "breakdown": breakdown,
     }
-    return fill_price_block(
+    return _finalize_economics(
         economics,
         semantics=semantics,
         profile=profile,
@@ -718,6 +758,11 @@ def _emit_subject_records(
         else:
             subject = {"workspace_id": ws_id, "entity_type": "account", "account_id": subject_id}
             strip_keys = ("account_id",)
+
+        contract = outcome_contract(workspace)
+        tier = contract.get("task_tier")
+        if tier:
+            subject["task_tier"] = tier
 
         record = {
             "record_id": f"gdr_{entity_type[:3]}_{rec_idx:04d}",
@@ -1004,7 +1049,7 @@ def _price_marketplace_exceptions(
         "currency": "USD",
         "breakdown": breakdown,
     }
-    return fill_price_block(
+    return _finalize_economics(
         economics,
         semantics=semantics,
         profile=profile,
@@ -1272,7 +1317,7 @@ def _price_clinical_exceptions(
         "breakdown": breakdown,
     }
     cap_id = next(iter(cap_ids)) if len(cap_ids) == 1 else None
-    return fill_price_block(
+    return _finalize_economics(
         economics,
         semantics=semantics,
         profile=profile,

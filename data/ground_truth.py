@@ -35,6 +35,11 @@ class GroundTruth:
     planted_eb_global_mean: float = 0.08
     planted_change_point_week: str | None = None
     planted_clinical_negatives: dict[str, str] = field(default_factory=dict)
+    planted_outcome_value_mean: float = 0.0
+    planted_task_tier_list_usd: dict[str, float] = field(default_factory=dict)
+    planted_price_change_week: str | None = None
+    planted_conversion_at_price: float = 0.0
+    planted_wtp_cap_usd: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -56,6 +61,11 @@ class GroundTruth:
             "planted_eb_global_mean": self.planted_eb_global_mean,
             "planted_change_point_week": self.planted_change_point_week,
             "planted_clinical_negatives": dict(self.planted_clinical_negatives),
+            "planted_outcome_value_mean": self.planted_outcome_value_mean,
+            "planted_task_tier_list_usd": dict(self.planted_task_tier_list_usd),
+            "planted_price_change_week": self.planted_price_change_week,
+            "planted_conversion_at_price": self.planted_conversion_at_price,
+            "planted_wtp_cap_usd": self.planted_wtp_cap_usd,
         }
 
 

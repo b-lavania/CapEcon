@@ -29,3 +29,7 @@ If they can't name a verified outcome, the useful thing to do is the Outcome Def
 Not a chat UI. Not a scheduler. Not a Langfuse replacement. Not an auto-rollback bot. I will log a Slack message and put `requires_review` on a record before I ever write a flag weight.
 
 The join and the claim types are in [contracts.md](contracts.md) and [honesty.md](honesty.md). Outcomes are in [outcome_contract.md](outcome_contract.md). The longer argument is [methodology.md](methodology.md).
+
+## Demand-side honesty
+
+churnOS is strong on **supply-side** economics: floor per verified outcome, retention harm, Version Gate. It is weaker on **demand**: user willingness to pay, task value magnitude, and price elasticity. The value ledger (`economics.value_usd`, `surplus_usd`) and Packaging Lab are teaching surfaces — not conjoint or billing-system WTP discovery. Bring external research or experiments for demand science; use churnOS to avoid shipping below floor.

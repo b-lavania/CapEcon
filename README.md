@@ -125,6 +125,10 @@ The ontology has a few verticals: `capability_lifecycle`, `agent_runtime`, `mark
 
 **Default data is still synthetic.** Generators in `data/agentic_generator.py`. The math is real, the numbers are authored. Data Connect will take a file and overlay it; I have not run a full live partner warehouse through every screen yet. [`docs/honesty.md`](docs/honesty.md) is the source of truth for simulated vs associational vs causal.
 
+### What churnOS does not price (yet)
+
+churnOS is deliberate about the **supply side**: what it costs to produce a verified outcome, and whether a capability hurts retention. It does **not** yet estimate willingness to pay from your billing data, run conjoint, or prove that users value a task at $X. The optional value block and Packaging Lab are teaching surfaces for surplus and list-price sensitivity. If you need demand-side pricing science, bring experiments or external research; use churnOS to make sure you are not shipping outcomes below floor.
+
 **Harm scores are associational**, not causal, unless there's an `experiment_id` on the record. I want to be careful about that distinction. Every GDR carries `evidence.claim_type` so the UI can't "forget."
 
 ---

@@ -23,6 +23,13 @@ EMPTY_OUTCOMES = pd.DataFrame(
     columns=[
         "outcome_id", "account_id", "end_user_id", "agent_run_id",
         "outcome_type", "success", "verified", "verified_by", "occurred_at", "days_since_signup",
+        "outcome_value_usd",
+    ]
+)
+EMPTY_SUBSCRIPTION_EVENTS = pd.DataFrame(
+    columns=[
+        "event_id", "account_id", "event_type", "occurred_at",
+        "old_tier", "new_tier", "old_mrr_usd", "new_mrr_usd",
     ]
 )
 
@@ -85,6 +92,7 @@ class Workspace:
     spans: pd.DataFrame = field(default_factory=pd.DataFrame)
     outcomes: pd.DataFrame = field(default_factory=lambda: EMPTY_OUTCOMES.copy())
     subscriptions: pd.DataFrame = field(default_factory=pd.DataFrame)
+    subscription_events: pd.DataFrame = field(default_factory=lambda: EMPTY_SUBSCRIPTION_EVENTS.copy())
     usage_events: pd.DataFrame = field(default_factory=pd.DataFrame)
     # Agentic challenges (dummy-seeded)
     catastrophic_events: pd.DataFrame = field(default_factory=pd.DataFrame)
@@ -279,6 +287,7 @@ def build_workspace(
         spans=agentic.get("spans", pd.DataFrame()),
         outcomes=agentic.get("outcomes", EMPTY_OUTCOMES.copy()),
         subscriptions=agentic.get("subscriptions", pd.DataFrame()),
+        subscription_events=agentic.get("subscription_events", EMPTY_SUBSCRIPTION_EVENTS.copy()),
         usage_events=agentic.get("usage_events", pd.DataFrame()),
         catastrophic_events=agentic.get("catastrophic_events", pd.DataFrame()),
         routing_decisions=agentic.get("routing_decisions", pd.DataFrame()),
@@ -325,6 +334,7 @@ def workspace_to_dict(ws: Workspace) -> dict[str, Any]:
         "spans": ws.spans,
         "outcomes": ws.outcomes,
         "subscriptions": ws.subscriptions,
+        "subscription_events": ws.subscription_events,
         "usage_events": ws.usage_events,
         "catastrophic_events": ws.catastrophic_events,
         "routing_decisions": ws.routing_decisions,
@@ -373,6 +383,7 @@ def workspace_from_dict(data: dict[str, Any]) -> Workspace:
         spans=data.get("spans", pd.DataFrame()),
         outcomes=data.get("outcomes", EMPTY_OUTCOMES.copy()),
         subscriptions=data.get("subscriptions", pd.DataFrame()),
+        subscription_events=data.get("subscription_events", EMPTY_SUBSCRIPTION_EVENTS.copy()),
         usage_events=data.get("usage_events", pd.DataFrame()),
         catastrophic_events=data.get("catastrophic_events", pd.DataFrame()),
         routing_decisions=data.get("routing_decisions", pd.DataFrame()),

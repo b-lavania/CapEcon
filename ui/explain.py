@@ -13,9 +13,10 @@ SURFACE_EXPLAINERS: dict[str, dict[str, str]] = {
         "body": (
             "The weekly meeting, rendered. Each card is a **GrowthDecisionRecord** for one "
             "capability (skill, automation, agent tool): what’s wrong, what it may cost to "
-            "leave live, and what to do. Numbers come from the synthetic workspace — not "
+            "leave live, and what to do. Radar ranks cost of leaving live and margin risk — "
+            "Numbers come from the synthetic workspace — not "
             "production agents — until you connect real event data. "
-            "Not a trace explorer and not an NRR dashboard — the join."
+            "not willingness to pay. Value/surplus captions appear when the value ledger has data."
         ),
     },
     "profile": {
@@ -76,6 +77,14 @@ SURFACE_EXPLAINERS: dict[str, dict[str, str]] = {
         "body": (
             "Distributional drift (KL/JS) between outcome mix windows and a CUSUM "
             "change-point on weekly success rate. Complements slope-based `quality_drift` on Radar."
+        ),
+    },
+    "math_packaging": {
+        "title": "What this measures",
+        "body": (
+            "Teaching sensitivity: margin per outcome and a **synthetic** conversion curve vs list price. "
+            "Not conjoint or Van Westendorp — use external research for demand discovery. "
+            "Floor comes from the price block; list/take from your contract or sliders."
         ),
     },
     "connector": {
@@ -318,6 +327,10 @@ FIELD_GLOSS = [
     ("Exceptions", "Ranked reasons — activation leak, trust break, cost blowout, etc."),
     ("Recommended / Final", "What the engine suggests vs what you chose (override)."),
     ("Outcome", "Later write-back: retention Δ and whether churn happened (simulated today)."),
+    ("Value", "Demand-side task value rollup (observed, estimated, or prior)."),
+    ("Surplus", "value_usd minus floor per verified outcome when both exist."),
+    ("Task tier", "S/M/L scoped footprint + list price from Outcome Definition."),
+    ("Data-derived WTP cap", "Rigorous mode cap from subscriptions/outcomes — associational unless experiment."),
 ]
 
 

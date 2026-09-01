@@ -14,6 +14,11 @@ TEMPLATES: dict[str, dict[str, Any]] = {
         "outcome_types": ["quote_sent", "quote_accepted", "booking_created"],
         "preferred_verified_by": "deterministic_stage",
         "notes": "Prefer deterministic pipeline stage or human confirmation.",
+        "task_tiers": {
+            "S": {"footprint": "single tool call, <3 steps", "max_loops": 3, "list_usd": 0.49, "outcome_types": ["quote_sent"]},
+            "M": {"footprint": "multi-step, optional HITL", "max_loops": 8, "list_usd": 0.99, "outcome_types": ["quote_accepted"]},
+            "L": {"footprint": "orchestrated, SLA-bound", "max_loops": 15, "list_usd": 2.49, "outcome_types": ["booking_created"]},
+        },
     },
     "support": {
         "label": "Support agent",
@@ -47,11 +52,15 @@ REQUIRED_FIELDS = (
 
 
 def default_contract() -> dict[str, Any]:
+    tpl = TEMPLATES["quote_ops"]
+    types = list(tpl["outcome_types"])
     return {
         "template_id": "quote_ops",
-        "outcome_types": list(TEMPLATES["quote_ops"]["outcome_types"]),
-        "verified_by_policy": {t: TEMPLATES["quote_ops"]["preferred_verified_by"] for t in TEMPLATES["quote_ops"]["outcome_types"]},
+        "outcome_types": types,
+        "verified_by_policy": {t: tpl["preferred_verified_by"] for t in types},
         "min_verified_share": 0.40,
+        "task_tiers": dict(tpl.get("task_tiers") or {}),
+        "outcome_value_map": {},
     }
 
 
@@ -63,6 +72,8 @@ def apply_template(template_id: str) -> dict[str, Any]:
         "outcome_types": types,
         "verified_by_policy": {t: tpl["preferred_verified_by"] for t in types},
         "min_verified_share": 0.40,
+        "task_tiers": dict(tpl.get("task_tiers") or {}),
+        "outcome_value_map": {},
     }
 
 

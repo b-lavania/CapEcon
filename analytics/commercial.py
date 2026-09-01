@@ -21,6 +21,7 @@ PRICE_SIGNALS = (
     "unpriceable",
     "within_policy",
     "mesh_leak",
+    "below_tier_list",
     "below_floor",
     "over_baseline",
     "flat_bucket_over_cap",
@@ -72,6 +73,10 @@ def _default_commercial_action_map() -> dict[str, dict[str, Any]]:
         "mesh_leak": {
             "commercial_action": "reallocate",
             "rationale": "Retry or coordination tax is inflating the floor. Change routing before you touch price.",
+        },
+        "below_tier_list": {
+            "commercial_action": "raise_list",
+            "rationale": "Floor exceeds the S/M/L list price for this scoped task.",
         },
         "below_floor": {
             "commercial_action": "raise_list",
@@ -158,6 +163,14 @@ def resolve_price_signal(
         leaking, why = _mesh_leak(workspace, thresholds)
         if leaking:
             return {"price_signal": "mesh_leak", "detail": why}
+
+    tier_list = economics.get("tier_list_usd")
+    if tier_list is not None and floor > float(tier_list):
+        gap = floor - float(tier_list)
+        return {
+            "price_signal": "below_tier_list",
+            "detail": f"floor ${floor:.2f} vs tier list ${float(tier_list):.2f} (${gap:.2f} gap)",
+        }
 
     if charged is not None and floor > float(charged):
         gap = floor - float(charged)

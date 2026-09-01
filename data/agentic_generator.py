@@ -414,6 +414,11 @@ def generate_agentic_warehouse(
     if not seats.empty and "churn_reason" in seats.columns:
         churned = seats[seats["is_churned"] == True]  # noqa: E712
         churn_reason_codes = dict(churned.groupby("account_id")["churn_reason"].first()) if "account_id" in churned.columns else {}
+    outcomes_df = enriched.get("outcomes", pd.DataFrame())
+    planted_value_mean = 0.0
+    if outcomes_df is not None and not outcomes_df.empty and "outcome_value_usd" in outcomes_df.columns:
+        planted_value_mean = float(pd.to_numeric(outcomes_df["outcome_value_usd"], errors="coerce").fillna(0).mean())
+    planted_wtp = float(profile.get("priors", {}).get("policy_cpso_cap", 0.5) or 0.5)
     register(
         GroundTruth(
             seed=int(seed),
@@ -427,6 +432,11 @@ def generate_agentic_warehouse(
             experiment_treatment_effect_success=treatment_success_pp,
             experiment_treatment_effect_cost_pct=treatment_cost_pct,
             churn_reason_codes=churn_reason_codes,
+            planted_outcome_value_mean=planted_value_mean,
+            planted_task_tier_list_usd={"S": 0.49, "M": 0.99, "L": 2.49},
+            planted_price_change_week="2025-W12" if profile.get("billing_model") == "usage_based" else None,
+            planted_conversion_at_price=0.42,
+            planted_wtp_cap_usd=planted_wtp,
         )
     )
     enriched["ground_truth_seed"] = int(seed)
@@ -517,20 +527,26 @@ def _build_methodology_tables(
                     verified_by = "connector_write" if verified else None
                     signup = seat_to_signup.get(seat_id)
                     days_since = int((run["started_at"] - signup).days) if signup is not None else 0
-                    outcome_rows.append(
-                        {
-                            "outcome_id": f"OUT-{run['run_id']}",
-                            "account_id": end_user_to_account.get(seat_id, "WS-0000"),
-                            "end_user_id": seat_id,
-                            "agent_run_id": run["run_id"],
-                            "outcome_type": "task_completion",
-                            "success": True,
-                            "verified": verified,
-                            "verified_by": verified_by,
-                            "occurred_at": run["started_at"],
-                            "days_since_signup": days_since,
-                        }
-                    )
+                    outcome_value = None
+                    if verified and billing == "usage_based":
+                        list_anchor = float(priors.get("policy_cpso_cap", 0.99) or 0.99)
+                        if rng.random() < 0.6:
+                            outcome_value = round(float(rng.lognormal(np.log(max(list_anchor * 1.2, 0.01)), 0.25)), 2)
+                    row = {
+                        "outcome_id": f"OUT-{run['run_id']}",
+                        "account_id": end_user_to_account.get(seat_id, "WS-0000"),
+                        "end_user_id": seat_id,
+                        "agent_run_id": run["run_id"],
+                        "outcome_type": "task_completion",
+                        "success": True,
+                        "verified": verified,
+                        "verified_by": verified_by,
+                        "occurred_at": run["started_at"],
+                        "days_since_signup": days_since,
+                    }
+                    if outcome_value is not None:
+                        row["outcome_value_usd"] = outcome_value
+                    outcome_rows.append(row)
 
     sessions = pd.DataFrame(session_rows) if session_rows else pd.DataFrame(
         columns=["session_id", "end_user_id", "account_id", "started_at", "ended_at", "run_count"]
@@ -545,23 +561,53 @@ def _build_methodology_tables(
         columns=[
             "outcome_id", "account_id", "end_user_id", "agent_run_id",
             "outcome_type", "success", "verified", "verified_by", "occurred_at", "days_since_signup",
+            "outcome_value_usd",
         ]
     )
 
     sub_rows = []
+    event_rows: list[dict[str, Any]] = []
+    list_per_outcome = float(priors.get("policy_cpso_cap", 0.99) or 0.99)
     for _, acc in accounts.iterrows():
         seat_sub = seats[seats["workspace_id"] == acc["account_id"]]
         mrr = float(seat_sub["seat_arpu_monthly"].sum()) if len(seat_sub) else float(priors.get("seat_arpu_monthly", 59))
-        sub_rows.append(
-            {
-                "subscription_id": f"SUB-{acc['account_id']}",
-                "account_id": acc["account_id"],
-                "mrr_usd": round(mrr, 2),
-                "started_at": acc["created_at"],
-                "tier": acc["tier"],
-            }
-        )
+        sub = {
+            "subscription_id": f"SUB-{acc['account_id']}",
+            "account_id": acc["account_id"],
+            "mrr_usd": round(mrr, 2),
+            "started_at": acc["created_at"],
+            "tier": acc["tier"],
+            "list_price_per_outcome_usd": None,
+            "price_changed_at": None,
+            "previous_mrr_usd": None,
+        }
+        if billing == "usage_based":
+            sub["list_price_per_outcome_usd"] = round(list_per_outcome, 2)
+            if rng.random() < 0.25:
+                change_at = start + pd.Timedelta(days=int(rng.integers(14, 60)))
+                sub["price_changed_at"] = change_at
+                sub["previous_mrr_usd"] = round(mrr * 0.85, 2)
+                sub["mrr_usd"] = round(mrr * 1.12, 2)
+                event_rows.append(
+                    {
+                        "event_id": f"EVT-{acc['account_id']}-price",
+                        "account_id": acc["account_id"],
+                        "event_type": "price_increase",
+                        "occurred_at": change_at,
+                        "old_tier": acc["tier"],
+                        "new_tier": acc["tier"],
+                        "old_mrr_usd": sub["previous_mrr_usd"],
+                        "new_mrr_usd": sub["mrr_usd"],
+                    }
+                )
+        sub_rows.append(sub)
     subscriptions = pd.DataFrame(sub_rows)
+    subscription_events = pd.DataFrame(event_rows) if event_rows else pd.DataFrame(
+        columns=[
+            "event_id", "account_id", "event_type", "occurred_at",
+            "old_tier", "new_tier", "old_mrr_usd", "new_mrr_usd",
+        ]
+    )
     usage_events = pd.DataFrame(usage_rows) if usage_rows else pd.DataFrame(
         columns=["usage_event_id", "account_id", "agent_run_id", "tokens_in", "tokens_out", "cost_usd", "recorded_at"]
     )
@@ -574,5 +620,6 @@ def _build_methodology_tables(
         "spans": spans,
         "outcomes": outcomes,
         "subscriptions": subscriptions,
+        "subscription_events": subscription_events,
         "usage_events": usage_events,
     }

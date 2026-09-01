@@ -7,6 +7,7 @@ from typing import Any, Callable
 import streamlit as st
 
 from analytics.price_block import display_metric_label, format_usd, price_sentence
+from analytics.value_ledger import value_sentence
 from ontology.exception_taxonomy import ACTIONS, CATEGORIES
 from ui.evidence_chrome import render_evidence_block, account_risk_so_what, render_claim_badge
 from ui.explain import ACTION_GLOSS, VERDICT_GLOSS
@@ -131,6 +132,14 @@ def render_decision_card(
         sentence = price_sentence(economics, record.get("evidence"))
         if economics.get("pricing_mode") or economics.get("floor_usd") is not None:
             st.caption(sentence)
+
+        value_line = value_sentence(economics, record.get("evidence"))
+        if value_line:
+            st.caption(value_line)
+            breakdown = economics.get("value_breakdown") or []
+            if breakdown:
+                with st.expander("Value breakdown", expanded=False):
+                    st.dataframe(breakdown, use_container_width=True, hide_index=True)
 
         cost_ci = economics.get("primary_metric_ci95_usd")
         if cost_ci:

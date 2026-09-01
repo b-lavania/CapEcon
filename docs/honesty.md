@@ -26,6 +26,8 @@ Every emitted GDR should carry `evidence.claim_type`. If the UI doesn't show it,
 - **Cost of leaving live** (`economics.primary_metric_usd`): rollup of LTV-at-risk + run cost for capabilities; LTV teaching formula for accounts.
 - **CM-NRR:** contribution-margin net revenue retention on synthetic subscriptions (or overlaid ones).
 - **$/successful outcome:** gross run cost / verified successful outcomes in window.
+- **Value / surplus:** optional `economics.value_usd` and `surplus_usd` from outcome values, revenue joins, or Outcome Definition priors. Associational or prior unless measured with an experiment.
+- **WTP cap (rigorous):** data-derived `cap_usd` from subscriptions when n is sufficient; otherwise profile prior with underpowered callout.
 
 ## Data storage
 

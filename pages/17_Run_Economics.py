@@ -170,6 +170,30 @@ if is_rigorous_mode(view_profile):
         st.plotly_chart(fig_hist, use_container_width=True)
     st.caption("VaR = a bad day; CVaR = how bad the bad days are. Synthetic run costs.")
 
+    section_kicker("Willingness-to-pay priors")
+    from analytics.wtp_priors import (
+        churn_after_price_change,
+        expansion_lift_after_verified,
+        wtp_cap_from_data,
+    )
+    from ui.evidence_chrome import render_claim_badge, render_underpowered_callout
+
+    wtp = wtp_cap_from_data(ws, view_profile)
+    churn = churn_after_price_change(ws)
+    lift = expansion_lift_after_verified(ws)
+    w1, w2, w3 = st.columns(3)
+    cap_disp = f"${wtp['cap_usd']:.2f}" if wtp.get("cap_usd") is not None else "—"
+    w1.metric("Data-derived cap", cap_disp)
+    w2.metric("Churn hazard (price change)", f"{churn.get('hazard_ratio') or '—'}")
+    w3.metric("Expansion lift", f"{lift.get('lift_pct') or '—'}%")
+    render_claim_badge(wtp.get("claim_type", "associational"))
+    if wtp.get("underpowered"):
+        render_underpowered_callout(wtp.get("detail", "insufficient n for WTP cap"))
+    st.caption(
+        "Rigorous mode replaces profile budget cap on economics when n ≥ 40 accounts with verified outcomes. "
+        "Associational unless an experiment_id is present."
+    )
+
 section_kicker("Loop depth & waterfall")
 col_a, col_b = st.columns(2)
 with col_a:

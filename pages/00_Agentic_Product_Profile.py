@@ -8,6 +8,7 @@ from analytics.agentic_profile import PRESETS, get_preset, list_presets
 from analytics.decisions import classify, emit_capability_records
 from analytics.metrics import resolve_metric
 from core.workspace import build_workspace, get_workspace_from_session, sync_workspace_to_session
+from analytics.value_ledger import sync_outcome_contract_to_workspace
 from ui.explain import page_help, tool_stack_explainer
 from ui.instrumentation_checklist import render_instrumentation_checklist
 from ui.loop_chrome import render_loop_stepper
@@ -82,6 +83,9 @@ if st.button("Generate workspace", type="primary"):
                 data_source=data_source,
                 n_sessions=5_000,
             )
+            contract = st.session_state.get("outcome_contract")
+            if contract:
+                sync_outcome_contract_to_workspace(ws, contract)
         sync_workspace_to_session(st.session_state, ws)
         st.session_state["growth_records"] = []
         st.session_state.pop("semantics_overlay", None)

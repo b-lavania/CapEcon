@@ -211,6 +211,11 @@ CATEGORIES: dict[str, dict[str, Any]] = {
         "default_severity": "high",
         "playbook_hint": "HITL review queue exceeds SLA — throttle intake or add reviewer capacity.",
     },
+    "wtp_compression": {
+        "owner_role": "finance",
+        "default_severity": "medium",
+        "playbook_hint": "Conversion or retention dropped after list/take change — revisit packaging before scaling traffic.",
+    },
 }
 
 CHURN_REASON_CODES = [

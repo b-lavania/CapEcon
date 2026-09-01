@@ -8,6 +8,7 @@ from analytics.commercial import commercial_sentence
 from analytics.evidence import is_rigorous_mode
 from analytics.inference.confidence_sequences import cs_two_proportion
 from analytics.price_block import price_sentence
+from analytics.value_ledger import value_sentence
 from analytics.version_gate import evaluate_version_gate
 from ontology.store import upsert_record
 from ui.decision_card import render_decision_card
@@ -50,7 +51,7 @@ if gate["eval_delta"].get("fail"):
 section_kicker("Price contract")
 econ = gate["economics"]
 commercial = gate["commercial"]
-p1, p2, p3 = st.columns(3)
+p1, p2, p3, p4 = st.columns(4)
 floor = econ.get("floor_usd")
 p1.metric(
     "Floor / verified outcome",
@@ -62,7 +63,16 @@ cap_label = "Budget cap" if econ.get("pricing_mode") == "internal_budget" else "
 p2.metric(cap_label, f"${cap:,.2f}" if cap is not None else "—")
 margin = econ.get("margin_usd")
 p3.metric("Margin / outcome", f"${margin:,.2f}" if margin is not None else "—")
+val = econ.get("value_usd")
+n_ver = econ.get("n_verified")
+p4.metric(
+    "Value / outcome",
+    f"${val / n_ver:,.2f}" if val is not None and n_ver else "—",
+)
 st.caption(price_sentence(econ, {"claim_type": gate.get("claim_type")}))
+value_line = value_sentence(econ, {"claim_type": gate.get("claim_type")})
+if value_line:
+    st.caption(value_line)
 
 if commercial.get("commercial_action"):
     st.warning(f"**{commercial['commercial_action']}** · owner `{commercial.get('commercial_owner_role', 'packaging')}` — {commercial.get('commercial_rationale', '')}")

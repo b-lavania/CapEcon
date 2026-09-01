@@ -32,16 +32,23 @@ st.caption(summary["claim_disclaimer"])
 
 section_kicker("Pinned metrics")
 pins = summary["pins"]
-cols = st.columns(4)
-for i, pin in enumerate(pins):
-    with cols[i % 4]:
+cols = st.columns(5)
+for i, pin in enumerate(pins[:4]):
+    with cols[i]:
         st.metric(pin.get("label") or pin.get("name"), pin.get("display", "—"))
+mean_surplus = summary.get("mean_surplus_usd")
+cols[4].metric(
+    "Mean surplus / outcome",
+    f"${mean_surplus:+.2f}" if mean_surplus is not None else "—",
+)
 
 section_kicker("Decisions")
 for d in summary["top_decisions"]:
+    surplus = d.get("surplus_usd")
+    surplus_txt = f" · surplus {surplus:+.2f}/outcome" if surplus is not None else ""
     st.markdown(
         f"**{d.get('action')}** · `{d.get('verdict')}` · "
-        f"${d.get('cost_usd') or 0:,.0f} · `{d.get('subject', {}).get('entity_type')}` "
+        f"${d.get('cost_usd') or 0:,.0f}{surplus_txt} · `{d.get('subject', {}).get('entity_type')}` "
         f"`{d.get('subject', {}).get('capability_id') or d.get('subject', {}).get('account_id')}`"
     )
     render_claim_badge(d.get("claim_type") or "associational")

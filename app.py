@@ -209,6 +209,7 @@ nav_structure = {
         st.Page("pages/33_Math_Lab_Decision_Curves.py", title="Lab · Decision Curves", url_path="math_decision_curves"),
         st.Page("pages/34_Math_Lab_Calibration.py", title="Lab · Calibration", url_path="math_calibration"),
         st.Page("pages/36_Math_Lab_Drift.py", title="Lab · Drift", url_path="math_drift"),
+        st.Page("pages/38_Math_Lab_Packaging.py", title="Lab · Packaging", url_path="math_packaging"),
         *_REFERENCE_PAGES,
         *_LEGACY_PAGES,
     ],

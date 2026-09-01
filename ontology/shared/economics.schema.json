@@ -46,6 +46,26 @@
     "margin_usd": { "type": ["number", "null"] },
     "ranking_metric_usd": { "type": "number" },
     "ranking_metric_label": { "type": "string" },
-    "n_verified": { "type": "integer", "minimum": 0 }
+    "n_verified": { "type": "integer", "minimum": 0 },
+    "value_usd": { "type": ["number", "null"] },
+    "value_basis": {
+      "type": "string",
+      "enum": ["observed", "estimated", "prior"]
+    },
+    "value_breakdown": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["label", "amount_usd"],
+        "properties": {
+          "label": { "type": "string" },
+          "amount_usd": { "type": "number" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "surplus_usd": { "type": ["number", "null"] },
+    "tier_list_usd": { "type": ["number", "null"] },
+    "wtp_evidence": { "type": "object" }
   }
 }
