@@ -141,6 +141,26 @@ def generate_agentic_warehouse(
     capabilities = pd.DataFrame(cap_rows)
     capability_versions = pd.DataFrame(ver_rows)
 
+    billing_model = profile.get("billing_model", "b2b_subscription")
+    demand_ctx: dict[str, Any] | None = None
+    if billing_model == "usage_based" and not capabilities.empty:
+        base_lists: dict[str, float] = {}
+        for cap_id in capabilities["capability_id"].astype(str):
+            h = abs(hash((int(seed), cap_id))) % 1000
+            base_lists[cap_id] = round(0.40 + (h / 1000.0) * 1.60, 2)
+        capabilities["base_list_usd"] = capabilities["capability_id"].astype(str).map(base_lists)
+        cap_ids = list(capabilities["capability_id"].astype(str))
+        treated = cap_ids[::2]  # half of SKUs
+        shock_day = start + pd.Timedelta(days=int((end - start).days * 0.5))
+        shock_week = shock_day.strftime("%G-W%V")
+        demand_ctx = {
+            "base_list_usd": base_lists,
+            "treated_skus": treated,
+            "shock_week": shock_week,
+            "planted_elasticity": float(priors.get("planted_elasticity", -0.8)),
+            "price_shock_mult": 1.15,
+        }
+
     # Version quality: v2 may have planted regression on first cap
     version_success_rates: dict[str, float] = {}
     version_change_points: dict[str, str] = {}
@@ -386,7 +406,8 @@ def generate_agentic_warehouse(
 
     methodology = _build_methodology_tables(
         workspaces, seats, runs, connector_events, priors, rng, start,
-        billing_model=profile.get("billing_model", "b2b_subscription"),
+        billing_model=billing_model,
+        demand_ctx=demand_ctx,
     )
 
     from data.challenge_seed import enrich_challenge_data
@@ -419,6 +440,10 @@ def generate_agentic_warehouse(
     if outcomes_df is not None and not outcomes_df.empty and "outcome_value_usd" in outcomes_df.columns:
         planted_value_mean = float(pd.to_numeric(outcomes_df["outcome_value_usd"], errors="coerce").fillna(0).mean())
     planted_wtp = float(profile.get("priors", {}).get("policy_cpso_cap", 0.5) or 0.5)
+    gt_elasticity = float(demand_ctx["planted_elasticity"]) if demand_ctx else -0.8
+    gt_shock = demand_ctx["shock_week"] if demand_ctx else None
+    gt_treated = list(demand_ctx["treated_skus"]) if demand_ctx else []
+    gt_base_lists = dict(demand_ctx["base_list_usd"]) if demand_ctx else {}
     register(
         GroundTruth(
             seed=int(seed),
@@ -434,13 +459,60 @@ def generate_agentic_warehouse(
             churn_reason_codes=churn_reason_codes,
             planted_outcome_value_mean=planted_value_mean,
             planted_task_tier_list_usd={"S": 0.49, "M": 0.99, "L": 2.49},
-            planted_price_change_week="2025-W12" if profile.get("billing_model") == "usage_based" else None,
+            planted_price_change_week=gt_shock if demand_ctx else None,
             planted_conversion_at_price=0.42,
             planted_wtp_cap_usd=planted_wtp,
+            planted_elasticity=gt_elasticity,
+            planted_shock_week=gt_shock,
+            planted_treated_skus=gt_treated,
+            planted_base_list_usd=gt_base_lists,
         )
     )
     enriched["ground_truth_seed"] = int(seed)
     return enriched
+
+
+def _list_at_week(
+    cap_id: str,
+    week: str,
+    demand_ctx: dict[str, Any] | None,
+) -> float | None:
+    if not demand_ctx:
+        return None
+    base = float(demand_ctx["base_list_usd"].get(str(cap_id), 0.99))
+    if str(cap_id) in demand_ctx.get("treated_skus", []) and week >= demand_ctx.get("shock_week", "9999"):
+        return round(base * float(demand_ctx.get("price_shock_mult", 1.15)), 4)
+    return round(base, 4)
+
+
+def _apply_demand_elasticity_thin(
+    outcomes: pd.DataFrame,
+    runs: pd.DataFrame,
+    demand_ctx: dict[str, Any] | None,
+    rng: np.random.Generator,
+) -> pd.DataFrame:
+    if outcomes.empty or demand_ctx is None or runs.empty:
+        return outcomes
+    run_cap = runs.set_index("run_id")["capability_id"].astype(str).to_dict()
+    eps = float(demand_ctx.get("planted_elasticity", -0.8))
+    shock = demand_ctx.get("shock_week", "")
+    treated = set(demand_ctx.get("treated_skus", []))
+    mult = float(demand_ctx.get("price_shock_mult", 1.15))
+    keep_rows = []
+    for _, row in outcomes.iterrows():
+        cap_id = str(run_cap.get(row.get("agent_run_id"), ""))
+        if not row.get("verified") or not row.get("success"):
+            keep_rows.append(row)
+            continue
+        occurred = pd.to_datetime(row["occurred_at"])
+        week = occurred.strftime("%G-W%V")
+        if cap_id in treated and week >= shock:
+            keep_p = mult ** eps
+            if rng.random() <= keep_p:
+                keep_rows.append(row)
+        else:
+            keep_rows.append(row)
+    return pd.DataFrame(keep_rows) if keep_rows else outcomes.iloc[0:0].copy()
 
 
 def _build_methodology_tables(
@@ -452,6 +524,7 @@ def _build_methodology_tables(
     rng: np.random.Generator,
     start: pd.Timestamp,
     billing_model: str = "b2b_subscription",
+    demand_ctx: dict[str, Any] | None = None,
 ) -> dict[str, pd.DataFrame]:
     """Methodology-layer entities (§3–4) with thin legacy adapters (seats/runs)."""
     billing = billing_model
@@ -485,6 +558,7 @@ def _build_methodology_tables(
         run_df = runs.copy()
         run_df["started_at"] = pd.to_datetime(run_df["started_at"])
         run_df["session_day"] = run_df["started_at"].dt.floor("D")
+        run_cap = run_df.set_index("run_id")["capability_id"].astype(str).to_dict()
         for (seat_id, day), grp in run_df.groupby(["seat_id", "session_day"]):
             session_id = f"SES-{seat_id}-{day.strftime('%Y%m%d')}"
             session_rows.append(
@@ -544,6 +618,15 @@ def _build_methodology_tables(
                         "occurred_at": run["started_at"],
                         "days_since_signup": days_since,
                     }
+                    cap_id = str(run_cap.get(run["run_id"], ""))
+                    week = pd.to_datetime(run["started_at"]).strftime("%G-W%V")
+                    list_p = _list_at_week(cap_id, week, demand_ctx)
+                    if list_p is not None:
+                        row["list_price_per_outcome_usd"] = list_p
+                    elif billing == "usage_based":
+                        row["list_price_per_outcome_usd"] = round(
+                            float(priors.get("policy_cpso_cap", 0.99) or 0.99), 2
+                        )
                     if outcome_value is not None:
                         row["outcome_value_usd"] = outcome_value
                     outcome_rows.append(row)
@@ -561,9 +644,11 @@ def _build_methodology_tables(
         columns=[
             "outcome_id", "account_id", "end_user_id", "agent_run_id",
             "outcome_type", "success", "verified", "verified_by", "occurred_at", "days_since_signup",
-            "outcome_value_usd",
+            "outcome_value_usd", "list_price_per_outcome_usd",
         ]
     )
+    if not outcomes.empty and demand_ctx is not None:
+        outcomes = _apply_demand_elasticity_thin(outcomes, runs, demand_ctx, rng)
 
     sub_rows = []
     event_rows: list[dict[str, Any]] = []

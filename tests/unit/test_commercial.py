@@ -116,6 +116,19 @@ def test_flat_bucket_over_cap_kills_all_inclusive():
 # --- precedence: routing before repricing ----------------------------------
 
 
+def test_list_below_demand_opt_before_below_floor():
+    econ = {
+        "pricing_mode": "product_sku",
+        "floor_usd": 0.50,
+        "cap_usd": 2.00,
+        "charged_usd": 0.80,
+        "surplus_opt_usd": 1.20,
+    }
+    sig = resolve_price_signal(econ)
+    assert sig["price_signal"] == "list_below_demand_opt"
+    assert resolve_commercial_action(econ)["commercial_action"] == "raise_list"
+
+
 def test_mesh_leak_outranks_raise_list(monkeypatch):
     """A cheaper route beats a price rise. Never ask finance for a retry bug."""
     monkeypatch.setattr(commercial_mod, "_mesh_leak", lambda ws, th: (True, "retry amplification 6.2x"))

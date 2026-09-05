@@ -127,7 +127,7 @@ The ontology has a few verticals: `capability_lifecycle`, `agent_runtime`, `mark
 
 ### What churnOS does not price (yet)
 
-churnOS is deliberate about the **supply side**: what it costs to produce a verified outcome, and whether a capability hurts retention. It does **not** yet estimate willingness to pay from your billing data, run conjoint, or prove that users value a task at $X. The optional value block and Packaging Lab are teaching surfaces for surplus and list-price sensitivity. If you need demand-side pricing science, bring experiments or external research; use churnOS to make sure you are not shipping outcomes below floor.
+churnOS is deliberate about the **supply side**: what it costs to produce a verified outcome, and whether a capability hurts retention. It does **not** estimate survey WTP, conjoint, or Van Westendorp from billing. Optional **demand_fit** (pypricing `LogLogDemandModel`, explicit Fit button in Packaging Lab / Run Economics) estimates own-price elasticity and surplus-optimal list when the SKU-week panel passes the power gate — `claim_type` stays `simulated` or `associational`, not causal. The Packaging Lab prior slider remains the fallback when pypricing is not installed or the panel is underpowered.
 
 **Harm scores are associational**, not causal, unless there's an `experiment_id` on the record. I want to be careful about that distinction. Every GDR carries `evidence.claim_type` so the UI can't "forget."
 

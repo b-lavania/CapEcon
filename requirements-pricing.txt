@@ -1,0 +1,3 @@
+# Optional: Bayesian demand elasticity (Packaging Lab + Run Economics)
+-r requirements-mmm.txt
+pypricing>=0.0.1

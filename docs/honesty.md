@@ -27,7 +27,8 @@ Every emitted GDR should carry `evidence.claim_type`. If the UI doesn't show it,
 - **CM-NRR:** contribution-margin net revenue retention on synthetic subscriptions (or overlaid ones).
 - **$/successful outcome:** gross run cost / verified successful outcomes in window.
 - **Value / surplus:** optional `economics.value_usd` and `surplus_usd` from outcome values, revenue joins, or Outcome Definition priors. Associational or prior unless measured with an experiment.
-- **WTP cap (rigorous):** data-derived `cap_usd` from subscriptions when n is sufficient; otherwise profile prior with underpowered callout.
+- **WTP cap (rigorous):** data-derived `cap_usd` from subscriptions when n is sufficient; when `workspace.meta.demand_fit` is populated (Packaging Lab or Run Economics **Fit demand**), rigorous mode prefers per-SKU `surplus_opt_usd` from the fitted log-log model. Install optional deps: `pip install -r requirements-pricing.txt`.
+- **Demand elasticity:** pypricing MCMC runs only on explicit Fit — never inside `classify()`. Synthetic warehouse → `claim_type: simulated`; Data Connect overlay → `associational`. Causal demand claims require `experiment_id` on a price arm (not built in v1).
 
 ## Data storage
 

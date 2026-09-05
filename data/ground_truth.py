@@ -40,6 +40,10 @@ class GroundTruth:
     planted_price_change_week: str | None = None
     planted_conversion_at_price: float = 0.0
     planted_wtp_cap_usd: float = 0.0
+    planted_elasticity: float = -0.8
+    planted_shock_week: str | None = None
+    planted_treated_skus: list[str] = field(default_factory=list)
+    planted_base_list_usd: dict[str, float] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -66,6 +70,10 @@ class GroundTruth:
             "planted_price_change_week": self.planted_price_change_week,
             "planted_conversion_at_price": self.planted_conversion_at_price,
             "planted_wtp_cap_usd": self.planted_wtp_cap_usd,
+            "planted_elasticity": self.planted_elasticity,
+            "planted_shock_week": self.planted_shock_week,
+            "planted_treated_skus": list(self.planted_treated_skus),
+            "planted_base_list_usd": dict(self.planted_base_list_usd),
         }
 
 

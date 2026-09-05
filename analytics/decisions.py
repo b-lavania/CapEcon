@@ -19,6 +19,7 @@ from analytics.price_block import (
     primary_metric_label,
 )
 from analytics.value_ledger import fill_value_block, outcome_contract
+from analytics.demand_model import enrich_economics_from_demand_fit
 from analytics.wtp_priors import apply_wtp_to_price_block, wtp_cap_from_data
 from core.workspace import Workspace
 from ontology.decision_rules import (
@@ -628,9 +629,12 @@ def _finalize_economics(
         capability_id=capability_id,
         account_id=account_id,
     )
+    economics = enrich_economics_from_demand_fit(economics, workspace, capability_id)
     if workspace is not None and (profile or {}).get("priors", {}).get("math_mode") == "rigorous":
         wtp = wtp_cap_from_data(workspace, profile)
-        economics = apply_wtp_to_price_block(economics, wtp, profile)
+        economics = apply_wtp_to_price_block(
+            economics, wtp, profile, workspace=workspace, capability_id=capability_id,
+        )
     return economics
 
 

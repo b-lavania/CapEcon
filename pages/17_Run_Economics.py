@@ -171,26 +171,68 @@ if is_rigorous_mode(view_profile):
     st.caption("VaR = a bad day; CVaR = how bad the bad days are. Synthetic run costs.")
 
     section_kicker("Willingness-to-pay priors")
+    from analytics.demand_model import (
+        fit_and_cache_demand,
+        get_demand_fit,
+        pypricing_available,
+    )
+    from analytics.demand_panel import build_demand_panel, panel_power
     from analytics.wtp_priors import (
         churn_after_price_change,
         expansion_lift_after_verified,
         wtp_cap_from_data,
     )
+    from core.workspace import sync_workspace_to_session
     from ui.evidence_chrome import render_claim_badge, render_underpowered_callout
 
     wtp = wtp_cap_from_data(ws, view_profile)
     churn = churn_after_price_change(ws)
     lift = expansion_lift_after_verified(ws)
-    w1, w2, w3 = st.columns(3)
+    panel = build_demand_panel(ws)
+    power = panel_power(panel)
+    fit = get_demand_fit(ws)
+
+    if pypricing_available():
+        if not power["ok"]:
+            render_underpowered_callout(" · ".join(power.get("reasons", [])))
+        if st.button("Fit demand", key="econ_fit_demand"):
+            with st.spinner("Sampling posterior…"):
+                fit_and_cache_demand(ws, panel=panel, draws=300, tune=300, chains=2)
+                sync_workspace_to_session(st.session_state, ws)
+            st.success("Demand fit cached.")
+            fit = get_demand_fit(ws)
+    else:
+        st.caption("Fitted demand: `pip install -r requirements-pricing.txt`")
+
+    w1, w2, w3, w4 = st.columns(4)
     cap_disp = f"${wtp['cap_usd']:.2f}" if wtp.get("cap_usd") is not None else "—"
     w1.metric("Data-derived cap", cap_disp)
     w2.metric("Churn hazard (price change)", f"{churn.get('hazard_ratio') or '—'}")
     w3.metric("Expansion lift", f"{lift.get('lift_pct') or '—'}%")
-    render_claim_badge(wtp.get("claim_type", "associational"))
-    if wtp.get("underpowered"):
+    if fit and not fit.get("underpowered"):
+        skus = fit.get("skus") or {}
+        eps_vals = [s.get("elasticity_mean") for s in skus.values() if s.get("elasticity_mean") is not None]
+        surplus_vals = [s.get("surplus_opt_usd") for s in skus.values() if s.get("surplus_opt_usd") is not None]
+        w4.metric(
+            "Fitted ε (median)",
+            f"{sorted(eps_vals)[len(eps_vals) // 2]:.2f}" if eps_vals else "—",
+        )
+        if surplus_vals:
+            st.caption(
+                f"Surplus-opt lists (median): ${sorted(surplus_vals)[len(surplus_vals) // 2]:.2f} "
+                f"across {len(surplus_vals)} SKUs"
+            )
+    else:
+        w4.metric("Fitted demand", "—")
+
+    if fit and not fit.get("underpowered"):
+        render_claim_badge(fit.get("claim_type", "simulated"))
+    else:
+        render_claim_badge(wtp.get("claim_type", "associational"))
+    if wtp.get("underpowered") and not (fit and not fit.get("underpowered")):
         render_underpowered_callout(wtp.get("detail", "insufficient n for WTP cap"))
     st.caption(
-        "Rigorous mode replaces profile budget cap on economics when n ≥ 40 accounts with verified outcomes. "
+        "Rigorous mode uses surplus-opt list from demand_fit when cached; otherwise median MRR/list cap. "
         "Associational unless an experiment_id is present."
     )
 

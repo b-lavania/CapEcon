@@ -22,6 +22,7 @@ PRICE_SIGNALS = (
     "within_policy",
     "mesh_leak",
     "below_tier_list",
+    "list_below_demand_opt",
     "below_floor",
     "over_baseline",
     "flat_bucket_over_cap",
@@ -46,6 +47,7 @@ def _default_commercial_thresholds() -> dict[str, float]:
         "retry_amplification_max": 3.0,
         "coordination_cost_ratio_max": 35.0,
         "severe_overage_multiple": 2.0,
+        "demand_opt_gap": 0.85,
     }
 
 
@@ -77,6 +79,10 @@ def _default_commercial_action_map() -> dict[str, dict[str, Any]]:
         "below_tier_list": {
             "commercial_action": "raise_list",
             "rationale": "Floor exceeds the S/M/L list price for this scoped task.",
+        },
+        "list_below_demand_opt": {
+            "commercial_action": "raise_list",
+            "rationale": "Current list sits below the surplus-optimal price from fitted demand.",
         },
         "below_floor": {
             "commercial_action": "raise_list",
@@ -170,6 +176,20 @@ def resolve_price_signal(
         return {
             "price_signal": "below_tier_list",
             "detail": f"floor ${floor:.2f} vs tier list ${float(tier_list):.2f} (${gap:.2f} gap)",
+        }
+
+    surplus_opt = economics.get("surplus_opt_usd")
+    list_ref = charged
+    gap_thresh = thresholds.get("demand_opt_gap", 0.85)
+    if (
+        surplus_opt is not None
+        and list_ref is not None
+        and float(surplus_opt) > floor
+        and float(list_ref) < gap_thresh * float(surplus_opt)
+    ):
+        return {
+            "price_signal": "list_below_demand_opt",
+            "detail": f"list ${float(list_ref):.2f} vs surplus-opt ${float(surplus_opt):.2f}",
         }
 
     if charged is not None and floor > float(charged):

@@ -23,7 +23,7 @@ EMPTY_OUTCOMES = pd.DataFrame(
     columns=[
         "outcome_id", "account_id", "end_user_id", "agent_run_id",
         "outcome_type", "success", "verified", "verified_by", "occurred_at", "days_since_signup",
-        "outcome_value_usd",
+        "outcome_value_usd", "list_price_per_outcome_usd",
     ]
 )
 EMPTY_SUBSCRIPTION_EVENTS = pd.DataFrame(

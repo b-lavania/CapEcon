@@ -181,13 +181,36 @@ def apply_wtp_to_price_block(
     economics: dict[str, Any],
     wtp: dict[str, Any],
     profile: dict[str, Any] | None,
+    *,
+    workspace: Any = None,
+    capability_id: str | None = None,
 ) -> dict[str, Any]:
     """When rigorous + sufficient n, replace cap_usd with data-derived estimate."""
     out = dict(economics)
+    priors = (profile or {}).get("priors", {})
+    rigorous = priors.get("math_mode") == "rigorous"
+
+    if rigorous and workspace is not None and capability_id:
+        from analytics.demand_model import get_demand_fit
+
+        fit = get_demand_fit(workspace)
+        if fit and not fit.get("underpowered"):
+            sku = (fit.get("skus") or {}).get(str(capability_id))
+            surplus_opt = (sku or {}).get("surplus_opt_usd")
+            if surplus_opt is not None:
+                out["cap_usd"] = float(surplus_opt)
+                out["surplus_opt_usd"] = float(surplus_opt)
+                out["wtp_evidence"] = {
+                    "estimand": "surplus_opt_list_usd",
+                    "claim_type": fit.get("claim_type", "associational"),
+                    "elasticity_mean": (sku or {}).get("elasticity_mean"),
+                    "detail": f"surplus-opt from demand_fit for {capability_id}",
+                }
+                return out
+
     if wtp.get("underpowered") or wtp.get("cap_usd") is None:
         return out
-    priors = (profile or {}).get("priors", {})
-    if priors.get("math_mode") != "rigorous":
+    if not rigorous:
         return out
     out["cap_usd"] = wtp["cap_usd"]
     out["wtp_evidence"] = {

@@ -271,6 +271,14 @@ def test_clinical_pricer_splits_floor_and_risk():
     )
 
 
+def test_price_block_import_does_not_load_pypricing():
+    import sys
+
+    import analytics.price_block  # noqa: F401
+
+    assert "pypricing" not in sys.modules
+
+
 def test_clinical_fixture_still_validates():
     import json
     from pathlib import Path

@@ -5,6 +5,7 @@ from pathlib import Path
 import streamlit as st
 
 from analytics.commercial import commercial_sentence
+from analytics.demand_model import demand_caption_for_capability
 from analytics.evidence import is_rigorous_mode
 from analytics.inference.confidence_sequences import cs_two_proportion
 from analytics.price_block import price_sentence
@@ -73,6 +74,12 @@ st.caption(price_sentence(econ, {"claim_type": gate.get("claim_type")}))
 value_line = value_sentence(econ, {"claim_type": gate.get("claim_type")})
 if value_line:
     st.caption(value_line)
+cap_id = (gate.get("gdr") or {}).get("subject", {}).get("capability_id")
+if not cap_id and gate.get("subject"):
+    cap_id = gate["subject"].get("capability_id")
+demand_line = demand_caption_for_capability(ws, cap_id)
+if demand_line:
+    st.caption(demand_line)
 
 if commercial.get("commercial_action"):
     st.warning(f"**{commercial['commercial_action']}** · owner `{commercial.get('commercial_owner_role', 'packaging')}` — {commercial.get('commercial_rationale', '')}")

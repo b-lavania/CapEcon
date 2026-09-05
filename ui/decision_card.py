@@ -8,6 +8,7 @@ import streamlit as st
 
 from analytics.price_block import display_metric_label, format_usd, price_sentence
 from analytics.value_ledger import value_sentence
+from analytics.demand_model import demand_caption_for_capability
 from ontology.exception_taxonomy import ACTIONS, CATEGORIES
 from ui.evidence_chrome import render_evidence_block, account_risk_so_what, render_claim_badge
 from ui.explain import ACTION_GLOSS, VERDICT_GLOSS
@@ -140,6 +141,18 @@ def render_decision_card(
             if breakdown:
                 with st.expander("Value breakdown", expanded=False):
                     st.dataframe(breakdown, use_container_width=True, hide_index=True)
+
+        cap_id = (record.get("subject") or {}).get("capability_id")
+        if workspace is None:
+            try:
+                from core.workspace import get_workspace_from_session
+
+                workspace = get_workspace_from_session(st.session_state)
+            except Exception:
+                workspace = None
+        demand_line = demand_caption_for_capability(workspace, cap_id)
+        if demand_line:
+            st.caption(demand_line)
 
         cost_ci = economics.get("primary_metric_ci95_usd")
         if cost_ci:
