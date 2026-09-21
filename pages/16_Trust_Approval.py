@@ -24,7 +24,7 @@ if css_path.exists():
     st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
 load_magazine_css()
-masthead("Decisions", "Trust & Approval", "Catastrophic reliability shocks (synthetic).")
+masthead("The call", "Trust & Approval", "Catastrophic reliability shocks (synthetic).", cluster="call")
 page_help("trust", show_card_glossary=True)
 render_tool_split_caption("trust")
 

@@ -2,7 +2,7 @@
 
 If you can't say what success looks like, the rest of this repo is a dashboard of runs. Traces without outcomes are observability. "The LLM said it worked" is not verification.
 
-**START → Outcome Definition** is the wizard. The contract itself is `ontology/outcome_contract.py`.
+**Setup → Outcome Definition** is the wizard. The contract itself is `ontology/outcome_contract.py`.
 
 ## Fields I actually need
 

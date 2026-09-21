@@ -16,6 +16,7 @@ from ui.decision_card import render_decision_card
 from ui.evidence_chrome import render_claim_badge, render_underpowered_callout
 from ui.explain import page_help
 from ui.magazine import load_magazine_css, masthead, section_kicker
+from ui.state_sketches import render_version_gate_sketch
 from ui.workspace_banner import require_workspace
 
 css_path = Path(__file__).parent.parent / "assets" / "style.css"
@@ -24,11 +25,13 @@ if css_path.exists():
 
 load_magazine_css()
 masthead(
-    "Decide",
+    "The call",
     "Version Gate",
     "Ship, hold, or roll back this capability version.",
+    cluster="call",
 )
 page_help("version_gate")
+render_version_gate_sketch()
 
 ws = require_workspace(st.session_state, page_label="Version Gate")
 overlay = st.session_state.get("semantics_overlay")

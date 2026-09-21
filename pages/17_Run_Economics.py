@@ -25,16 +25,19 @@ from ui.viz import (
     run_gantt_sample,
 )
 from ui.workspace_banner import empty_records_caption, require_workspace
+from ui.state_sketches import render_two_axis_sketch
 
 css_path = Path(__file__).parent.parent / "assets" / "style.css"
 if css_path.exists():
     st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
 load_magazine_css()
-masthead("Decisions", "Run Economics", "Cost opacity, Jevons paradox, and margin leakage (synthetic).")
+masthead("Price", "Run Economics", "Floor, CPSO, WTP, and margin leakage — can we charge this?", cluster="price")
 page_help("run_economics", show_card_glossary=True)
+render_two_axis_sketch()
 render_tool_split_caption("run_economics")
 st.caption("Synthetic teaching data — see docs/honesty.md")
+st.page_link("pages/38_Math_Lab_Packaging.py", label="Lab · Packaging (demand curve) →")
 
 ws = require_workspace(st.session_state, page_label="Run Economics")
 

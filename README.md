@@ -155,10 +155,10 @@ uvicorn service.app:app --port 8088
 
 **Synthetic path**
 
-1. **Product Profile**: pick a preset, hit **Generate workspace**
-2. **Version Gate**: ship / hold / rollback on the latest two capability versions
-3. **Radar** or **Decision Inbox**: ranked records, read the price sentence, override if you disagree
-4. **Outcome Flywheel**: write synthetic outcomes back to close the loop
+1. **Product Profile** (Setup): pick a preset, hit **Generate workspace** → lands on **Run Economics** (Price)
+2. **Version Gate** / **Radar** (The call): ship / hold / rollback; ranked records
+3. Orientation strips on every page repeat the cluster question; full atlas under **Reference → Architecture**
+4. **Outcome Flywheel** (Learn): write synthetic outcomes back to close the loop
 
 **Real-file path**
 
@@ -170,7 +170,7 @@ If you want to play with policy: change the `agent_runtime` destructive action f
 
 CI: [.github/workflows/ci.yml](.github/workflows/ci.yml)
 
-Further reading: [Why this shape](docs/positioning.md) | [Methodology](docs/methodology.md) | [Honesty](docs/honesty.md) | [What to ingest](docs/contracts.md) | [Outcomes](docs/outcome_contract.md) | [API / hooks](docs/integrations.md) | [Slice 2 audit](docs/slice2_build_audit.md) | [Ontology](ontology/README.md)
+Further reading: [Information architecture](docs/information_architecture.md) | [Architecture (join)](docs/architecture.md) | [Why this shape](docs/positioning.md) | [Methodology](docs/methodology.md) | [Honesty](docs/honesty.md) | [What to ingest](docs/contracts.md) | [Outcomes](docs/outcome_contract.md) | [API / hooks](docs/integrations.md) | [Slice 2 audit](docs/slice2_build_audit.md) | [Ontology](ontology/README.md)
 
 ---
 
@@ -178,7 +178,7 @@ Further reading: [Why this shape](docs/positioning.md) | [Methodology](docs/meth
 
 ```
 churnOS/
-├── app.py                          # grouped nav (START / DECIDE / LEARN / CONFIG)
+├── app.py                          # grouped nav (Setup / The call / Price / Learn / Config)
 ├── core/workspace.py               # unified warehouse (agentic + legacy + overlays)
 ├── core/control_plane.py           # same functions Streamlit and the API call
 ├── service/app.py                  # optional FastAPI (version-gate, decisions)

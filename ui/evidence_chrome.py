@@ -1,4 +1,4 @@
-"""Evidence presentation chrome — stats → operator copy on DECIDE surfaces."""
+"""Evidence presentation chrome — stats → operator copy on The call surfaces."""
 
 from __future__ import annotations
 

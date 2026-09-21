@@ -11,69 +11,79 @@ from core.workspace import Workspace, get_workspace_from_session
 
 
 JOURNEY_PAGES: dict[str, dict[str, Any]] = {
+    "teacher_map": {
+        "phase": "Reference",
+        "title": "Map atlas",
+        "related": ["profile", "run_economics"],
+    },
+    "profile": {
+        "phase": "Setup",
+        "title": "Agentic Product Profile",
+        "related": ["radar", "run_economics"],
+    },
     "radar": {
-        "phase": "Decide",
+        "phase": "The call",
         "title": "Capability Risk Radar",
         "related": ["profile", "activation", "record_inspector"],
     },
-    "profile": {
-        "phase": "Configure",
-        "title": "Agentic Product Profile",
-        "related": ["radar", "semantics"],
-    },
     "activation": {
-        "phase": "Observe",
+        "phase": "The call",
         "title": "Activation & Habit",
         "tables": ["seats", "runs", "product_events"],
         "related": ["trust", "radar"],
     },
     "trust": {
-        "phase": "Observe",
+        "phase": "The call",
         "title": "Trust & Approval Health",
         "tables": ["approvals", "runs"],
         "related": ["activation", "run_economics"],
     },
     "run_economics": {
-        "phase": "Observe",
+        "phase": "Price",
         "title": "Run Economics",
         "tables": ["runs", "seats"],
-        "related": ["connector", "unit_economics"],
+        "related": ["connector", "packaging"],
+    },
+    "packaging": {
+        "phase": "Learn",
+        "title": "Lab · Packaging",
+        "related": ["run_economics"],
     },
     "connector": {
-        "phase": "Observe",
+        "phase": "The call",
         "title": "Connector Blast Radius",
         "tables": ["connector_events", "capabilities"],
         "related": ["run_economics"],
     },
     "experimentation": {
-        "phase": "Experiment",
+        "phase": "Learn",
         "title": "Experimentation Court",
         "tables": ["experiment_assignments", "experiment_outcomes"],
         "related": ["outcome_flywheel", "record_inspector"],
     },
     "outcome_flywheel": {
-        "phase": "Learn",
+        "phase": "After",
         "title": "Outcome Flywheel",
         "related": ["experimentation", "retention"],
     },
     "retention": {
-        "phase": "Observe",
+        "phase": "The call",
         "title": "Seat Retention & Churn",
         "tables": ["seats", "retention_marks"],
         "related": ["activation", "unit_economics"],
     },
     "semantics": {
-        "phase": "Ontology",
+        "phase": "Reference",
         "title": "Semantics Console",
         "related": ["taxonomy", "concepts"],
     },
     "taxonomy": {
-        "phase": "Ontology",
+        "phase": "Reference",
         "title": "Taxonomy Browser",
         "related": ["semantics", "record_inspector"],
     },
     "record_inspector": {
-        "phase": "Ontology",
+        "phase": "Reference",
         "title": "Record Inspector",
         "tables": ["growth_records"],
         "related": ["radar", "outcome_flywheel"],

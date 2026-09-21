@@ -17,7 +17,7 @@ if css_path.exists():
     st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
 load_magazine_css()
-masthead("Decisions", "Connectors", "Integration depth and rip-out risk (synthetic).")
+masthead("The call", "Connectors", "Integration depth and rip-out risk (synthetic).", cluster="call")
 page_help("connector", show_card_glossary=True)
 render_tool_split_caption("connector")
 

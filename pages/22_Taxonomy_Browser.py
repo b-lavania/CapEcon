@@ -30,7 +30,7 @@ counts = exception_counts_from_records(records)
 section_kicker("Live exception counts (current workspace)")
 if counts:
     st.table([{"category": k, "count": v} for k, v in sorted(counts.items(), key=lambda x: -x[1])])
-    st.caption("Filter Radar DECIDE pages by these categories.")
+    st.caption("Filter Radar (The call) by these categories.")
 else:
     st.caption("No exceptions on this seed.")
 

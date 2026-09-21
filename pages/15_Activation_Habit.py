@@ -24,7 +24,7 @@ if css_path.exists():
     st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
 load_magazine_css()
-masthead("Decisions", "Activation & Habit", "Activation failure disguised as churn (synthetic).")
+masthead("The call", "Activation & Habit", "Activation failure disguised as churn (synthetic).", cluster="call")
 page_help("activation", show_card_glossary=True)
 render_tool_split_caption("activation")
 st.caption("Synthetic teaching data")

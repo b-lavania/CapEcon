@@ -16,7 +16,7 @@ if css_path.exists():
     st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
 load_magazine_css()
-masthead("Learn", "Math Lab · Drift", "Did the outcome mix shift, and when?")
+masthead("Learn", "Math Lab · Drift", "Did the outcome mix shift, and when?", cluster="lab")
 page_help("math_drift")
 
 ws = require_workspace(st.session_state, page_label="Math Lab · Drift")

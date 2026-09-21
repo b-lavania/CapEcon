@@ -23,9 +23,10 @@ if css_path.exists():
 
 load_magazine_css()
 masthead(
-    "Decide",
+    "The call",
     "Marketplace Radar",
     "Agent-assisted GMV after inference cost — which workflows to throttle.",
+    cluster="call",
 )
 page_help("marketplace_radar", show_card_glossary=True)
 

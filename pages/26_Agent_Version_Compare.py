@@ -20,9 +20,10 @@ if css_path.exists():
 
 load_magazine_css()
 masthead(
-    "Decide",
+    "The call",
     "Agent Version Comparison",
     "Should you roll back the latest agent version?",
+    cluster="call",
 )
 page_help("experiments")
 st.page_link("pages/24_Version_Gate.py", label="Prefer Version Gate (ship / hold / rollback)")

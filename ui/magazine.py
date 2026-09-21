@@ -19,7 +19,8 @@ def load_magazine_css() -> None:
     _CSS_LOADED = True
 
 
-def masthead(kicker: str, title: str, deck: str = "") -> None:
+def masthead(kicker: str, title: str, deck: str = "", *, cluster: str | None = None) -> None:
+    """Magazine header. Pass ``cluster`` (setup|call|price|lab|after|config) for the orientation strip."""
     load_magazine_css()
     deck_html = f'<p class="mag-deck">{deck}</p>' if deck else ""
     st.markdown(
@@ -32,6 +33,10 @@ def masthead(kicker: str, title: str, deck: str = "") -> None:
         """,
         unsafe_allow_html=True,
     )
+    if cluster:
+        from ui.teacher_map import render_orientation_strip
+
+        render_orientation_strip(cluster)
 
 
 def section_kicker(label: str) -> None:

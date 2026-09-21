@@ -17,9 +17,10 @@ if css_path.exists():
 
 load_magazine_css()
 masthead(
-    "Learn",
+    "After",
     "Executive Summary",
     "The 3–5 decisions that matter this week. Every number carries a claim type.",
+    cluster="after",
 )
 page_help("executive")
 

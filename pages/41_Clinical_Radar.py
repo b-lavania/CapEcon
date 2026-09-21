@@ -18,9 +18,10 @@ if css_path.exists():
 
 load_magazine_css()
 masthead(
-    "Decide",
+    "The call",
     "Clinical Radar",
     "Residual clinical risk — inference, review labor, and expected harm per SDK capability.",
+    cluster="call",
 )
 page_help("clinical_radar", show_card_glossary=True)
 

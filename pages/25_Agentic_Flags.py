@@ -18,7 +18,7 @@ if css_path.exists():
     st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
 load_magazine_css()
-masthead("Experiment", "Agentic Flags", "Treatment vs control on cost, activation, and trust (dummy-seeded).")
+masthead("Learn", "Agentic Flags", "Treatment vs control on cost, activation, and trust (dummy-seeded).", cluster="after")
 page_help("experiments", show_card_glossary=True)
 render_tool_split_caption("experiments")
 st.info("Dual-layer story: measurement → decision → flywheel. Flags instrument CPSO, TTFV, HITL on synthetic cohorts.", icon="ℹ️")

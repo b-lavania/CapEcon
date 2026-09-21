@@ -27,9 +27,10 @@ if css_path.exists():
 
 load_magazine_css()
 masthead(
-    "Learn",
+    "Lab",
     "Math Lab · Packaging",
     "At what list price does this SKU still clear floor?",
+    cluster="lab",
 )
 page_help("math_packaging")
 

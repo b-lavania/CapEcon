@@ -4,8 +4,8 @@ Every rigorous method in churnOS ships as:
 
 1. **Pure function** in `analytics/` (no Streamlit)
 2. **Unit + property tests** in `tests/`
-3. **Math Lab** page under LEARN nav (optional for backlog items)
-4. **DECIDE/LEARN hook** — operator-facing so-what on Radar, Version Gate, or Flywheel
+3. **Math Lab** page under Learn nav (optional for backlog items)
+4. **The call / Learn hook** — operator-facing so-what on Radar, Version Gate, or Flywheel
 5. **Optional `evidence` block** on GDR exceptions when `profile.priors.math_mode == "rigorous"`
 
 ## Ground truth
@@ -41,4 +41,4 @@ Every rigorous method in churnOS ships as:
 
 ## Acceptance per PR
 
-Analytics + tests + at least one DECIDE/LEARN surface + estimand gloss in `ui/explain.py`.
+Analytics + tests + at least one The call / Learn surface + estimand gloss in `ui/explain.py`.

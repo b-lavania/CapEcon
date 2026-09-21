@@ -15,6 +15,7 @@ PROFILE_CTA_LABEL = "Open Product Profile → Generate workspace"
 REFERENCE_LINKS: list[tuple[str, str]] = [
     ("pages/7_Concepts.py", "Concepts"),
     ("pages/6_README.py", "Architecture"),
+    ("pages/03_Teacher_Map.py", "Map atlas"),
     ("pages/21_Semantics_Console.py", "Semantics"),
     ("pages/22_Taxonomy_Browser.py", "Taxonomy"),
     ("pages/23_Record_Inspector.py", "Record Inspector"),

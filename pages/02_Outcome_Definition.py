@@ -16,9 +16,10 @@ if css_path.exists():
 
 load_magazine_css()
 masthead(
-    "Start",
+    "Setup",
     "Outcome Definition Kit",
     "Name what verified success is. Login doesn't count.",
+    cluster="setup",
 )
 page_help("outcome_kit")
 

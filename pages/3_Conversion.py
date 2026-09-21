@@ -26,6 +26,7 @@ masthead(
     "Learn",
     "Experiments",
     "Workspace funnel tests, agentic power design, and CUPED-adjusted results.",
+    cluster="after",
 )
 page_help("experiments", show_card_glossary=True)
 

@@ -21,9 +21,10 @@ if css_path.exists():
 
 load_magazine_css()
 masthead(
-    "Start",
+    "Setup",
     "Data Connect",
     "Upload traces, accounts, and outcomes. Prompt bodies are stripped. Synthetic demo remains available.",
+    cluster="setup",
 )
 page_help("data_connect")
 

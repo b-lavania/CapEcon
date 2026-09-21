@@ -19,7 +19,7 @@ if css_path.exists():
     st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
 load_magazine_css()
-masthead("Learn", "Math Lab · Decision Curves", "Net-benefit vs threshold — pick your operating point.")
+masthead("Learn", "Math Lab · Decision Curves", "Net-benefit vs threshold — pick your operating point.", cluster="lab")
 page_help("math_lab")
 
 ws = require_workspace(st.session_state, page_label="Math Lab")

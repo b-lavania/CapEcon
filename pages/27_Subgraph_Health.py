@@ -22,9 +22,10 @@ if css_path.exists():
 
 load_magazine_css()
 masthead(
-    "Decide",
+    "The call",
     "Subgraph Health",
     "Handoffs, coordination cost, connector blast radius.",
+    cluster="call",
 )
 page_help("subgraph")
 

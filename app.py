@@ -1,6 +1,6 @@
 """
 churnOS — Decision-grade analytics for agentic software systems.
-Navigation: START → DECIDE → LEARN (+ Reference / Legacy expanders).
+Navigation: Setup → The call → Price → Learn → Config (+ Reference / Legacy).
 """
 
 import streamlit as st
@@ -32,9 +32,10 @@ if css_path.exists():
 def capability_risk_radar():
     load_magazine_css()
     masthead(
-        "Capability Risk Radar",
+        "The call",
         "What to ship, throttle, or kill",
         "Ranked GrowthDecisionRecords priced by cost of leaving live.",
+        cluster="call",
     )
 
     ws = get_workspace_from_session(st.session_state)
@@ -153,6 +154,7 @@ def capability_risk_radar():
 _REFERENCE_PAGES = [
     st.Page("pages/7_Concepts.py", title="Concepts", url_path="concepts", visibility="hidden"),
     st.Page("pages/6_README.py", title="Architecture", url_path="architecture", visibility="hidden"),
+    st.Page("pages/03_Teacher_Map.py", title="Map atlas", url_path="map_atlas", visibility="hidden"),
     st.Page("pages/21_Semantics_Console.py", title="Semantics", url_path="semantics", visibility="hidden"),
     st.Page("pages/22_Taxonomy_Browser.py", title="Taxonomy", url_path="taxonomy", visibility="hidden"),
     st.Page("pages/23_Record_Inspector.py", title="Record Inspector", url_path="records", visibility="hidden"),
@@ -174,50 +176,74 @@ _LEGACY_PAGES = [
     st.Page("pages/14_Conversion_Forecast.py", title="Conversion Forecast", url_path="legacy_forecast", visibility="hidden"),
 ]
 
-nav_structure = {
-    "START": [
-        st.Page(
-            "pages/00_Agentic_Product_Profile.py",
-            title="Product Profile",
-            url_path="profile",
-            default=True,
-        ),
-        st.Page("pages/01_Data_Connect.py", title="Data Connect", url_path="data_connect"),
-        st.Page("pages/02_Outcome_Definition.py", title="Outcome Definition", url_path="outcomes"),
-    ],
-    "DECIDE": [
+
+def _preset_id() -> str | None:
+    ws = get_workspace_from_session(st.session_state)
+    if ws is None:
+        return None
+    return str(ws.profile.get("preset_id") or "")
+
+
+def build_nav_structure() -> dict:
+    """Nav: Setup / The call / Price / Learn / Config. Preset radars gated."""
+    preset = _preset_id()
+
+    call_pages = [
         st.Page("pages/24_Version_Gate.py", title="Version Gate", url_path="version_gate"),
         st.Page("pages/19_Decision_Inbox.py", title="Decision Inbox", url_path="inbox"),
         st.Page(capability_risk_radar, title="Radar", url_path="radar"),
-        st.Page("pages/27_Subgraph_Health.py", title="Subgraph Health", url_path="subgraph"),
-        st.Page("pages/15_Activation_Habit.py", title="Activation & Habit", url_path="activation"),
-        st.Page("pages/16_Trust_Approval.py", title="Trust & Approval", url_path="trust"),
-        st.Page("pages/17_Run_Economics.py", title="Run Economics", url_path="run_economics"),
+        st.Page("pages/15_Activation_Habit.py", title="Activation", url_path="activation"),
+        st.Page("pages/16_Trust_Approval.py", title="Trust", url_path="trust"),
         st.Page("pages/18_Connector_Blast_Radius.py", title="Connectors", url_path="connectors"),
-        st.Page("pages/35_Marketplace_Radar.py", title="Marketplace Radar", url_path="marketplace_radar"),
-        st.Page("pages/41_Clinical_Radar.py", title="Clinical Radar", url_path="clinical_radar"),
+        st.Page("pages/27_Subgraph_Health.py", title="Subgraph", url_path="subgraph"),
         st.Page("pages/26_Agent_Version_Compare.py", title="Version Compare", url_path="version_compare"),
-    ],
-    "LEARN": [
-        st.Page("pages/37_Executive_Summary.py", title="Executive Summary", url_path="executive"),
-        st.Page("pages/3_Conversion.py", title="Experiments", url_path="experiments"),
-        st.Page("pages/25_Agentic_Flags.py", title="Agentic Flags", url_path="agentic_flags"),
-        st.Page("pages/20_Outcome_Flywheel.py", title="Outcome Flywheel", url_path="flywheel"),
-        st.Page("pages/30_Math_Lab_Binomial.py", title="Lab · Binomial", url_path="math_binomial"),
-        st.Page("pages/31_Math_Lab_Power.py", title="Lab · Power", url_path="math_power"),
-        st.Page("pages/32_Math_Lab_CLV.py", title="Lab · CLV", url_path="math_clv"),
-        st.Page("pages/33_Math_Lab_Decision_Curves.py", title="Lab · Decision Curves", url_path="math_decision_curves"),
-        st.Page("pages/34_Math_Lab_Calibration.py", title="Lab · Calibration", url_path="math_calibration"),
-        st.Page("pages/36_Math_Lab_Drift.py", title="Lab · Drift", url_path="math_drift"),
-        st.Page("pages/38_Math_Lab_Packaging.py", title="Lab · Packaging", url_path="math_packaging"),
-        *_REFERENCE_PAGES,
-        *_LEGACY_PAGES,
-    ],
-    "CONFIG": [
-        st.Page("pages/40_Integrations.py", title="Integrations", url_path="integrations"),
-    ],
-}
+    ]
+    if preset == "marketplace_agentic":
+        call_pages.append(
+            st.Page("pages/35_Marketplace_Radar.py", title="Marketplace Radar", url_path="marketplace_radar")
+        )
+    if preset == "openmed_v22":
+        call_pages.append(
+            st.Page("pages/41_Clinical_Radar.py", title="Clinical Radar", url_path="clinical_radar")
+        )
 
+    return {
+        "Setup": [
+            st.Page(
+                "pages/00_Agentic_Product_Profile.py",
+                title="Product Profile",
+                url_path="profile",
+                default=True,
+            ),
+            st.Page("pages/01_Data_Connect.py", title="Data Connect", url_path="data_connect"),
+            st.Page("pages/02_Outcome_Definition.py", title="Outcome Definition", url_path="outcomes"),
+        ],
+        "The call": call_pages,
+        "Price": [
+            st.Page("pages/17_Run_Economics.py", title="Run Economics", url_path="run_economics"),
+        ],
+        "Learn": [
+            st.Page("pages/37_Executive_Summary.py", title="Executive Summary", url_path="executive"),
+            st.Page("pages/3_Conversion.py", title="Experiments", url_path="experiments"),
+            st.Page("pages/25_Agentic_Flags.py", title="Agentic Flags", url_path="agentic_flags"),
+            st.Page("pages/20_Outcome_Flywheel.py", title="Outcome Flywheel", url_path="flywheel"),
+            st.Page("pages/30_Math_Lab_Binomial.py", title="Lab · Binomial", url_path="math_binomial"),
+            st.Page("pages/31_Math_Lab_Power.py", title="Lab · Power", url_path="math_power"),
+            st.Page("pages/32_Math_Lab_CLV.py", title="Lab · CLV", url_path="math_clv"),
+            st.Page("pages/33_Math_Lab_Decision_Curves.py", title="Lab · Decision Curves", url_path="math_decision_curves"),
+            st.Page("pages/34_Math_Lab_Calibration.py", title="Lab · Calibration", url_path="math_calibration"),
+            st.Page("pages/36_Math_Lab_Drift.py", title="Lab · Drift", url_path="math_drift"),
+            st.Page("pages/38_Math_Lab_Packaging.py", title="Lab · Packaging", url_path="math_packaging"),
+            *_REFERENCE_PAGES,
+            *_LEGACY_PAGES,
+        ],
+        "Config": [
+            st.Page("pages/40_Integrations.py", title="Integrations", url_path="integrations"),
+        ],
+    }
+
+
+nav_structure = build_nav_structure()
 pg = st.navigation(nav_structure, expanded=True)
 render_sidebar_brand_and_status(st.session_state)
 render_sidebar_secondary_nav()

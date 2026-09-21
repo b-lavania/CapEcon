@@ -385,12 +385,15 @@ In production the warehouse is LangSmith-class traces + ChartMogul-class billing
 
 **Sidebar map**
 
-- **START** — Product Profile, Data Connect, Outcome Definition
-- **DECIDE** — Version Gate, Inbox, Radar, then the filtered surfaces
-- **LEARN** — Executive Summary, Experiments, Outcome Flywheel
-- **CONFIG** — Integrations (hooks)
-- **Reference** (collapsed) — Concepts, Architecture, Semantics, Taxonomy, Record Inspector
+- **Setup** — Product Profile, Data Connect, Outcome Definition
+- **The call** — Version Gate, Inbox, Radar, then receipts (Activation, Trust, Connectors, Subgraph, Version Compare)
+- **Price** — Run Economics (home); Lab · Packaging under Learn
+- **Learn** — Executive Summary, Experiments, Flags, Flywheel, seven Lab · X
+- **Config** — Integrations (hooks)
+- **Reference** (collapsed) — Concepts, Architecture (atlas), Map atlas, Semantics, Taxonomy, Record Inspector
 - **Legacy** (collapsed) — Pre-agentic ecomm / marketplace modules
+
+Every agentic page shows a slim **orientation strip** (cluster question + next links). Full diagrams live under Reference → Architecture.
             """
         )
 

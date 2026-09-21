@@ -13,6 +13,7 @@ from ui.decision_card import render_decision_card
 from ui.explain import page_help, render_tool_split_caption
 from ui.loop_chrome import render_loop_stepper
 from ui.magazine import load_magazine_css, masthead, section_kicker
+from ui.state_sketches import render_flywheel_sketch
 from ui.viz import (
     coordination_overhead_chart,
     flywheel_comparison_chart,
@@ -26,8 +27,9 @@ if css_path.exists():
     st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
 load_magazine_css()
-masthead("Learn", "Outcome Flywheel", "Decisions awaiting outcome → write-back → intervention effectiveness.")
+masthead("Learn", "Outcome Flywheel", "Decisions awaiting outcome → write-back → intervention effectiveness.", cluster="after")
 page_help("flywheel", show_card_glossary=True)
+render_flywheel_sketch()
 render_tool_split_caption("flywheel")
 render_loop_stepper(st.session_state, highlight="flywheel")
 

@@ -17,6 +17,7 @@ masthead(
     "Config",
     "Integrations",
     "Slack first, then require_review. I will not auto-act.",
+    cluster="config",
 )
 page_help("integrations")
 

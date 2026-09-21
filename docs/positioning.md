@@ -30,6 +30,8 @@ Not a chat UI. Not a scheduler. Not a Langfuse replacement. Not an auto-rollback
 
 The join and the claim types are in [contracts.md](contracts.md) and [honesty.md](honesty.md). Outcomes are in [outcome_contract.md](outcome_contract.md). The longer argument is [methodology.md](methodology.md).
 
+**Teacher orientation:** every agentic page shows a slim orientation strip (cluster question + next links). The sidebar stepper is Setup → Call → Price → Lab → After. Full atlas diagrams live under **Reference → Architecture** (and [information_architecture.md](information_architecture.md) / [architecture.md](architecture.md)).
+
 ## Demand-side honesty
 
 churnOS is strong on **supply-side** economics: floor per verified outcome, retention harm, Version Gate. It is weaker on **demand**: user willingness to pay, task value magnitude, and price elasticity. The value ledger (`economics.value_usd`, `surplus_usd`) and Packaging Lab are teaching surfaces — not conjoint or billing-system WTP discovery. Bring external research or experiments for demand science; use churnOS to avoid shipping below floor.

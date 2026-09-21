@@ -14,7 +14,7 @@ if css_path.exists():
     st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
 load_magazine_css()
-masthead("Learn", "Math Lab · Power", "Cluster-aware sample size — web CVR vs agent success.")
+masthead("Learn", "Math Lab · Power", "Cluster-aware sample size — web CVR vs agent success.", cluster="lab")
 page_help("math_lab")
 
 section_kicker("Web CRO pain (why ~300k?)")

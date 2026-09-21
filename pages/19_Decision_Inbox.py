@@ -11,6 +11,7 @@ from ontology.store import read_records
 from ui.decision_card import render_decision_card
 from ui.explain import page_help
 from ui.magazine import load_magazine_css, masthead, section_kicker
+from ui.state_sketches import render_triage_sketch
 from ui.workspace_banner import require_workspace
 
 css_path = Path(__file__).parent.parent / "assets" / "style.css"
@@ -19,11 +20,21 @@ if css_path.exists():
 
 load_magazine_css()
 masthead(
-    "Decide",
+    "The call",
     "Decision Inbox",
     "Ranked GrowthDecisionRecords. Route by owner. Review is scarce — knapsack first.",
+    cluster="call",
 )
 page_help("inbox")
+
+roles = ["all"] + owner_roles()
+c1, c2, c3, c4 = st.columns(4)
+owner = c1.selectbox("Owner role", roles)
+status = c2.selectbox("Status", ["all", *TRIAGE_STATES])
+verdict = c3.selectbox("Verdict", ["all", "destructive", "uneconomic", "leaking", "needs_review", "healthy", "underpowered"])
+review_only = c4.checkbox("requires_review only", value=False)
+
+render_triage_sketch(current=None if status == "all" else status)
 
 ws = require_workspace(st.session_state, page_label="Decision Inbox")
 session_recs = ensure_growth_records(st.session_state, ws)
@@ -32,13 +43,6 @@ by_id = {r["record_id"]: r for r in stored}
 for r in session_recs:
     by_id.setdefault(r["record_id"], r)
 records = list(by_id.values())
-
-roles = ["all"] + owner_roles()
-c1, c2, c3, c4 = st.columns(4)
-owner = c1.selectbox("Owner role", roles)
-status = c2.selectbox("Status", ["all", *TRIAGE_STATES])
-verdict = c3.selectbox("Verdict", ["all", "destructive", "uneconomic", "leaking", "needs_review", "healthy", "underpowered"])
-review_only = c4.checkbox("requires_review only", value=False)
 
 filtered = filter_inbox(
     records,

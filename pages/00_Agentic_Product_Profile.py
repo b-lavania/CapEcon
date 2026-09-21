@@ -20,13 +20,14 @@ if css_path.exists():
 
 load_magazine_css()
 masthead(
-    "Configuration",
+    "Setup",
     "Agentic Product Profile",
     "Choose a product shape. This switches ontology semantics and synthetic warehouse priors.",
+    cluster="setup",
 )
 page_help("profile", show_notice=True)
 tool_stack_explainer(expanded=False)
-render_loop_stepper(st.session_state, highlight="profile")
+render_loop_stepper(st.session_state, highlight="setup")
 
 st.info(
     "**Required before any chart works:** pick a preset and click **Generate workspace**, "
@@ -89,10 +90,12 @@ if st.button("Generate workspace", type="primary"):
         sync_workspace_to_session(st.session_state, ws)
         st.session_state["growth_records"] = []
         st.session_state.pop("semantics_overlay", None)
+        st.session_state["teacher_map_group"] = "price"
         st.success(
             f"Workspace built — {len(ws.seats)} seats, {len(ws.capabilities)} capabilities, "
             f"{len(getattr(ws, 'accounts', ws.workspaces))} accounts."
         )
+        st.switch_page("pages/17_Run_Economics.py")
     except Exception as exc:
         st.error(f"Workspace build failed: {exc}")
         st.exception(exc)
@@ -102,7 +105,7 @@ if workspace:
     src = workspace.meta.get("data_source", "synthetic")
     if src in ("synthetic", "otel"):
         st.warning("Using synthetic / mock-OTel demo mode. Data Connect overlays real tables when you have them.")
-    render_loop_stepper(st.session_state, highlight="warehouse")
+    render_loop_stepper(st.session_state, highlight="setup")
     section_kicker("Warehouse summary")
     c1, c2, c3, c4, c5 = st.columns(5)
     c1.metric("Seats", len(workspace.seats))
@@ -133,4 +136,6 @@ if workspace:
 
     render_instrumentation_checklist(workspace)
 
-    st.caption("Next: **Version Gate** (ship/hold/rollback) or **Radar** from DECIDE.")
+    st.caption("Next: **Run Economics** (Price) · **Version Gate** or **Radar** (The call).")
+    st.page_link("pages/17_Run_Economics.py", label="Open Run Economics →")
+    st.page_link("pages/38_Math_Lab_Packaging.py", label="Lab · Packaging (demand curve)")
