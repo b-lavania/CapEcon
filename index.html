@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>churnOS: Decision-grade analytics for agentic systems</title>
+  <title>churnOS: Agentic economics for task-sold agents</title>
   <meta name="description"
-    content="The missing join between agent traces (LangSmith, Langfuse) and subscription analytics (ChartMogul, ChurnZero). Weekly ship / throttle / kill decisions with dollar impact. Synthetic teaching model — clone and run.">
+    content="Task-sold agents need cost per verified outcome, not 2016 SaaS playbooks. Open-source teaching model for weekly ship, throttle, and kill decisions. Clone and run locally.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -285,6 +285,50 @@
       color: var(--ink);
     }
 
+    .glossary-details {
+      margin-top: 20px;
+      max-width: 760px;
+      padding: 14px 16px;
+      background: linear-gradient(to bottom, #ffffff, #fcfcfb);
+      border: 2px solid var(--rule);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .glossary-details summary {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      list-style-position: outside;
+    }
+
+    .glossary-details summary::-webkit-details-marker {
+      color: var(--teal);
+    }
+
+    .glossary-item {
+      font-size: 15px;
+      color: var(--ink-mid);
+      line-height: 1.55;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--rule);
+    }
+
+    .glossary-item:first-of-type {
+      margin-top: 12px;
+    }
+
+    .glossary-term {
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      color: var(--teal);
+      font-weight: 500;
+      display: block;
+      margin-bottom: 4px;
+    }
+
     .radar-tool-caption {
       font-size: 15px;
       color: var(--ink-soft);
@@ -516,59 +560,218 @@
 
     .footer-contact {
       margin-top: 32px;
-      padding: 28px 32px;
+      padding: 20px 24px;
       background: linear-gradient(to bottom, #ffffff, #fcfcfb);
       border: 2px solid var(--rule);
       box-shadow: var(--shadow-lg);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px 40px;
+      align-items: start;
+    }
+
+    .footer-contact-identity {
+      min-width: 0;
+    }
+
+    .footer-contact-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+      min-width: 0;
     }
 
     .footer-contact-name {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       color: var(--ink);
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       line-height: 1.2;
     }
 
     .footer-contact-role {
       font-family: var(--mono);
-      font-size: 12px;
+      font-size: 11px;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--teal);
-      margin-bottom: 16px;
+      margin-bottom: 10px;
     }
 
     .footer-contact-desc {
-      font-size: 16px;
+      font-size: 15px;
       color: var(--ink-mid);
-      line-height: 1.55;
-      max-width: 640px;
-      margin-bottom: 20px;
+      line-height: 1.5;
+      margin-bottom: 0;
+      max-width: none;
     }
 
     .footer-contact-links {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 16px;
+      gap: 8px;
+      margin-bottom: 0;
+    }
+
+    .footer-contact-links .btn-cta,
+    .footer-contact-links .btn-cta-secondary {
+      flex: 1 1 auto;
+      text-align: center;
+      padding: 10px 14px;
+      font-size: 14px;
     }
 
     .install-hint {
       font-family: var(--mono);
-      font-size: 13px;
+      font-size: 12px;
       color: var(--ink-light);
       background: var(--page);
       padding: 10px 12px;
       border: 1px solid var(--rule);
-      display: inline-block;
+      display: block;
       margin-bottom: 0;
+      width: 100%;
+      overflow-x: auto;
+      white-space: nowrap;
     }
 
     .feature-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: var(--block-gap);
+    }
+
+    .feature-grid-5 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--block-gap);
+    }
+
+    @media (min-width: 720px) {
+      .feature-grid-5 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 961px) {
+      .feature-grid-5 {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    .playbook-section,
+    .unit-section {
+      margin-bottom: var(--section-gap);
+      padding-bottom: var(--section-pad);
+      border-bottom: 2px solid var(--rule);
+    }
+
+    .playbook-closer {
+      font-size: 16px;
+      color: var(--ink-mid);
+      font-style: italic;
+      margin-top: 16px;
+      max-width: 720px;
+    }
+
+    .unit-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .unit-bullets {
+      list-style: none;
+      font-size: 15px;
+      color: var(--ink-mid);
+      line-height: 1.6;
+    }
+
+    .unit-bullets li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .unit-bullets li:last-child {
+      border-bottom: none;
+    }
+
+    .unit-bullets strong {
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .price-mini-card {
+      background: var(--page);
+      border: 2px solid var(--rule);
+      padding: 20px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .price-mini-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 8px;
+    }
+
+    .price-mini-name {
+      font-weight: 700;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+
+    .price-mini-row {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-mid);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .price-mini-levers {
+      font-size: 14px;
+      color: var(--ink-mid);
+      padding-top: 12px;
+      border-top: 1px solid var(--rule);
+      line-height: 1.5;
+    }
+
+    .price-mini-levers strong {
+      color: var(--teal);
+    }
+
+    .price-sentence {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .commercial-line {
+      font-size: 14px;
+      color: var(--ink-mid);
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--rule);
+    }
+
+    .commercial-line strong {
+      color: var(--blue);
+    }
+
+    .dialect-note {
+      font-size: 14px;
+      color: var(--ink-soft);
+      margin-top: 16px;
+      max-width: 680px;
     }
 
     .feature-col {
@@ -1072,7 +1275,9 @@
       .persona-grid,
       .narrative,
       .work-principles,
-      .feature-grid {
+      .feature-grid,
+      .feature-grid-5,
+      .unit-layout {
         grid-template-columns: 1fr;
         gap: var(--block-gap);
       }
@@ -1081,9 +1286,14 @@
         font-size: 44px;
       }
 
+      .footer-contact {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
       .footer-contact-links {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
       }
 
       .health-row-compact {
@@ -1127,174 +1337,129 @@
 
   <main id="main">
     <header>
-      <span class="kicker">Decision-grade analytics · Ontology as IP</span>
       <h1>churn<em>OS</em></h1>
-      <p class="subhead">A governed judgment layer for agentic products, which <strong>accounts</strong> and
-        <strong>capabilities</strong> to ship, throttle, or kill, priced by cost of leaving live.</p>
-      <p class="subhead-secondary">Built for teams shipping assistants, workspace agents, and ops automations. Not
-        another success-rate dashboard, auditable <code style="font-family: var(--mono); font-size: 15px;">GrowthDecisionRecord</code>s
-        with YAML-governed policy. Not a LangSmith replacement and not a ChartMogul replacement: the weekly join between
-        traces and revenue.</p>
+      <p class="subhead">Task-sold agents (quotes, approvals, verified runs) need <strong>cost per verified
+          outcome</strong>, not seat funnels and login health scores, and churnOS models that economics so you can turn
+        it into weekly <strong>ship / throttle / kill</strong> decisions.</p>
+      <p class="subhead-secondary">This is an open-source teaching repo with a synthetic warehouse plus optional Data
+        Connect overlays, so you can clone it and run locally.</p>
       <a href="https://github.com/b-lavania/churnOS" class="btn btn-primary hero-cta" target="_blank"
         rel="noopener">View on GitHub</a>
     </header>
 
-    <section class="gap-section" id="gap">
-      <span class="kicker">The gap</span>
-      <h2>Two dashboards, one missing meeting</h2>
-      <p class="section-intro">Keep LangSmith for debugging. Keep ChartMogul for board NRR. Neither emits a ranked ship /
-        throttle / kill object on the join Account → Run → Outcome → Subscription.</p>
-
-      <div class="narrative">
-        <div>
-          <h2>Traces</h2>
-          <p>LangSmith, Langfuse, Braintrust — spans and token cost, eval scores, latency and retries.</p>
-          <p><em>Does not know if the paying account churned, or whether a “successful” run was a verified business
-              outcome.</em></p>
-        </div>
-        <div>
-          <h2>Revenue / CS</h2>
-          <p>ChartMogul (MRR, NRR), ChurnZero (health scores and playbooks — login/usage proxies), cancel cohorts.</p>
-          <p><em>Does not know CPSO, retry loops, HITL takeover, or which capability to throttle.</em></p>
-        </div>
-      </div>
-
-      <p class="gap-punch">churnOS is the meeting: join + <code style="font-family: var(--mono); font-size: 15px;">GrowthDecisionRecord</code>
-        (verdict, $ cost of leaving live, YAML rule, override).</p>
-      <p class="gap-footnote">Product analytics (PostHog / Amplitude) sit in the same gap: sessions and funnels, no agent
-        internals, no verified outcome. Metering (Stripe / Metronome / Orb) shows the token bill, not CPSO per verified
-        outcome. Eval tools improve quality; they do not run the weekly business review.</p>
-
+    <section class="playbook-section">
+      <h2>What breaks when you run agents like 2016 SaaS</h2>
       <div class="work-principles">
         <div class="principle">
-          <span class="join-col-title">Traces</span>
-          <p class="join-col-body">LangSmith · Langfuse · Braintrust<br>spans · tokens · evals</p>
+          <span class="principle-num">Unit of value</span>
+          <div class="principle-title">Seat, login, feature adoption</div>
+          <p class="principle-desc">For task agents, the real unit is a <strong>verified outcome</strong> per job
+            (Outcome Definition), and login alone does not count.</p>
         </div>
         <div class="principle">
-          <span class="join-col-title">churnOS</span>
-          <p class="join-col-body">Account→Run→Outcome→Sub<br><code style="font-family: var(--mono); font-size: 13px;">GrowthDecisionRecord</code><br>ship · throttle · kill</p>
+          <span class="principle-num">Health</span>
+          <div class="principle-title">ChurnZero-style usage proxies</div>
+          <p class="principle-desc">Instead of usage proxies, look at <strong>TTFV</strong>, tourist accounts, and whether
+            seats keep a weekly delegation habit.</p>
         </div>
         <div class="principle">
-          <span class="join-col-title">Revenue</span>
-          <p class="join-col-body">ChartMogul · ChurnZero · Stripe/MRR<br>cancel · NRR</p>
+          <span class="principle-num">Margin</span>
+          <div class="principle-title">MRR vs usage in another tab</div>
+          <p class="principle-desc">Margin shows up as <strong>CPSO</strong>, floor vs cap, and the retry or HITL tax on
+            multi-step runs, not MRR sitting next to a token bill in another tab.</p>
         </div>
       </div>
-      <p class="join-caption">Keep LangSmith for debugging. Keep ChartMogul for board NRR. Use churnOS for the weekly
-        decision that connects them.</p>
+      <p class="playbook-closer">Metering shows the token bill, but it does not tell you if the task was worth shipping.</p>
+    </section>
 
-      <div class="persona-grid">
-        <div class="persona-card">
-          <div class="persona-role">The green ChartMogul account</div>
-          <p class="persona-pain">Paid + 92% LangSmith success, never a verified outcome in 14 days →
-            <code style="font-family: var(--mono); font-size: 14px;">tourist</code> /
-            <code style="font-family: var(--mono); font-size: 14px;">activation_failure</code>. Revenue tool sees a
-            customer; trace tool sees activity; neither flags activation failure.</p>
-        </div>
-        <div class="persona-card">
-          <div class="persona-role">The expanding account that loses money</div>
-          <p class="persona-pain">ChartMogul expansion + token spike on one capability →
-            <code style="font-family: var(--mono); font-size: 14px;">margin_leakage</code> /
-            <code style="font-family: var(--mono); font-size: 14px;">run_cost_blowout</code>. Board celebrates NRR; ops
-            should throttle.</p>
-        </div>
-        <div class="persona-card">
-          <div class="persona-role">The Monday meeting</div>
-          <p class="persona-pain">Slack trace link + ChurnZero red score, no shared object. churnOS alternative: one GDR,
-            throttle, YAML cited, flywheel outcome 14d later.</p>
+    <section class="unit-section" id="economics">
+      <h2>One honest decision object</h2>
+      <p class="section-intro">A <code style="font-family: var(--mono); font-size: 15px;">GrowthDecisionRecord</code> is
+        a priceable row, not an ops alert, so Radar can sort on headline dollars while the card still shows unit economics
+        and honesty about the cost basis.</p>
+      <div class="unit-layout">
+        <ul class="unit-bullets">
+          <li><strong>primary_metric_usd</strong> Headline sort: cost of leaving live (window total)</li>
+          <li><strong>floor_usd</strong> Unit economics: cost per verified outcome where applicable</li>
+          <li><strong>cost_basis</strong> Weakest link: simulated → estimated → metered → invoiced</li>
+          <li><strong>recommended_action</strong> Runtime: ship, throttle, rollback, hold</li>
+          <li><strong>commercial_action</strong> Packaging: reallocate, raise_list, split_tier (reviewed separately)</li>
+        </ul>
+        <div class="price-mini-card" aria-hidden="true">
+          <div class="price-mini-title">Capability · Leaking</div>
+          <div class="price-mini-name">inbox_triage</div>
+          <div class="price-mini-row">Headline $48,200 · Floor $0.42 / outcome · basis: estimated</div>
+          <div class="price-mini-levers">Ops: <strong>throttle</strong> · Commercial: <strong>reallocate</strong></div>
         </div>
       </div>
-
-      <div class="table-container" style="margin-top: 24px; margin-bottom: 16px;">
-        <table class="outcome-table">
-          <thead>
-            <tr>
-              <th>Challenge</th>
-              <th>Traces</th>
-              <th>Revenue / CS</th>
-              <th>churnOS</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="td-metric">Cost / margin</td>
-              <td class="td-before">Cost per span; no ARPU join</td>
-              <td class="td-before">MRR fine while serving cost explodes</td>
-              <td class="td-after">CPSO vs ARPU; throttle uneconomic capabilities</td>
-            </tr>
-            <tr>
-              <td class="td-metric">Visibility</td>
-              <td class="td-before">“What did this trace cost?”</td>
-              <td class="td-before">“What is NRR?”</td>
-              <td class="td-after">Unattributed spend; cost heatmap by step × cohort</td>
-            </tr>
-            <tr>
-              <td class="td-metric">Activation</td>
-              <td class="td-before">Run success ≠ first win</td>
-              <td class="td-before">Paying customer still in “trial”</td>
-              <td class="td-after">TTFV; paying-but-dormant; tourist GDRs</td>
-            </tr>
-            <tr>
-              <td class="td-metric">Switching costs</td>
-              <td class="td-before">Tool-call graph, not rip-out risk</td>
-              <td class="td-before">Churn reason unknown / competitor</td>
-              <td class="td-after">Connector blast radius</td>
-            </tr>
-            <tr>
-              <td class="td-metric">Trust / reliability</td>
-              <td class="td-before">Evals on traces</td>
-              <td class="td-before">Health score drops after the fact</td>
-              <td class="td-after">HITL trend; trust_break → rollback</td>
-            </tr>
-            <tr>
-              <td class="td-metric">Opaque success</td>
-              <td class="td-before">Completed trace ≠ trusted SOP</td>
-              <td class="td-before">Login/usage health</td>
-              <td class="td-after">Verified outcome rate; flywheel write-back</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="honesty-chip">
-        <span class="honesty-chip-kicker">Synthetic teaching model</span>
-        <span class="honesty-chip-body">A teaching model of that meeting. The warehouse scaffolds the join; GDR
-          economics today use synthetic runs and seat priors. Production path is exports into the same Workspace schema
-          — no live LangSmith or ChartMogul connector in this demo.</span>
-      </div>
-
-      <details class="faq-details">
-        <summary>Common questions</summary>
-        <p class="faq-item"><strong>Can’t I join this in Looker/dbt?</strong> You can SQL the join; churnOS’s IP is the
-          exception taxonomy, YAML policy, and auditable decision record.</p>
-        <p class="faq-item"><strong>Is this observability?</strong> No. Use LangSmith for traces. churnOS consumes
-          trace-shaped facts and emits decisions.</p>
-        <p class="faq-item"><strong>Is this a BI churn tool?</strong> No. ChartMogul tells you churn happened; churnOS
-          ranks interventions with playbook hints.</p>
-        <p class="faq-item"><strong>Do you replace my stack?</strong> No — ingest later; decide now on a teaching model.
-        </p>
+      <p class="dialect-note">Pricing dialect follows the preset (internal budget, product SKU, or marketplace take), and
+        the schema plus contracts live in
+        <a href="https://github.com/b-lavania/churnOS/tree/main/ontology" target="_blank" rel="noopener">ontology/</a>
+        and
+        <a href="https://github.com/b-lavania/churnOS/blob/main/docs/contracts.md" target="_blank"
+          rel="noopener">docs/contracts.md</a>.</p>
+      <details class="glossary-details" id="cpso">
+        <summary>What CPSO, WTP, and margin leakage mean</summary>
+        <div class="glossary-item">
+          <span class="glossary-term">CPSO (cost per successful outcome)</span>
+          Total token, tool, and infra cost attributed to a workflow, divided by the number of runs that reach a
+          <strong>verified</strong> successful end state (not merely “the trace finished”). Rising CPSO or high variance
+          usually means retry loops, context bloat, or expensive model routing. ChartMogul will not show this; LangSmith
+          alone will not join it to ARPU.
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">Floor vs headline $</span>
+          <code style="font-family: var(--mono); font-size: 13px;">floor_usd</code> is the unit cost of producing one
+          verified outcome when you can measure it.
+          <code style="font-family: var(--mono); font-size: 13px;">primary_metric_usd</code> is the Radar headline
+          (cost of leaving live over the window). They stay separate on purpose so sort order and unit economics do not
+          get mashed together.
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">WTP (willingness to pay)</span>
+          An upper bound or cap next to the floor: what you can sensibly charge or budget for that outcome, often compared
+          to seat ARPU or SKU value. churnOS does not invent survey WTP from billing; in rigorous mode a data-derived cap
+          can come from subscriptions or outcomes (associational), and Packaging Lab / Fit demand can estimate
+          surplus-optimal list when the panel is strong enough.
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">Margin leakage</span>
+          Power users (often the top few percent by token volume) whose revenue minus fully loaded serve cost is near zero
+          or negative under flat or loosely capped pricing. The board may still see expansion and NRR while ops should
+          throttle or reallocate. In the taxonomy this is
+          <code style="font-family: var(--mono); font-size: 13px;">margin_leakage</code>.
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">Retry amplification</span>
+          Average model and tool invocations per logical user intent. Values much greater than 1× quantify the hidden
+          multi-step cost explosion that CPSO catches when “success” still burns margin.
+        </div>
+        <div class="glossary-item">
+          <span class="glossary-term">Where this lives in the app</span>
+          Run Economics (Price cluster) puts CPSO next to WTP-style caps and power-user margin leakage. Radar and Version
+          Gate surface the same numbers on decision cards when the workspace has data.
+        </div>
       </details>
     </section>
 
     <section class="radar-section" id="preview">
-      <span class="kicker">Weekly meeting, rendered</span>
       <h2>What your agent review could look like</h2>
-      <p class="section-intro">Each row is a <code style="font-family: var(--mono); font-size: 15px;">GrowthDecisionRecord</code>:
-        what's wrong, what it may cost to leave live, and what to do, with policy provenance from
+      <p class="section-intro">Each row is a <code style="font-family: var(--mono); font-size: 15px;">GrowthDecisionRecord</code>
+        that says what's wrong, what it may cost to leave live, and what to do, with policy provenance from
         <code style="font-family: var(--mono); font-size: 15px;">semantics.yaml</code>.</p>
-      <p class="radar-tool-caption">What ChartMogul will not show: which capability. What LangSmith will not show: dollar
-        cost of leaving it live.</p>
+      <p class="radar-tool-caption">ChartMogul will not show which capability is hurting you, and LangSmith will not show
+        the dollar cost of leaving it live.</p>
 
       <div class="radar-preview" aria-label="Static preview of the Radar screen">
         <div class="radar-masthead">
-          <div class="radar-masthead-kicker">Capability Risk Radar</div>
+          <div class="radar-masthead-kicker">The call</div>
           <div class="radar-masthead-title">What to ship, throttle, or kill</div>
-          <div class="radar-masthead-deck">Ranked decisions priced by cost of leaving live.</div>
+          <div class="radar-masthead-deck">Ranked GrowthDecisionRecords: headline $, floor per outcome, ops vs commercial.</div>
         </div>
 
         <div class="meta-chips" aria-hidden="true">
           <span class="meta-chip">assistant_heavy</span>
-          <span class="meta-chip">capability_lifecycle</span>
-          <span class="meta-chip">v0.1</span>
+          <span class="meta-chip">product_sku</span>
           <span class="meta-chip">seed 42</span>
           <span class="meta-chip">8 acct GDRs</span>
           <span class="meta-chip">12 cap GDRs</span>
@@ -1388,7 +1553,7 @@
               <div class="cap">acme_west</div>
               <div class="evidence">3 exceptions · activation_leak, habit_collapse</div>
               <p class="gloss">Activation or habit problems: value unfinished for many seats.</p>
-              <p class="rationale">Paying seats never hit weekly delegation; habit collapse correlates with churn on
+              <p class="rationale">Paying seats never hit weekly delegation, and habit collapse correlates with churn on
                 this seed.</p>
               <div class="cost">$84,200</div>
               <div class="cost-label">Cost of leaving live</div>
@@ -1432,220 +1597,242 @@
               <div class="cap">inbox_triage</div>
               <div class="evidence">2 exceptions · activation_leak, approval_fatigue</div>
               <p class="gloss">Activation or habit problems: value unfinished for many seats.</p>
-              <p class="rationale">Seats activate but stop delegating weekly; habit collapse correlates with churn on
+              <p class="rationale">Seats activate but stop delegating weekly, and habit collapse correlates with churn on
                 this seed.</p>
               <div class="cost">$48,200</div>
-              <div class="cost-label">Cost of leaving live</div>
+              <div class="cost-label">Cost of leaving live (headline)</div>
+              <p class="price-sentence">Floor $0.42 / verified outcome · basis: estimated</p>
               <div class="evidence-chips">
                 <span class="chip">activation_leak 58%</span>
                 <span class="chip">approval_fatigue 42%</span>
               </div>
               <div class="rule-trace">Policy: <code>leaking → throttle</code> → <strong>throttle</strong> · rule
                 when_any_category: activation_leak</div>
-              <div class="action">Recommended: <strong>Throttle</strong>: cap traffic, rate, or tool budget.</div>
+              <div class="action">Ops: <strong>Throttle</strong>: cap traffic, rate, or tool budget.</div>
+              <div class="commercial-line">Commercial: <strong>reallocate</strong> (routing tax before raise_list)</div>
             </article>
           </div>
         </div>
 
         <div class="honesty-chip">
           <span class="honesty-chip-kicker">Synthetic demo</span>
-          <span class="honesty-chip-body">Static preview; clone the repo to run it (teaching warehouse and authored priors,
-            not production telemetry).</span>
+          <span class="honesty-chip-body">This is a teaching warehouse you clone and run locally (authored priors, not
+            production telemetry).</span>
         </div>
       </div>
+    </section>
+
+    <section class="gap-section" id="gap">
+      <h2>Two dashboards, one missing meeting</h2>
+      <p class="section-intro">Keep LangSmith for debugging, ChartMogul for board NRR. However, neither emits a ranked
+        ship / throttle / kill object on the join Account → Run → Outcome → Subscription.</p>
+
+      <div class="narrative">
+        <div>
+          <h2>Traces</h2>
+          <p>LangSmith, Langfuse, and Braintrust give you spans, token cost, eval scores, latency, and retries, and
+            Data Connect can also ingest OpenTelemetry GenAI-style JSONL (token and model attributes, prompts scrubbed).
+            None of those tools know if the paying account churned, or whether a “successful” run was a verified business
+            outcome.</p>
+        </div>
+        <div>
+          <h2>Revenue / CS</h2>
+          <p>ChartMogul (MRR, NRR), ChurnZero (health scores and playbooks, login/usage proxies), and cancel cohorts tell
+            you revenue health, but they do not know CPSO, retry loops, HITL takeover, or which capability to throttle.</p>
+        </div>
+      </div>
+
+      <p class="gap-punch">churnOS is that missing meeting: the join plus a
+        <code style="font-family: var(--mono); font-size: 15px;">GrowthDecisionRecord</code>
+        (verdict, $ cost of leaving live, YAML rule, override). Prefer OTel-compatible exports when you can, so the
+        ingest path stays framework-agnostic instead of locking to one vendor’s dump format.</p>
+
+      <div class="work-principles">
+        <div class="principle">
+          <span class="join-col-title">Traces</span>
+          <p class="join-col-body">LangSmith · Langfuse · OTel GenAI<br>spans · tokens · evals</p>
+        </div>
+        <div class="principle">
+          <span class="join-col-title">churnOS</span>
+          <p class="join-col-body">Account→Run→Outcome→Sub<br><code style="font-family: var(--mono); font-size: 13px;">GrowthDecisionRecord</code><br>ship · throttle · kill</p>
+        </div>
+        <div class="principle">
+          <span class="join-col-title">Revenue</span>
+          <p class="join-col-body">ChartMogul · ChurnZero · Stripe/MRR<br>cancel · NRR</p>
+        </div>
+      </div>
+
+      <div class="persona-grid">
+        <div class="persona-card">
+          <div class="persona-role">The green ChartMogul account</div>
+          <p class="persona-pain">The account is paid with 92% LangSmith success, yet never hits a verified outcome in 14
+            days (<code style="font-family: var(--mono); font-size: 14px;">tourist</code> /
+            <code style="font-family: var(--mono); font-size: 14px;">activation_failure</code>). The revenue tool sees a
+            customer and the trace tool sees activity, but neither flags activation failure.</p>
+        </div>
+        <div class="persona-card">
+          <div class="persona-role">The expanding account that loses money</div>
+          <p class="persona-pain">ChartMogul shows expansion while one capability spikes tokens
+            (<code style="font-family: var(--mono); font-size: 14px;">margin_leakage</code> /
+            <code style="font-family: var(--mono); font-size: 14px;">run_cost_blowout</code>), so the board celebrates
+            NRR while ops should throttle.</p>
+        </div>
+        <div class="persona-card">
+          <div class="persona-role">The Monday meeting</div>
+          <p class="persona-pain">A Slack trace link plus a ChurnZero red score leaves you with no shared object, whereas
+            churnOS gives you one GDR, a throttle call, the YAML cited, and a flywheel outcome 14 days later.</p>
+        </div>
+      </div>
+
+      <div class="table-container" style="margin-top: 24px; margin-bottom: 16px;">
+        <table class="outcome-table">
+          <thead>
+            <tr>
+              <th>Challenge</th>
+              <th>Traces</th>
+              <th>Revenue / CS</th>
+              <th>churnOS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-metric">Cost / margin</td>
+              <td class="td-before">Cost per span; no ARPU join</td>
+              <td class="td-before">MRR fine while serving cost explodes</td>
+              <td class="td-after">CPSO vs ARPU; throttle uneconomic capabilities</td>
+            </tr>
+            <tr>
+              <td class="td-metric">Visibility</td>
+              <td class="td-before">“What did this trace cost?”</td>
+              <td class="td-before">“What is NRR?”</td>
+              <td class="td-after">Unattributed spend; cost heatmap by step × cohort</td>
+            </tr>
+            <tr>
+              <td class="td-metric">Activation</td>
+              <td class="td-before">Run success ≠ first win</td>
+              <td class="td-before">Paying customer still in “trial”</td>
+              <td class="td-after">TTFV; paying-but-dormant; tourist GDRs</td>
+            </tr>
+            <tr>
+              <td class="td-metric">Switching costs</td>
+              <td class="td-before">Tool-call graph, not rip-out risk</td>
+              <td class="td-before">Churn reason unknown / competitor</td>
+              <td class="td-after">Connector blast radius</td>
+            </tr>
+            <tr>
+              <td class="td-metric">Trust / reliability</td>
+              <td class="td-before">Evals on traces</td>
+              <td class="td-before">Health score drops after the fact</td>
+              <td class="td-after">HITL trend; trust_break → rollback</td>
+            </tr>
+            <tr>
+              <td class="td-metric">Opaque success</td>
+              <td class="td-before">Completed trace ≠ trusted SOP</td>
+              <td class="td-before">Login/usage health</td>
+              <td class="td-after">Verified outcome rate; flywheel write-back</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="honesty-chip">
+        <span class="honesty-chip-kicker">Synthetic teaching model</span>
+        <span class="honesty-chip-body">The warehouse scaffolds the join, and economics use synthetic runs and seat priors
+          today. When you have files, Data Connect overlays OTel GenAI JSONL, Langfuse exports, or CSVs into the same
+          Workspace schema (metadata only: prompt bodies are scrubbed), with no live LangSmith or ChartMogul connector
+          in this demo.</span>
+      </div>
+
+      <details class="faq-details">
+        <summary>Common questions</summary>
+        <p class="faq-item"><strong>Can’t I join this in Looker/dbt?</strong> You can SQL the join, but churnOS’s IP is the
+          exception taxonomy, YAML policy, and auditable decision record.</p>
+        <p class="faq-item"><strong>Is this observability?</strong> No: keep LangSmith or your OTel pipeline for traces,
+          while churnOS consumes trace-shaped facts and emits decisions.</p>
+        <p class="faq-item"><strong>Do I need OpenTelemetry?</strong> Prefer OTel GenAI attributes when you can (tokens,
+          model, agent id), and Langfuse export also works; full nested OTLP protobuf JSON is not the path today.</p>
+        <p class="faq-item"><strong>Do you replace my stack?</strong> No: ingest later via Data Connect, and decide now on
+          the teaching model.</p>
+      </details>
     </section>
 
     <section class="features-section">
-      <span class="kicker">What is in the repo</span>
-      <h2>START → DECIDE → LEARN</h2>
-      <p class="section-intro">Synthetic teaching warehouse, not production telemetry. Clone and run locally.</p>
-      <div class="feature-grid">
+      <h2>Setup → The call → Price → Learn</h2>
+      <p class="section-intro">The warehouse is synthetic by default, and Data Connect shows the path to real exports
+        (OTel GenAI JSONL, Langfuse, CSV, Vision) without claiming live connectors.</p>
+      <div class="feature-grid-5">
         <div class="feature-col">
-          <span class="feature-kicker">START</span>
+          <span class="feature-kicker">Setup</span>
           <ul class="feature-list">
-            <li>Product Profile presets (assistant-heavy, CRM workspace, ops mission)</li>
-            <li>Synthetic warehouse generator (seats, runs, approvals, connectors)</li>
-            <li>Reproducible seeds for demos and tests</li>
-            <li>Profile switches ontology vertical and synthetic priors</li>
+            <li>Product Profile (presets switch ontology and priors)</li>
+            <li>Data Connect: OTel GenAI JSONL (prompts scrubbed), Langfuse, CSV, Vision</li>
+            <li>Outcome Definition (verified success, not login)</li>
           </ul>
         </div>
         <div class="feature-col">
-          <span class="feature-kicker">DECIDE</span>
+          <span class="feature-kicker">The call</span>
           <ul class="feature-list">
-            <li>Capability Risk Radar (account + capability decisions, health score, tornado)</li>
-            <li>Activation &amp; Habit, Trust &amp; Approval, Run Economics, Connector Blast Radius</li>
-            <li>Version Compare for agent version regressions</li>
-            <li>Override decisions with audit trail and JSONL persistence</li>
-            <li>Sits on top of traces + billing; does not ingest production yet</li>
+            <li>Version Gate, Decision Inbox, Radar</li>
+            <li>Activation, Trust, Connectors, Subgraph, Version Compare</li>
+            <li>Marketplace Radar and Clinical Radar on matching presets</li>
           </ul>
         </div>
         <div class="feature-col">
-          <span class="feature-kicker">LEARN</span>
+          <span class="feature-kicker">Price</span>
           <ul class="feature-list">
-            <li>Experiments and Agentic Flags (CPSO, TTFV, HITL under synthetic treatments)</li>
-            <li>Outcome Flywheel (retention write-back on the same record)</li>
+            <li>Run Economics: CPSO, WTP caps, power-user margin leakage (<a href="#cpso">defs</a>)</li>
+            <li>Math Lab · Packaging (demand curve teaching)</li>
+          </ul>
+        </div>
+        <div class="feature-col">
+          <span class="feature-kicker">Learn</span>
+          <ul class="feature-list">
+            <li>Executive Summary, Experiments, Agentic Flags</li>
+            <li>Outcome Flywheel, Math Labs (binomial, power, CLV, drift)</li>
+          </ul>
+        </div>
+        <div class="feature-col">
+          <span class="feature-kicker">Config</span>
+          <ul class="feature-list">
+            <li>Integrations</li>
             <li>Semantics Console, Taxonomy Browser, Record Inspector</li>
-            <li>Legacy analytics archive (retention, unit economics, CRO, marketplace)</li>
+            <li>Legacy analytics archive (reference only)</li>
           </ul>
         </div>
       </div>
     </section>
-
-    <section class="who-section">
-      <span class="kicker">Who this is for</span>
-      <h2>Builders shipping agent capabilities every week</h2>
-      <div class="persona-grid">
-        <div class="persona-card">
-          <div class="persona-role">Shipping new capabilities weekly</div>
-          <p class="persona-pain">Run success rates look fine, but nothing tells you which capability is quietly hurting
-            retention, or which one to kill. LangSmith success rate will not rank the kill.</p>
-        </div>
-        <div class="persona-card">
-          <div class="persona-role">Owning retention for agent seats</div>
-          <p class="persona-pain">Trust incidents and approval fatigue pile up. You can't prioritize which problems to
-            fix first without a ranked list.</p>
-        </div>
-        <div class="persona-card">
-          <div class="persona-role">Watching inference burn climb</div>
-          <p class="persona-pain">Long reasoning loops eat margin. You see aggregate token spend but not which
-            capabilities are uneconomic per seat.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="what-if-section">
-      <span class="kicker">What if</span>
-      <h2>What if your weekly agent review looked like this?</h2>
-      <p class="section-intro">Agentic products fail on verified outcomes, cost per successful outcome, and trust after
-        multi-step runs, not another trace explorer.</p>
-      <div class="work-principles">
-        <div class="principle">
-          <span class="principle-num">What if</span>
-          <div class="principle-title">Paying looked healthy, but nobody got a first win?</div>
-          <p class="principle-desc">Revenue metrics stay green while accounts never hit a verified agent outcome. The
-            “AI churn wave” is often <strong>activation failure</strong>, not classic feature adoption.</p>
-        </div>
-        <div class="principle">
-          <span class="principle-num">What if</span>
-          <div class="principle-title">One intent burned a dozen metered steps?</div>
-          <p class="principle-desc"><strong>CPSO</strong> and retry amplification show when “success” is margin-negative,
-            especially for power users under flat pricing.</p>
-        </div>
-        <div class="principle">
-          <span class="principle-num">What if</span>
-          <div class="principle-title">The agent “worked” until humans took over?</div>
-          <p class="principle-desc">Rising human-in-the-loop, dismissals, and scary side effects erase trust faster than
-            usage dashboards admit.</p>
-        </div>
-      </div>
-    </section>
-
-    <div class="narrative">
-      <div>
-        <h2>The problem</h2>
-        <p>You ship agent capabilities from traces and run logs, but traces don't tell you which ones to kill. Success
-          rates hide retention harm until seats churn. LangSmith traces and ChartMogul NRR live in different tabs; neither
-          says which capability to kill this week.</p>
-        <p>When you throttle a capability, nothing writes back to retention. You never learn if the call helped.</p>
-      </div>
-      <div>
-        <h2>The solution</h2>
-        <p>churnOS emits auditable <code style="font-family: var(--mono); font-size: 15px;">GrowthDecisionRecord</code>s:
-          ranked accounts and capabilities with dollar impact, YAML-governed verdicts, and an outcome flywheel that closes
-          the loop.</p>
-        <p>Override when you disagree. Write back retention impact; even in synthetic mode, you see how decisions
-          connect to churn.</p>
-      </div>
-    </div>
 
     <section class="ontology-section">
-      <span class="kicker">Ontology as IP</span>
-      <h2>Machine-readable policy, not hardcoded heuristics</h2>
+      <h2>Machine-readable policy instead of hardcoded heuristics</h2>
       <div class="ontology-card">
-        <p class="ontology-punch">Taxonomy → semantics → schema → record. Change verdict rules in YAML; the Radar
-          reclassifies without a code deploy.</p>
+        <p class="ontology-punch">Taxonomy → semantics → schema → record.<br>
+          Change the verdict rules in YAML and the Radar reclassifies without a code deploy.</p>
         <p class="ontology-detail">The <code>ontology/</code> package defines exception categories, vertical-specific
           <code>semantics.yaml</code> action maps, and JSON Schema contracts for
-          <code>GrowthDecisionRecord</code>. Explore it on
-          <a href="https://github.com/b-lavania/churnOS/tree/main/ontology" target="_blank" rel="noopener">GitHub →
-            ontology/</a>.</p>
+          <code>GrowthDecisionRecord</code>. See
+          <a href="https://github.com/b-lavania/churnOS/tree/main/ontology" target="_blank" rel="noopener">ontology/</a>
+          and
+          <a href="https://github.com/b-lavania/churnOS/blob/main/docs/contracts.md" target="_blank"
+            rel="noopener">docs/contracts.md</a>.</p>
       </div>
-    </section>
-
-    <section class="table-container">
-      <h2>Before → After</h2>
-      <p class="section-intro">The shift isn't more dashboards; it's a weekly decision ritual with dollar impact and
-        an audit trail.</p>
-      <table class="outcome-table">
-        <thead>
-          <tr>
-            <th>Area</th>
-            <th>Before</th>
-            <th>After</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="td-metric">Weekly review</td>
-            <td class="td-before">Run success rate dashboards</td>
-            <td class="td-after">Ranked ship / throttle / kill list</td>
-          </tr>
-          <tr>
-            <td class="td-metric">Harm signal</td>
-            <td class="td-before">Anecdotal support tickets</td>
-            <td class="td-after">Dollar impact per capability</td>
-          </tr>
-          <tr>
-            <td class="td-metric">Policy</td>
-            <td class="td-before">Hardcoded Python heuristics</td>
-            <td class="td-after">YAML-governed verdicts &amp; actions</td>
-          </tr>
-          <tr>
-            <td class="td-metric">Audit trail</td>
-            <td class="td-before">Slack threads &amp; spreadsheets</td>
-            <td class="td-after">Saved decision records you can revisit</td>
-          </tr>
-          <tr>
-            <td class="td-metric">Account risk</td>
-            <td class="td-before">CSM spreadsheets and gut feel</td>
-            <td class="td-after">Ranked account decisions with $ impact</td>
-          </tr>
-          <tr>
-            <td class="td-metric">Retention loop</td>
-            <td class="td-before">Decisions never revisit churn</td>
-            <td class="td-after">Outcome flywheel writes back (demo)</td>
-          </tr>
-          <tr>
-            <td class="td-metric">Observability</td>
-            <td class="td-before">LangSmith / Langfuse trace URLs</td>
-            <td class="td-after">Ranked GDRs on the same week</td>
-          </tr>
-          <tr>
-            <td class="td-metric">Retention</td>
-            <td class="td-before">ChartMogul NRR / ChurnZero health</td>
-            <td class="td-after">Agent-native reason codes (<code style="font-family: var(--mono); font-size: 14px;">tourist</code>, <code style="font-family: var(--mono); font-size: 14px;">value_failure</code>, <code style="font-family: var(--mono); font-size: 14px;">price</code>)</td>
-          </tr>
-          <tr>
-            <td class="td-metric">Economics</td>
-            <td class="td-before">Token bill vs MRR in different tabs</td>
-            <td class="td-after">CPSO on the decision card</td>
-          </tr>
-        </tbody>
-      </table>
     </section>
 
     <footer class="footer-contact">
-      <div class="footer-contact-name">Bob Lavania</div>
-      <div class="footer-contact-role">Product &amp; AI Engineering</div>
-      <p class="footer-contact-desc">churnOS is an open-source portfolio project: a governed decision OS for agentic
-        products.</p>
-      <div class="footer-contact-links">
-        <a href="https://github.com/b-lavania/churnOS" class="btn-cta" target="_blank" rel="noopener">View on GitHub
-          →</a>
-        <a href="https://blavania.netlify.app/" class="btn-cta-secondary" target="_blank" rel="noopener">Portfolio</a>
-        <a href="https://linkedin.com/in/blavania" class="btn-cta-secondary" target="_blank" rel="noopener">LinkedIn</a>
+      <div class="footer-contact-identity">
+        <div class="footer-contact-name">Bob Lavania</div>
+        <div class="footer-contact-role">Product &amp; AI Engineering</div>
+        <p class="footer-contact-desc">Agentic economics and weekly decisions for task-sold agents.</p>
       </div>
-      <p class="install-hint">pip install -r requirements.txt &amp;&amp; streamlit run app.py</p>
+      <div class="footer-contact-actions">
+        <div class="footer-contact-links">
+          <a href="https://github.com/b-lavania/churnOS" class="btn-cta" target="_blank" rel="noopener">View on GitHub
+            →</a>
+          <a href="https://blavania.com/" class="btn-cta-secondary" target="_blank" rel="noopener">Portfolio</a>
+          <a href="https://linkedin.com/in/blavania" class="btn-cta-secondary" target="_blank"
+            rel="noopener">LinkedIn</a>
+        </div>
+        <p class="install-hint">pip install -r requirements.txt &amp;&amp; streamlit run app.py</p>
+      </div>
     </footer>
   </main>
 </body>
