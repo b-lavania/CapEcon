@@ -208,56 +208,102 @@
       border-bottom: 2px solid var(--rule);
     }
 
-    .gap-section .narrative {
-      margin-bottom: 24px;
-      padding-bottom: 0;
-      border-bottom: none;
+    .join-board {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 4px;
     }
 
-    .gap-punch {
-      font-size: 17px;
-      color: var(--ink-mid);
-      line-height: 1.55;
-      max-width: 760px;
-      margin: 20px 0 12px;
+    .join-board .principle {
+      padding: 14px 12px;
+      min-width: 0;
+      box-shadow: var(--shadow-sm);
     }
 
-    .gap-footnote {
-      font-size: 15px;
-      font-style: italic;
-      color: var(--ink-soft);
-      line-height: 1.55;
-      max-width: 760px;
-      margin-bottom: 24px;
+    .join-board .principle:nth-child(2) {
+      border-color: var(--teal-mid);
+      background: var(--teal-light);
     }
 
-    .join-caption {
-      font-size: 15px;
-      color: var(--ink-mid);
-      font-style: italic;
-      text-align: center;
-      margin-top: 12px;
-      margin-bottom: 24px;
-    }
-
-    .join-col-title {
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--teal);
+    .join-board .principle-title {
       margin-bottom: 10px;
-      display: block;
     }
 
     .join-col-body {
       font-size: 14px;
       color: var(--ink-mid);
       line-height: 1.55;
+      overflow-wrap: break-word;
     }
 
-    .join-col-body li {
+    .join-col-body p {
       margin-bottom: 6px;
+    }
+
+    .join-col-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .join-col-body strong {
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .join-miss {
+      color: var(--amber);
+    }
+
+    .join-miss strong {
+      color: var(--amber);
+    }
+
+    .join-board-note {
+      font-size: 15px;
+      color: var(--ink-mid);
+      line-height: 1.55;
+      margin-top: 12px;
+      margin-bottom: 24px;
+    }
+
+    .situation-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 8px;
+    }
+
+    .situation-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px 24px;
+      align-items: baseline;
+      padding: 14px 0;
+      border-top: 1px solid var(--rule);
+    }
+
+    .situation-row:last-child {
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .situation-case {
+      font-size: 15px;
+      color: var(--ink-mid);
+      line-height: 1.55;
+      min-width: 0;
+    }
+
+    .situation-call {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--teal);
+      line-height: 1.45;
+      text-align: right;
+    }
+
+    .situation-call code {
+      font-family: var(--mono);
+      font-size: 13px;
     }
 
     .faq-details {
@@ -355,56 +401,6 @@
 
     .what-if-section .principle-num {
       color: var(--teal);
-    }
-
-    .persona-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--block-gap);
-    }
-
-    .persona-card {
-      background: linear-gradient(to bottom, #ffffff, #fcfcfb);
-      border: 2px solid var(--rule);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow-md);
-    }
-
-    .persona-role {
-      font-weight: 700;
-      font-size: 16px;
-      color: var(--ink);
-      margin-bottom: 12px;
-      line-height: 1.3;
-    }
-
-    .persona-pain {
-      font-size: 15px;
-      color: var(--ink-mid);
-      line-height: 1.55;
-    }
-
-    .narrative {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
-      margin-bottom: var(--section-gap);
-      padding-bottom: var(--section-pad);
-      border-bottom: 2px solid var(--rule);
-    }
-
-    .narrative h2 {
-      border-bottom: 1px solid var(--rule);
-      padding-bottom: 16px;
-      margin-bottom: 32px;
-    }
-
-    .narrative p {
-      color: var(--ink-mid);
-      font-size: 17px;
-      line-height: 1.6;
-      margin-bottom: 16px;
     }
 
     .ontology-section {
@@ -930,20 +926,22 @@
       letter-spacing: 0.04em;
     }
 
-    .exec-strip {
+    .metric-strip {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
       flex: 1;
+      min-width: 0;
     }
 
-    .exec-cell {
+    .metric-cell {
       padding: 12px 14px;
       background: var(--page);
       border: 1px solid var(--rule);
+      min-width: 0;
     }
 
-    .exec-cell-label {
+    .metric-cell-label {
       font-family: var(--mono);
       font-size: 11px;
       letter-spacing: 0.06em;
@@ -952,17 +950,54 @@
       margin-bottom: 6px;
     }
 
-    .exec-cell-value {
+    .metric-cell-value {
       font-size: 18px;
       font-weight: 700;
       color: var(--ink);
       line-height: 1.2;
     }
 
-    .exec-cell-delta {
-      font-size: 13px;
+    .verdict-legend {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .verdict-legend-item {
+      font-size: 14px;
+      color: var(--ink-mid);
+      line-height: 1.45;
+    }
+
+    .verdict-legend-item strong {
+      display: block;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .verdict-legend-item .verdict--leaking {
       color: var(--amber);
-      margin-top: 2px;
+    }
+
+    .verdict-legend-item .verdict--destructive {
+      color: #a32a2a;
+    }
+
+    .verdict-legend-item .verdict--uneconomic {
+      color: var(--ink);
+    }
+
+    .verdict-legend-item .verdict--healthy {
+      color: var(--teal);
+    }
+
+    .verdict--uneconomic {
+      background: #f4f1f0;
+      color: var(--ink);
     }
 
     .tab-radar input[type="radio"] {
@@ -1009,50 +1044,6 @@
     #tab-accounts:checked ~ .panel-accounts,
     #tab-caps:checked ~ .panel-caps {
       display: block;
-    }
-
-    .panel-heading {
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      margin-bottom: 12px;
-    }
-
-    .risk-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 24px;
-      font-size: 13px;
-    }
-
-    .risk-table th {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-      text-align: left;
-      padding: 8px 10px;
-      border-bottom: 2px solid var(--ink);
-      background: var(--page);
-    }
-
-    .risk-table td {
-      padding: 10px;
-      border-bottom: 1px solid var(--rule);
-      color: var(--ink-mid);
-    }
-
-    .risk-table td:first-child {
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .risk-table .risk-high {
-      color: var(--amber);
-      font-weight: 600;
     }
 
     .tornado-chart {
@@ -1272,8 +1263,6 @@
         padding: 32px 20px;
       }
 
-      .persona-grid,
-      .narrative,
       .work-principles,
       .feature-grid,
       .feature-grid-5,
@@ -1296,14 +1285,44 @@
         align-items: stretch;
       }
 
+      .join-board {
+        gap: 8px;
+      }
+
+      .join-board .principle {
+        padding: 10px 8px;
+      }
+
+      .join-board .principle-title {
+        font-size: 14px;
+      }
+
+      .join-board .join-col-body {
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .situation-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .situation-call {
+        text-align: left;
+      }
+
       .health-row-compact {
         flex-direction: column;
         align-items: flex-start;
       }
 
-      .exec-strip {
-        grid-template-columns: 1fr;
+      .metric-strip {
+        grid-template-columns: repeat(2, 1fr);
         width: 100%;
+      }
+
+      .verdict-legend {
+        grid-template-columns: 1fr 1fr;
       }
 
       .tab-radar-nav {
@@ -1319,15 +1338,6 @@
         grid-template-columns: 100px 1fr 60px;
         gap: 8px;
       }
-
-      .risk-table {
-        font-size: 12px;
-      }
-
-      .risk-table th,
-      .risk-table td {
-        padding: 8px 6px;
-      }
     }
   </style>
 </head>
@@ -1340,7 +1350,8 @@
       <h1>churn<em>OS</em></h1>
       <p class="subhead">Task-sold agents (quotes, approvals, verified runs) need <strong>cost per verified
           outcome</strong>, not seat funnels and login health scores, and churnOS models that economics so you can turn
-        it into weekly <strong>ship / throttle / kill</strong> decisions.</p>
+        it into weekly <strong>ship / throttle / kill</strong> decisions on accounts and capabilities, ranked by cost of
+        leaving them live.</p>
       <p class="subhead-secondary">This is an open-source teaching repo with a synthetic warehouse plus optional Data
         Connect overlays, so you can clone it and run locally.</p>
       <a href="https://github.com/b-lavania/churnOS" class="btn btn-primary hero-cta" target="_blank"
@@ -1475,19 +1486,22 @@
             </div>
             <div class="health-gauge-label">Agentic health</div>
           </div>
-          <div class="exec-strip" aria-hidden="true">
-            <div class="exec-cell">
-              <div class="exec-cell-label">Active accounts</div>
-              <div class="exec-cell-value">24</div>
+          <div class="metric-strip" aria-hidden="true">
+            <div class="metric-cell">
+              <div class="metric-cell-label">Health score</div>
+              <div class="metric-cell-value">62 (yellow)</div>
             </div>
-            <div class="exec-cell">
-              <div class="exec-cell-label">At-risk accounts</div>
-              <div class="exec-cell-value">8</div>
-              <div class="exec-cell-delta">33% of base</div>
+            <div class="metric-cell">
+              <div class="metric-cell-label">CPSO</div>
+              <div class="metric-cell-value">$0.42</div>
             </div>
-            <div class="exec-cell">
-              <div class="exec-cell-label">CPSO trend</div>
-              <div class="exec-cell-value">$0.42</div>
+            <div class="metric-cell">
+              <div class="metric-cell-label">TTFV</div>
+              <div class="metric-cell-value">4.2d</div>
+            </div>
+            <div class="metric-cell">
+              <div class="metric-cell-label">Unattributed</div>
+              <div class="metric-cell-value">18%</div>
             </div>
           </div>
         </div>
@@ -1501,53 +1515,34 @@
           </div>
 
           <div class="tab-radar-panel panel-accounts">
-            <div class="panel-heading">At-risk account list</div>
-            <table class="risk-table" aria-hidden="true">
-              <thead>
-                <tr>
-                  <th>Account</th>
-                  <th>Tier</th>
-                  <th>Risk</th>
-                  <th>Primary signal</th>
-                  <th>Recommended</th>
-                  <th>Cost live</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>acme_west</td>
-                  <td>enterprise</td>
-                  <td class="risk-high">0.84</td>
-                  <td>habit_collapse</td>
-                  <td>throttle</td>
-                  <td>$84,200</td>
-                </tr>
-                <tr>
-                  <td>globex_ops</td>
-                  <td>growth</td>
-                  <td class="risk-high">0.71</td>
-                  <td>activation_leak</td>
-                  <td>throttle</td>
-                  <td>$61,500</td>
-                </tr>
-                <tr>
-                  <td>initech_ai</td>
-                  <td>growth</td>
-                  <td class="risk-high">0.58</td>
-                  <td>approval_fatigue</td>
-                  <td>hold</td>
-                  <td>$44,800</td>
-                </tr>
-                <tr>
-                  <td>umbra_corp</td>
-                  <td>starter</td>
-                  <td>0.42</td>
-                  <td>run_cost_blowout</td>
-                  <td>throttle</td>
-                  <td>$31,200</td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="tornado-chart" aria-hidden="true">
+              <div class="tornado-row">
+                <span class="tornado-label">ACC · acme_west</span>
+                <div class="tornado-bar-track"><div class="tornado-bar" style="width: 100%"></div></div>
+                <span class="tornado-cost">$84,200</span>
+              </div>
+              <div class="tornado-row">
+                <span class="tornado-label">ACC · globex_ops</span>
+                <div class="tornado-bar-track"><div class="tornado-bar" style="width: 73%"></div></div>
+                <span class="tornado-cost">$61,500</span>
+              </div>
+              <div class="tornado-row">
+                <span class="tornado-label">ACC · initech_ai</span>
+                <div class="tornado-bar-track"><div class="tornado-bar" style="width: 53%"></div></div>
+                <span class="tornado-cost">$44,800</span>
+              </div>
+              <div class="tornado-row">
+                <span class="tornado-label">ACC · umbra_corp</span>
+                <div class="tornado-bar-track"><div class="tornado-bar" style="width: 37%"></div></div>
+                <span class="tornado-cost">$31,200</span>
+              </div>
+              <div class="tornado-row">
+                <span class="tornado-label">ACC · wayne_labs</span>
+                <div class="tornado-bar-track"><div class="tornado-bar" style="width: 22%"></div></div>
+                <span class="tornado-cost">$18,900</span>
+              </div>
+              <div class="tornado-axis-label">Cost of leaving live (USD)</div>
+            </div>
             <article class="decision-card" aria-hidden="true">
               <div class="verdict verdict--leaking">Account · Leaking</div>
               <div class="cap">acme_west</div>
@@ -1590,6 +1585,11 @@
                 <div class="tornado-bar-track"><div class="tornado-bar" style="width: 40%"></div></div>
                 <span class="tornado-cost">$19,400</span>
               </div>
+              <div class="tornado-row">
+                <span class="tornado-label">CAP · slack_digest</span>
+                <div class="tornado-bar-track"><div class="tornado-bar" style="width: 27%"></div></div>
+                <span class="tornado-cost">$12,800</span>
+              </div>
               <div class="tornado-axis-label">Cost of leaving live (USD)</div>
             </div>
             <article class="decision-card" aria-hidden="true">
@@ -1620,6 +1620,25 @@
             production telemetry).</span>
         </div>
       </div>
+
+      <div class="verdict-legend" aria-label="What the labels mean">
+        <div class="verdict-legend-item">
+          <strong class="verdict--leaking">Leaking</strong>
+          Activation or habit unfinished for many seats.
+        </div>
+        <div class="verdict-legend-item">
+          <strong class="verdict--destructive">Destructive</strong>
+          Correlates with churn; throttle or rollback.
+        </div>
+        <div class="verdict-legend-item">
+          <strong class="verdict--uneconomic">Uneconomic</strong>
+          Margin-negative even if UX looks fine.
+        </div>
+        <div class="verdict-legend-item">
+          <strong class="verdict--healthy">Healthy</strong>
+          Safe to keep shipping.
+        </div>
+      </div>
     </section>
 
     <section class="gap-section" id="gap">
@@ -1627,64 +1646,50 @@
       <p class="section-intro">Keep LangSmith for debugging, ChartMogul for board NRR. However, neither emits a ranked
         ship / throttle / kill object on the join Account → Run → Outcome → Subscription.</p>
 
-      <div class="narrative">
-        <div>
-          <h2>Traces</h2>
-          <p>LangSmith, Langfuse, and Braintrust give you spans, token cost, eval scores, latency, and retries, and
-            Data Connect can also ingest OpenTelemetry GenAI-style JSONL (token and model attributes, prompts scrubbed).
-            None of those tools know if the paying account churned, or whether a “successful” run was a verified business
-            outcome.</p>
+      <div class="join-board">
+        <div class="principle">
+          <div class="principle-title">Traces</div>
+          <div class="join-col-body">
+            <p>Tools: LangSmith, Langfuse, Braintrust, OTel GenAI JSONL (prompts scrubbed).</p>
+            <p><strong>Sees</strong> spans, tokens, evals, latency, retries.</p>
+            <p class="join-miss"><strong>Misses</strong> whether the paying account churned, and whether a successful run was a verified outcome.</p>
+          </div>
         </div>
-        <div>
-          <h2>Revenue / CS</h2>
-          <p>ChartMogul (MRR, NRR), ChurnZero (health scores and playbooks, login/usage proxies), and cancel cohorts tell
-            you revenue health, but they do not know CPSO, retry loops, HITL takeover, or which capability to throttle.</p>
+        <div class="principle">
+          <div class="principle-title">churnOS</div>
+          <div class="join-col-body">
+            <p><strong>Join</strong> Account, Run, Outcome, Subscription.</p>
+            <p><strong>Record</strong> verdict, cost of leaving live, YAML rule, override.</p>
+            <p><strong>Call</strong> ship, throttle, kill.</p>
+          </div>
+        </div>
+        <div class="principle">
+          <div class="principle-title">Revenue / CS</div>
+          <div class="join-col-body">
+            <p>Tools: ChartMogul, ChurnZero, Stripe.</p>
+            <p><strong>Sees</strong> MRR, NRR, health scores, cancel cohorts.</p>
+            <p class="join-miss"><strong>Misses</strong> CPSO, retry loops, HITL takeover, which capability to throttle.</p>
+          </div>
+        </div>
+      </div>
+      <p class="join-board-note">Prefer OTel-compatible exports so ingest stays framework-agnostic.</p>
+
+      <div class="situation-rows">
+        <div class="situation-row">
+          <p class="situation-case">Paid ChartMogul account with 92% LangSmith success and no verified outcome in 14 days.</p>
+          <p class="situation-call">Call: <code>tourist</code> / <code>activation_failure</code></p>
+        </div>
+        <div class="situation-row">
+          <p class="situation-case">NRR is up while one capability spikes tokens.</p>
+          <p class="situation-call">Call: <code>margin_leakage</code> / <code>run_cost_blowout</code>, throttle</p>
+        </div>
+        <div class="situation-row">
+          <p class="situation-case">A Slack trace link plus a red health score, with no shared object.</p>
+          <p class="situation-call">Call: one GDR, the YAML cited, flywheel outcome 14 days later</p>
         </div>
       </div>
 
-      <p class="gap-punch">churnOS is that missing meeting: the join plus a
-        <code style="font-family: var(--mono); font-size: 15px;">GrowthDecisionRecord</code>
-        (verdict, $ cost of leaving live, YAML rule, override). Prefer OTel-compatible exports when you can, so the
-        ingest path stays framework-agnostic instead of locking to one vendor’s dump format.</p>
-
-      <div class="work-principles">
-        <div class="principle">
-          <span class="join-col-title">Traces</span>
-          <p class="join-col-body">LangSmith · Langfuse · OTel GenAI<br>spans · tokens · evals</p>
-        </div>
-        <div class="principle">
-          <span class="join-col-title">churnOS</span>
-          <p class="join-col-body">Account→Run→Outcome→Sub<br><code style="font-family: var(--mono); font-size: 13px;">GrowthDecisionRecord</code><br>ship · throttle · kill</p>
-        </div>
-        <div class="principle">
-          <span class="join-col-title">Revenue</span>
-          <p class="join-col-body">ChartMogul · ChurnZero · Stripe/MRR<br>cancel · NRR</p>
-        </div>
-      </div>
-
-      <div class="persona-grid">
-        <div class="persona-card">
-          <div class="persona-role">The green ChartMogul account</div>
-          <p class="persona-pain">The account is paid with 92% LangSmith success, yet never hits a verified outcome in 14
-            days (<code style="font-family: var(--mono); font-size: 14px;">tourist</code> /
-            <code style="font-family: var(--mono); font-size: 14px;">activation_failure</code>). The revenue tool sees a
-            customer and the trace tool sees activity, but neither flags activation failure.</p>
-        </div>
-        <div class="persona-card">
-          <div class="persona-role">The expanding account that loses money</div>
-          <p class="persona-pain">ChartMogul shows expansion while one capability spikes tokens
-            (<code style="font-family: var(--mono); font-size: 14px;">margin_leakage</code> /
-            <code style="font-family: var(--mono); font-size: 14px;">run_cost_blowout</code>), so the board celebrates
-            NRR while ops should throttle.</p>
-        </div>
-        <div class="persona-card">
-          <div class="persona-role">The Monday meeting</div>
-          <p class="persona-pain">A Slack trace link plus a ChurnZero red score leaves you with no shared object, whereas
-            churnOS gives you one GDR, a throttle call, the YAML cited, and a flywheel outcome 14 days later.</p>
-        </div>
-      </div>
-
-      <div class="table-container" style="margin-top: 24px; margin-bottom: 16px;">
+      <div class="table-container" style="margin-top: 8px; margin-bottom: 16px;">
         <table class="outcome-table">
           <thead>
             <tr>
@@ -1821,7 +1826,7 @@
       <div class="footer-contact-identity">
         <div class="footer-contact-name">Bob Lavania</div>
         <div class="footer-contact-role">Product &amp; AI Engineering</div>
-        <p class="footer-contact-desc">Agentic economics and weekly decisions for task-sold agents.</p>
+        <p class="footer-contact-desc">Agentic economics and weekly decisions for accounts and capabilities.</p>
       </div>
       <div class="footer-contact-actions">
         <div class="footer-contact-links">
