@@ -1,4 +1,4 @@
-"""Ontology registry and validation for agentic churnOS."""
+"""Ontology registry and validation for agentic CapEcon."""
 
 from __future__ import annotations
 
@@ -55,13 +55,13 @@ def validate_record(record: dict[str, Any], vertical: str) -> list[str]:
     schema = load_schema(vertical)
     store = {
         schema["$id"]: schema,
-        f"https://churnos.local/ontology/shared/exception_item.schema.json": json.loads(
+        f"https://capecon.local/ontology/shared/exception_item.schema.json": json.loads(
             (ONTOLOGY_ROOT / "shared" / "exception_item.schema.json").read_text()
         ),
-        f"https://churnos.local/ontology/shared/economics.schema.json": json.loads(
+        f"https://capecon.local/ontology/shared/economics.schema.json": json.loads(
             (ONTOLOGY_ROOT / "shared" / "economics.schema.json").read_text()
         ),
-        f"https://churnos.local/ontology/shared/decision.schema.json": json.loads(
+        f"https://capecon.local/ontology/shared/decision.schema.json": json.loads(
             (ONTOLOGY_ROOT / "shared" / "decision.schema.json").read_text()
         ),
     }

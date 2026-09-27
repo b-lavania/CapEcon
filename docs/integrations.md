@@ -7,7 +7,7 @@ I will not auto-act. Order of operations, on purpose:
 3. Open a rollback or "please turn the flag down" request in *their* system
 4. Only later, with policy and a human, write traffic weights or disable a capability
 
-| They have | What churnOS does |
+| They have | What CapEcon does |
 | --- | --- |
 | GitHub Actions / GitLab / Jenkins | `POST /version-gate` → pass / warn / fail |
 | LaunchDarkly / Split / Statsig | Recommend weights. They still own the flag. |

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://churnos.local/ontology/shared/decision.schema.json",
+  "$id": "https://capecon.local/ontology/shared/decision.schema.json",
   "title": "Decision",
   "type": "object",
   "properties": {

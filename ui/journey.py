@@ -93,7 +93,7 @@ JOURNEY_PAGES: dict[str, dict[str, Any]] = {
 
 def render_journey_header(page_key: str) -> Workspace | None:
     """Render breadcrumb + data contract; return workspace if loaded."""
-    spec = JOURNEY_PAGES.get(page_key, {"phase": "churnOS", "title": page_key, "related": []})
+    spec = JOURNEY_PAGES.get(page_key, {"phase": "CapEcon", "title": page_key, "related": []})
     phase = spec.get("phase", "")
     title = spec.get("title", page_key)
 

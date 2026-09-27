@@ -100,7 +100,7 @@ def test_compose_keeps_agent_floor_and_move_invoice_apart():
     assert agent["evidence"]["claim_type"] == "associational"
 
     assert validate_record(agent, "agent_runtime") == []
-    # Quote records are theta-shaped, not churnOS GDRs.
+    # Quote records are theta-shaped, not CapEcon GDRs.
     for quote in quotes:
         assert quote["vertical"] == "moving"
         assert quote["record_kind"] == "move_quote"

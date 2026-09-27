@@ -54,7 +54,7 @@ cfg["flag_vendor"] = st.selectbox(
     ["none", "launchdarkly", "split", "statsig"],
     index=["none", "launchdarkly", "split", "statsig"].index(cfg.get("flag_vendor", "none")),
 )
-st.caption("churnOS recommends traffic weights on Version Gate. The flag product remains source of truth.")
+st.caption("CapEcon recommends traffic weights on Version Gate. The flag product remains source of truth.")
 
 section_kicker("Owner map (no login)")
 st.json(

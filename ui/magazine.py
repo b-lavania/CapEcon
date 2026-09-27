@@ -1,4 +1,4 @@
-"""Magazine / editorial UI chrome for agentic churnOS."""
+"""Magazine / editorial UI chrome for agentic CapEcon."""
 
 from __future__ import annotations
 

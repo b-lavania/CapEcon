@@ -2,7 +2,7 @@
 Agentic unit economics — token/loop pricing + dual billing-model simulations.
 
 OSS toolkit: models the *builder's* product economics (subscription margin vs
-usage revenue), not churnOS licensing.
+usage revenue), not CapEcon licensing.
 """
 
 from __future__ import annotations

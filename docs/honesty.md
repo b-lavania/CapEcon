@@ -1,6 +1,6 @@
 # Honesty & limits (synthetic demo)
 
-churnOS is a **synthetic teaching environment** unless you overlay files on Data Connect. Numbers illustrate methodology and decision workflows; they are not production telemetry from a customer.
+CapEcon is a **synthetic teaching environment** unless you overlay files on Data Connect. Numbers illustrate methodology and decision workflows; they are not production telemetry from a customer.
 
 ## What is real vs simulated
 
@@ -40,6 +40,6 @@ For the full retention methodology, see [`methodology.md`](methodology.md).
 ## OpenMed v2.2 case study (`openmed_v22` preset)
 
 - Warehouse rows are **authored from public OpenMed 2.2 API contracts**, not vendor telemetry.
-- OpenMed is **not** claimed to have a churn problem; churnOS prices **review labor as COGS** on assistive clinical output.
+- OpenMed is **not** claimed to have a churn problem; CapEcon prices **review labor as COGS** on assistive clinical output.
 - GDRs and `clinical_runs` store **hashes, rates, counts, and USD** — never source clinical text or MRNs.
 - See [`case_studies/openmed_v2_2.md`](case_studies/openmed_v2_2.md).

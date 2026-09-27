@@ -1,12 +1,12 @@
 # Architecture (join, not a runtime)
 
-churnOS sits on the join: traces × verified outcomes × trust × cost-to-serve.
+CapEcon sits on the join: traces × verified outcomes × trust × cost-to-serve.
 It does not replace LangGraph, Langfuse, or Stripe.
 
-## What churnOS is (not a runtime)
+## What CapEcon is (not a runtime)
 
 ```
-  builder owns                          churnOS join
+  builder owns                          CapEcon join
   ┌──────────────┐                    ┌──────────────────┐
   │ LangGraph /  │  traces            │ warehouse        │
   │ Langfuse     │ ─────────────────► │ outcomes × cost  │

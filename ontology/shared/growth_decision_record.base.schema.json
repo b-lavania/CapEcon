@@ -1,7 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://churnos.local/ontology/shared/growth_decision_record.base.schema.json",
+  "$id": "https://capecon.local/ontology/shared/growth_decision_record.base.schema.json",
   "title": "GrowthDecisionRecord",
+  "description": "Version 2.0 - Added optional standard compliance fields (adp, opendone_receipt, opentrajectory_id). All proprietary features preserved.",
   "type": "object",
   "required": [
     "record_id",
@@ -68,6 +69,55 @@
         "churn_happened": { "type": "boolean" },
         "actual_run_cost_usd": { "type": "number" }
       }
+    },
+    "adp": {
+      "type": "object",
+      "description": "OPTIONAL ADP (Agent Decision Protocol) compliance metadata. Added in v2.0 for regulatory interoperability. NOT a replacement for CapEcon's triage system.",
+      "properties": {
+        "autonomy_level": {
+          "type": "string",
+          "enum": ["A1", "A2", "A3", "A4", "A5"],
+          "description": "ADP autonomy level (A1=no autonomy, A5=full autonomy)"
+        },
+        "decision_type": {
+          "type": "string",
+          "enum": ["operational", "strategic", "financial", "regulatory"],
+          "description": "ADP decision type classification"
+        },
+        "risk_level": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"],
+          "description": "ADP risk level classification"
+        },
+        "classification_code": {
+          "type": "string",
+          "description": "ADP classification code (e.g., operational-medium)"
+        },
+        "authorization": {
+          "type": "object",
+          "properties": {
+            "result": {
+              "type": "string",
+              "enum": ["auto_approved", "approval_required", "denied"]
+            },
+            "reason": { "type": "string" }
+          }
+        }
+      }
+    },
+    "opendone_receipt": {
+      "type": "object",
+      "description": "OPTIONAL OpenDone receipt for external verification. Added in v2.0 for interoperability. NOT a replacement for CapEcon's Outcome Definition Kit.",
+      "properties": {
+        "passed": { "type": "boolean" },
+        "criteriaResults": { "type": "array" },
+        "constraintResults": { "type": "array" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    },
+    "opentrajectory_id": {
+      "type": "string",
+      "description": "OPTIONAL OpenTrajectory export ID. Added in v2.0 for interoperability. NOT a replacement for CapEcon's internal classification."
     }
   }
 }

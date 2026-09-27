@@ -1,6 +1,6 @@
 # Why the repo is shaped this way
 
-I don't want churnOS to be an agent runtime. LangGraph, CrewAI, and a dozen others already run the loop. Langfuse / LangSmith already store traces. Stripe already invoices.
+I don't want CapEcon to be an agent runtime. LangGraph, CrewAI, and a dozen others already run the loop. Langfuse / LangSmith already store traces. Stripe already invoices.
 
 What's missing is the join: traces × verified outcomes × trust × what it cost to serve. From that join you should be able to answer, for a capability or a version, **ship, hold, throttle, roll back, or make a human look**. I will not let a correlation dress up as a cause. That's what `claim_type` is for.
 
@@ -34,4 +34,4 @@ The join and the claim types are in [contracts.md](contracts.md) and [honesty.md
 
 ## Demand-side honesty
 
-churnOS is strong on **supply-side** economics: floor per verified outcome, retention harm, Version Gate. It is weaker on **demand**: user willingness to pay, task value magnitude, and price elasticity. The value ledger (`economics.value_usd`, `surplus_usd`) and Packaging Lab are teaching surfaces — not conjoint or billing-system WTP discovery. Bring external research or experiments for demand science; use churnOS to avoid shipping below floor.
+CapEcon is strong on **supply-side** economics: floor per verified outcome, retention harm, Version Gate. It is weaker on **demand**: user willingness to pay, task value magnitude, and price elasticity. The value ledger (`economics.value_usd`, `surplus_usd`) and Packaging Lab are teaching surfaces — not conjoint or billing-system WTP discovery. Bring external research or experiments for demand science; use CapEcon to avoid shipping below floor.

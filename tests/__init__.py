@@ -1,1 +1,1 @@
-# Test package for churnOS CRO Analytics Enhancement
+# Test package for CapEcon CRO Analytics Enhancement

@@ -57,7 +57,7 @@ with col_a:
         st.rerun()
 with col_b:
     if otel_file is not None and st.button("Parse OTel upload"):
-        tmp = Path("/tmp/churnos_otel.jsonl")
+        tmp = Path("/tmp/capecon_otel.jsonl")
         tmp.write_bytes(otel_file.getvalue())
         tables = ingest_otel_export(tmp)
         uploaded["spans"] = tables["spans"]
@@ -68,7 +68,7 @@ with col_b:
         st.rerun()
 
 if langfuse_file is not None and st.button("Parse Langfuse export"):
-    tmp = Path("/tmp/churnos_langfuse.json")
+    tmp = Path("/tmp/capecon_langfuse.json")
     tmp.write_bytes(langfuse_file.getvalue())
     tables = ingest_langfuse_export(tmp)
     uploaded["spans"] = tables["spans"]
@@ -124,11 +124,11 @@ with v_load:
         st.rerun()
 with v_parse:
     if vision_run is not None and st.button("Parse Vision upload"):
-        tmp_run = Path("/tmp/churnos_vision_run.json")
+        tmp_run = Path("/tmp/capecon_vision_run.json")
         tmp_run.write_bytes(vision_run.getvalue())
         tmp_jobs = None
         if vision_jobs is not None:
-            tmp_jobs = Path("/tmp/churnos_vision_jobs.jsonl")
+            tmp_jobs = Path("/tmp/capecon_vision_jobs.jsonl")
             tmp_jobs.write_bytes(vision_jobs.getvalue())
         pack = ingest_vision_pack(tmp_run, tmp_jobs)
         uploaded["runs"] = pack["tables"]["runs"]
@@ -171,7 +171,7 @@ csv_specs = [
 for table, label in csv_specs:
     f = st.file_uploader(label, type=["csv"], key=f"csv_{table}")
     if f is not None:
-        tmp = Path(f"/tmp/churnos_{table}.csv")
+        tmp = Path(f"/tmp/capecon_{table}.csv")
         tmp.write_bytes(f.getvalue())
         try:
             uploaded[table] = ingest_csv_table(tmp, table)

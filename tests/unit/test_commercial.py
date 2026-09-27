@@ -57,7 +57,7 @@ def test_no_floor_is_unpriceable_not_within_policy():
 
 
 def test_floor_with_no_reference_price_is_unpriceable():
-    """A floor on its own proves nothing. churnOS must not claim it is fine."""
+    """A floor on its own proves nothing. CapEcon must not claim it is fine."""
     sig = resolve_price_signal({"pricing_mode": "product_sku", "floor_usd": 4.0})
     assert sig["price_signal"] == "unpriceable"
 

@@ -72,3 +72,32 @@ decision:
       recommended_action: hold
       requires_review: true
       rationale: "A2A consent or human gate required."
+
+# OPTIONAL: Standards export sections (ADDED IN v2.0 for interoperability)
+# These sections are used ONLY for exporting to external standards (Policy Cards, ADP)
+# They do NOT affect CapEcon's internal decision logic or proprietary features.
+
+policy_card_export:
+  enabled: false  # Set to true to enable Policy Card export
+  export_format: policy_card  # Output format for external tools
+  include_regulatory_crosswalk: true  # Include EU AI Act, NIST, ISO mappings
+
+regulatory_mapping:
+  # OPTIONAL: Crosswalk to regulatory frameworks (for Policy Card export)
+  # This does NOT change CapEcon's internal semantics or verdict logic
+  eu_ai_act:
+    category: "high_risk"  # Multi-agent orchestration is typically high-risk
+    risk_level: "high"
+  nist_ai_rmf:
+    category: "govern"
+    functions: ["govern", "measure", "manage"]
+  iso_42001:
+    category: "aims"
+    controls: ["risk_management", "coordination", "governance"]
+
+evidence_requirements:
+  # OPTIONAL: Evidence requirements for external standards validation
+  # This does NOT change CapEcon's internal evidence handling
+  min_verified_share: 0.40  # Placeholder - customize based on your orchestration requirements
+  requires_experiment_id: false  # Orchestration may not require experiments
+  evidence_types: ["simulated", "associational", "causal"]  # All evidence types allowed

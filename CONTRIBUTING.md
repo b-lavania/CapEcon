@@ -1,14 +1,14 @@
-# Contributing to churnOS
+# Contributing to CapEcon
 
-**Private collaborator access only.** Copyright (c) 2026 churnOS. All rights reserved. Not licensed for redistribution, public forks, or commercial use without permission.
+**Private collaborator access only.** Copyright (c) 2026 CapEcon. All rights reserved. Not licensed for redistribution, public forks, or commercial use without permission.
 
 ---
 
 ## Clone & run (first time)
 
 ```bash
-git clone https://github.com/b-lavania/churn-analysis.git churnOS
-cd churnOS
+git clone https://github.com/b-lavania/churn-analysis.git CapEcon
+cd CapEcon
 python3 -m venv .venv && source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt -r requirements-dev.txt
@@ -19,7 +19,7 @@ Then: **Product Profile** → pick `assistant_heavy` → **Generate workspace** 
 
 Optional HTTP surface (same library): `uvicorn service.app:app --port 8088`.
 
-> Remote repo is still named `churn-analysis` on GitHub; the product name is **churnOS**.
+> Remote repo is still named `churn-analysis` on GitHub; the product name is **CapEcon**.
 
 ---
 

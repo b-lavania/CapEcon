@@ -12,7 +12,7 @@ from analytics.version_gate import evaluate_from_counts
 from ontology.store import list_hooks, log_hook, read_records, upsert_record
 
 app = FastAPI(
-    title="churnOS control plane",
+    title="CapEcon control plane",
     description="Decision layer for enterprise agent operations. Metadata only — no prompt bodies.",
     version="0.1.0",
 )

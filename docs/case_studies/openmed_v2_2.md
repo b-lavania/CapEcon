@@ -1,6 +1,6 @@
 # OpenMed v2.2 case study
 
-churnOS preset: **`openmed_v22`** · vertical: **`clinical_runtime`** · catalog: [`data/case_studies/openmed_v2_2.yaml`](../../data/case_studies/openmed_v2_2.yaml)
+CapEcon preset: **`openmed_v22`** · vertical: **`clinical_runtime`** · catalog: [`data/case_studies/openmed_v2_2.yaml`](../../data/case_studies/openmed_v2_2.yaml)
 
 [OpenMed v2.2.0](https://github.com/maziyarpanahi/openmed/releases/tag/v2.2.0) is a local-first clinical SDK (de-identification, grounding, FHIR/OMOP, Maple/Compass). This case study does **not** install or call OpenMed. It authors a **synthetic warehouse** from the public API inventory so Clinical Radar can price **inference + review labor + expected harm** per capability.
 
@@ -38,7 +38,7 @@ A specialty medication access operator (benefit verification, prior auth, clinic
 ## Walkthrough
 
 ```bash
-cd churnOS
+cd CapEcon
 streamlit run app.py
 # Product Profile → OpenMed v2.2 → Generate workspace → Clinical Radar
 ```

@@ -1,4 +1,4 @@
-# churnOS Ontology
+# CapEcon Ontology
 
 Decision-grade analytics IP for agentic software systems.
 

@@ -58,7 +58,7 @@ for d in summary["top_decisions"]:
 
 section_kicker("Export")
 md = markdown_report(summary)
-st.download_button("Download markdown", md, file_name="churnos-weekly.md", mime="text/markdown")
+st.download_button("Download markdown", md, file_name="capecon-weekly.md", mime="text/markdown")
 st.caption("Print this page from the browser for PDF. Slack blocks below — paste into a webhook payload.")
 st.json(slack_blocks(summary))
 st.page_link("pages/19_Decision_Inbox.py", label="Triage in Decision Inbox")

@@ -1,4 +1,4 @@
-"""In-app explainers — how churnOS works and what numbers mean."""
+"""In-app explainers — how CapEcon works and what numbers mean."""
 
 from __future__ import annotations
 
@@ -280,7 +280,7 @@ OUTPUT_CONTRAST_ROWS: list[tuple[str, str, str]] = [
         "Which agent capability caused the health drop?",
     ),
     (
-        "churnOS",
+        "CapEcon",
         "`GrowthDecisionRecord`: verdict, action, `$` impact, exceptions",
         "(Demo: synthetic; production: needs your exports)",
     ),
@@ -298,17 +298,17 @@ TOOL_SPLIT_CAPTIONS: dict[str, str] = {
 COMPETITIVE_FAQ: list[tuple[str, str]] = [
     (
         "Can’t I join this in Looker/dbt?",
-        "You can SQL the join; churnOS’s IP is the **exception taxonomy**, **YAML policy**, "
+        "You can SQL the join; CapEcon’s IP is the **exception taxonomy**, **YAML policy**, "
         "and **auditable decision record**, not the warehouse.",
     ),
     (
         "Is this observability?",
-        "No. Use LangSmith for traces. churnOS consumes trace-shaped *facts* (runs, outcomes, cost) "
+        "No. Use LangSmith for traces. CapEcon consumes trace-shaped *facts* (runs, outcomes, cost) "
         "and emits *decisions*.",
     ),
     (
         "Is this a BI churn tool?",
-        "No. ChartMogul tells you churn happened; churnOS ranks **interventions** on capabilities "
+        "No. ChartMogul tells you churn happened; CapEcon ranks **interventions** on capabilities "
         "and accounts with playbook hints.",
     ),
     (
@@ -362,7 +362,7 @@ def surface_explainer(surface_key: str, *, expanded: bool = False) -> None:
 
 def how_it_works(*, expanded: bool = True) -> None:
     """Full product loop — primarily on Radar home."""
-    with st.expander("How churnOS works (read this first)", expanded=expanded):
+    with st.expander("How CapEcon works (read this first)", expanded=expanded):
         st.markdown(
             """
 **One loop**
@@ -453,7 +453,7 @@ The durable idea: ranked, dollar-weighted judgments with human override and outc
 
 
 def _pain_map_markdown() -> str:
-    header = "| Challenge | Traces (LangSmith / Langfuse) | Revenue (ChartMogul / ChurnZero) | churnOS alternative |\n"
+    header = "| Challenge | Traces (LangSmith / Langfuse) | Revenue (ChartMogul / ChurnZero) | CapEcon alternative |\n"
     header += "| --- | --- | --- | --- |\n"
     rows = "\n".join(
         f"| {a} | {b} | {c} | {d} |"
@@ -471,11 +471,11 @@ def _output_contrast_markdown() -> str:
 
 def tool_stack_explainer(*, expanded: bool = False) -> None:
     """Six-row pain map + output contrast — LangSmith/ChartMogul complement positioning."""
-    with st.expander("Where churnOS sits vs LangSmith / ChartMogul", expanded=expanded):
+    with st.expander("Where CapEcon sits vs LangSmith / ChartMogul", expanded=expanded):
         st.markdown(
             "**Traces** (LangSmith, Langfuse, Braintrust) tell you what the agent did. "
             "**Revenue / CS** (ChartMogul NRR, ChurnZero health scores) tell you that money moved. "
-            "churnOS is the weekly join: Account → Run → Outcome → Subscription → "
+            "CapEcon is the weekly join: Account → Run → Outcome → Subscription → "
             "`GrowthDecisionRecord` (ship / throttle / kill)."
         )
         section_kicker("Pain map")

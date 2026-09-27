@@ -66,7 +66,7 @@ def _default_commercial_action_map() -> dict[str, dict[str, Any]]:
     return {
         "unpriceable": {
             "commercial_action": None,
-            "rationale": "No floor or no reference price — churnOS will not make a commercial call.",
+            "rationale": "No floor or no reference price — CapEcon will not make a commercial call.",
         },
         "within_policy": {
             "commercial_action": None,

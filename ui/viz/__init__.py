@@ -1,4 +1,4 @@
-"""Shared visualization helpers for churnOS surfaces."""
+"""Shared visualization helpers for CapEcon surfaces."""
 
 from ui.viz.challenge_charts import (
     activation_funnel_revenue,

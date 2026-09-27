@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-2020-12/schema#",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "policy_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "rule_id": {"type": "string"},
+          "type": {"type": "string"},
+          "metric": {"type": "string"},
+          "condition": {"type": "string"},
+          "action": {"type": "string"},
+          "categories": {"type": "array"},
+          "verdict": {"type": "string"}
+        }
+      }
+    },
+    "regulatory_mapping": {
+      "type": "object",
+      "properties": {
+        "eu_ai_act": {
+          "type": "object",
+          "properties": {
+            "category": {"type": "string"},
+            "risk_level": {"type": "string"}
+          }
+        },
+        "nist_ai_rmf": {
+          "type": "object",
+          "properties": {
+            "category": {"type": "string"},
+            "functions": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        },
+        "iso_42001": {
+          "type": "object",
+          "properties": {
+            "category": {"type": "string"},
+            "controls": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "evidence_requirements": {
+      "type": "object",
+      "properties": {
+        "min_verified_share": {"type": "number"},
+        "requires_experiment_id": {"type": "boolean"},
+        "evidence_types": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    }
+  },
+  "required": ["policy_id", "name", "category"]
+}

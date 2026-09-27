@@ -1,6 +1,6 @@
-# churnOS Test Suite
+# CapEcon Test Suite
 
-This directory contains the test suite for churnOS (agentic decision analytics + legacy simulator modules).
+This directory contains the test suite for CapEcon (agentic decision analytics + legacy simulator modules).
 
 ## Directory Structure
 

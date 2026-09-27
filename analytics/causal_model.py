@@ -1,12 +1,12 @@
 """
-Causal Model Engine for churnOS.
+Causal Model Engine for CapEcon.
 ================================
 
 A parametric business model that propagates inputs through the full causal chain:
 
     Acquisition → Churn/Retention → Revenue → Unit Economics → Profitability
 
-Every page in churnOS reads from this model rather than computing in isolation.
+Every page in CapEcon reads from this model rather than computing in isolation.
 This ensures that changing churn on one page ripples into CLV, payback, and
 break-even everywhere.
 

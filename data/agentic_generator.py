@@ -1,5 +1,5 @@
 """
-Synthetic agentic warehouse generator for churnOS v2.
+Synthetic agentic warehouse generator for CapEcon v2.
 """
 
 from __future__ import annotations

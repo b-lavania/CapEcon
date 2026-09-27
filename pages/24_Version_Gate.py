@@ -86,7 +86,7 @@ if demand_line:
 
 if commercial.get("commercial_action"):
     st.warning(f"**{commercial['commercial_action']}** · owner `{commercial.get('commercial_owner_role', 'packaging')}` — {commercial.get('commercial_rationale', '')}")
-    st.caption("Commercial actions always require review — churnOS does not change a price book.")
+    st.caption("Commercial actions always require review — CapEcon does not change a price book.")
 else:
     st.caption(commercial_sentence(commercial))
 

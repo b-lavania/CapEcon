@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>churnOS: Agentic economics for task-sold agents</title>
+  <title>CapEcon: Capability economics for task-sold agents</title>
   <meta name="description"
     content="Task-sold agents need cost per verified outcome, not 2016 SaaS playbooks. Open-source teaching model for weekly ship, throttle, and kill decisions. Clone and run locally.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1347,14 +1347,14 @@
 
   <main id="main">
     <header>
-      <h1>churn<em>OS</em></h1>
+      <h1>Cap<em>econ</em></h1>
       <p class="subhead">Task-sold agents (quotes, approvals, verified runs) need <strong>cost per verified
-          outcome</strong>, not seat funnels and login health scores, and churnOS models that economics so you can turn
+          outcome</strong>, not seat funnels and login health scores, and CapEcon models that economics so you can turn
         it into weekly <strong>ship / throttle / kill</strong> decisions on accounts and capabilities, ranked by cost of
         leaving them live.</p>
       <p class="subhead-secondary">This is an open-source teaching repo with a synthetic warehouse plus optional Data
         Connect overlays, so you can clone it and run locally.</p>
-      <a href="https://github.com/b-lavania/churnOS" class="btn btn-primary hero-cta" target="_blank"
+      <a href="https://github.com/b-lavania/CapEcon" class="btn btn-primary hero-cta" target="_blank"
         rel="noopener">View on GitHub</a>
     </header>
 
@@ -1405,9 +1405,9 @@
       </div>
       <p class="dialect-note">Pricing dialect follows the preset (internal budget, product SKU, or marketplace take), and
         the schema plus contracts live in
-        <a href="https://github.com/b-lavania/churnOS/tree/main/ontology" target="_blank" rel="noopener">ontology/</a>
+        <a href="https://github.com/b-lavania/CapEcon/tree/main/ontology" target="_blank" rel="noopener">ontology/</a>
         and
-        <a href="https://github.com/b-lavania/churnOS/blob/main/docs/contracts.md" target="_blank"
+        <a href="https://github.com/b-lavania/CapEcon/blob/main/docs/contracts.md" target="_blank"
           rel="noopener">docs/contracts.md</a>.</p>
       <details class="glossary-details" id="cpso">
         <summary>What CPSO, WTP, and margin leakage mean</summary>
@@ -1429,7 +1429,7 @@
         <div class="glossary-item">
           <span class="glossary-term">WTP (willingness to pay)</span>
           An upper bound or cap next to the floor: what you can sensibly charge or budget for that outcome, often compared
-          to seat ARPU or SKU value. churnOS does not invent survey WTP from billing; in rigorous mode a data-derived cap
+          to seat ARPU or SKU value. CapEcon does not invent survey WTP from billing; in rigorous mode a data-derived cap
           can come from subscriptions or outcomes (associational), and Packaging Lab / Fit demand can estimate
           surplus-optimal list when the panel is strong enough.
         </div>
@@ -1656,7 +1656,7 @@
           </div>
         </div>
         <div class="principle">
-          <div class="principle-title">churnOS</div>
+          <div class="principle-title">CapEcon</div>
           <div class="join-col-body">
             <p><strong>Join</strong> Account, Run, Outcome, Subscription.</p>
             <p><strong>Record</strong> verdict, cost of leaving live, YAML rule, override.</p>
@@ -1696,7 +1696,7 @@
               <th>Challenge</th>
               <th>Traces</th>
               <th>Revenue / CS</th>
-              <th>churnOS</th>
+              <th>CapEcon</th>
             </tr>
           </thead>
           <tbody>
@@ -1750,10 +1750,10 @@
 
       <details class="faq-details">
         <summary>Common questions</summary>
-        <p class="faq-item"><strong>Can’t I join this in Looker/dbt?</strong> You can SQL the join, but churnOS’s IP is the
+        <p class="faq-item"><strong>Can’t I join this in Looker/dbt?</strong> You can SQL the join, but CapEcon’s IP is the
           exception taxonomy, YAML policy, and auditable decision record.</p>
         <p class="faq-item"><strong>Is this observability?</strong> No: keep LangSmith or your OTel pipeline for traces,
-          while churnOS consumes trace-shaped facts and emits decisions.</p>
+          while CapEcon consumes trace-shaped facts and emits decisions.</p>
         <p class="faq-item"><strong>Do I need OpenTelemetry?</strong> Prefer OTel GenAI attributes when you can (tokens,
           model, agent id), and Langfuse export also works; full nested OTLP protobuf JSON is not the path today.</p>
         <p class="faq-item"><strong>Do you replace my stack?</strong> No: ingest later via Data Connect, and decide now on
@@ -1815,9 +1815,9 @@
         <p class="ontology-detail">The <code>ontology/</code> package defines exception categories, vertical-specific
           <code>semantics.yaml</code> action maps, and JSON Schema contracts for
           <code>GrowthDecisionRecord</code>. See
-          <a href="https://github.com/b-lavania/churnOS/tree/main/ontology" target="_blank" rel="noopener">ontology/</a>
+          <a href="https://github.com/b-lavania/CapEcon/tree/main/ontology" target="_blank" rel="noopener">ontology/</a>
           and
-          <a href="https://github.com/b-lavania/churnOS/blob/main/docs/contracts.md" target="_blank"
+          <a href="https://github.com/b-lavania/CapEcon/blob/main/docs/contracts.md" target="_blank"
             rel="noopener">docs/contracts.md</a>.</p>
       </div>
     </section>
@@ -1830,7 +1830,7 @@
       </div>
       <div class="footer-contact-actions">
         <div class="footer-contact-links">
-          <a href="https://github.com/b-lavania/churnOS" class="btn-cta" target="_blank" rel="noopener">View on GitHub
+          <a href="https://github.com/b-lavania/CapEcon" class="btn-cta" target="_blank" rel="noopener">View on GitHub
             →</a>
           <a href="https://blavania.com/" class="btn-cta-secondary" target="_blank" rel="noopener">Portfolio</a>
           <a href="https://linkedin.com/in/blavania" class="btn-cta-secondary" target="_blank"

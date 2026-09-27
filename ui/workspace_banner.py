@@ -66,7 +66,7 @@ def render_sidebar_brand_and_status(session_state: Any) -> None:
         st.markdown(
             f"""
             <div class="mag-sidebar-brand">
-                <p class="mag-kicker">churnOS</p>
+                <p class="mag-kicker">CapEcon</p>
                 <p class="mag-sidebar-tagline">Decision-grade analytics loop</p>
                 {status_html}
             </div>
@@ -85,7 +85,7 @@ def render_sidebar_brand_and_status(session_state: Any) -> None:
 
 
 def render_sidebar_secondary_nav() -> None:
-    """Collapsed Reference + Legacy links (pages registered as hidden routes)."""
+    """Collapsed Reference + Legacy + Standards links (pages registered as hidden routes)."""
     with st.sidebar:
         st.markdown('<div class="mag-sidebar-secondary">', unsafe_allow_html=True)
         with st.expander("Reference", expanded=False):
@@ -93,6 +93,10 @@ def render_sidebar_secondary_nav() -> None:
                 st.page_link(path, label=label)
         with st.expander("Legacy", expanded=False):
             st.page_link("pages/99_Legacy_Index.py", label="Legacy reference")
+        with st.expander("Standards", expanded=False):
+            st.page_link("pages/50_Standards_Export.py", label="Export formats")
+            st.page_link("pages/51_ADP_Compliance.py", label="ADP compliance")
+            st.page_link("pages/52_Policy_Card_Editor.py", label="Policy Cards")
         st.markdown("</div>", unsafe_allow_html=True)
 
 

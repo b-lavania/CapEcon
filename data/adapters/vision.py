@@ -460,7 +460,7 @@ def compose_vision_records(
         "schema_version": "1.0.0",
         "ontology_version": str(profile.get("ontology_version") or "agent_runtime_v1"),
         "evaluated_at": str(evaluated_at),
-        "evaluator_id": "churnos_vision_adapter",
+        "evaluator_id": "capecon_vision_adapter",
         "subject": {
             "workspace_id": WORKSPACE_ID,
             "entity_type": "capability",

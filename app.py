@@ -1,5 +1,5 @@
 """
-churnOS — Decision-grade analytics for agentic software systems.
+CapEcon — Decision-grade analytics for agentic software systems.
 Navigation: Setup → The call → Price → Learn → Config (+ Reference / Legacy).
 """
 
@@ -22,7 +22,7 @@ from ui.workspace_banner import (
     render_sidebar_secondary_nav,
 )
 
-st.set_page_config(page_title="churnOS", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="CapEcon", layout="wide", initial_sidebar_state="expanded")
 
 css_path = Path(__file__).parent / "assets" / "style.css"
 if css_path.exists():
@@ -239,6 +239,9 @@ def build_nav_structure() -> dict:
         ],
         "Config": [
             st.Page("pages/40_Integrations.py", title="Integrations", url_path="integrations"),
+            st.Page("pages/50_Standards_Export.py", title="Standards Export", url_path="standards_export"),
+            st.Page("pages/51_ADP_Compliance.py", title="ADP Compliance", url_path="adp_compliance"),
+            st.Page("pages/52_Policy_Card_Editor.py", title="Policy Card Editor", url_path="policy_cards"),
         ],
     }
 

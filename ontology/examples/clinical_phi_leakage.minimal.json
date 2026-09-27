@@ -4,7 +4,7 @@
   "schema_version": "1.0.0",
   "ontology_version": "clinical_runtime_v1",
   "evaluated_at": "2026-08-22T12:00:00Z",
-  "evaluator_id": "churnos_emitter",
+  "evaluator_id": "capecon_emitter",
   "subject": {
     "workspace_id": "WS-0001",
     "entity_type": "capability",

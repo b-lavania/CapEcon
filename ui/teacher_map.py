@@ -68,7 +68,7 @@ CLUSTERS: dict[str, dict[str, Any]] = {
     },
     "config": {
         "question": "How do hooks fire?",
-        "insight": "Slack and review — churnOS does not write flag weights.",
+        "insight": "Slack and review — CapEcon does not write flag weights.",
         "next": [
             ("pages/40_Integrations.py", "Integrations"),
             ("pages/19_Decision_Inbox.py", "Inbox"),
@@ -77,7 +77,7 @@ CLUSTERS: dict[str, dict[str, Any]] = {
 }
 
 JOIN_ASCII = """\
-  builder owns                          churnOS join
+  builder owns                          CapEcon join
   ┌──────────────┐                    ┌──────────────────┐
   │ LangGraph /  │  traces            │ warehouse        │
   │ Langfuse     │ ─────────────────► │ outcomes × cost  │
@@ -244,7 +244,7 @@ def render_atlas() -> None:
 
     with tabs[0]:
         _section_header(
-            "What is churnOS?",
+            "What is CapEcon?",
             "Key insight: Radar does not run the agent. It prices leaving it live.",
         )
         render_ascii_diagram(JOIN_ASCII)
@@ -301,10 +301,10 @@ render_teacher_map_page = render_atlas
 def docs_architecture_markdown() -> str:
     return f"""# Architecture (join, not a runtime)
 
-churnOS sits on the join: traces × verified outcomes × trust × cost-to-serve.
+CapEcon sits on the join: traces × verified outcomes × trust × cost-to-serve.
 It does not replace LangGraph, Langfuse, or Stripe.
 
-## What churnOS is (not a runtime)
+## What CapEcon is (not a runtime)
 
 ```
 {JOIN_ASCII}

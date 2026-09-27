@@ -1,1 +1,1 @@
-"""churnOS HTTP control plane."""
+"""CapEcon HTTP control plane."""

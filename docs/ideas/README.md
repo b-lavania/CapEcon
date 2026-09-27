@@ -1,6 +1,6 @@
 # Math dojo contributor guide
 
-Every rigorous method in churnOS ships as:
+Every rigorous method in CapEcon ships as:
 
 1. **Pure function** in `analytics/` (no Streamlit)
 2. **Unit + property tests** in `tests/`

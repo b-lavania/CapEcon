@@ -66,3 +66,32 @@ decision:
     severely_over_cap:
       commercial_action: hold_sku
       rationale: "Floor is a multiple of the cap. Do not sell more of this version."
+
+# OPTIONAL: Standards export sections (ADDED IN v2.0 for interoperability)
+# These sections are used ONLY for exporting to external standards (Policy Cards, ADP)
+# They do NOT affect CapEcon's internal decision logic or proprietary features.
+
+policy_card_export:
+  enabled: false  # Set to true to enable Policy Card export
+  export_format: policy_card  # Output format for external tools
+  include_regulatory_crosswalk: true  # Include EU AI Act, NIST, ISO mappings
+
+regulatory_mapping:
+  # OPTIONAL: Crosswalk to regulatory frameworks (for Policy Card export)
+  # This does NOT change CapEcon's internal semantics or verdict logic
+  eu_ai_act:
+    category: "limited_risk"  # Eval governance is typically limited-risk
+    risk_level: "limited"
+  nist_ai_rmf:
+    category: "govern"
+    functions: ["govern", "measure"]
+  iso_42001:
+    category: "aims"
+    controls: ["quality_management", "risk_assessment"]
+
+evidence_requirements:
+  # OPTIONAL: Evidence requirements for external standards validation
+  # This does NOT change CapEcon's internal evidence handling
+  min_verified_share: 0.40  # Placeholder - customize based on your eval requirements
+  requires_experiment_id: true  # Eval governance requires experiment ID
+  evidence_types: ["simulated", "associational", "causal"]  # All evidence types allowed

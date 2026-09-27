@@ -31,7 +31,7 @@ def test_upsert_and_read(tmp_path):
     assert len(rows) == 1
     assert rows[0]["record_id"] == "gdr_t_1"
     assert (tmp_path / "agent_runtime.jsonl").exists()
-    assert (tmp_path / "churnos.sqlite").exists()
+    assert (tmp_path / "capecon.sqlite").exists()
 
 
 def test_triage_and_hooks(tmp_path):

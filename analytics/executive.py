@@ -92,7 +92,7 @@ def slack_blocks(summary: dict[str, Any]) -> dict[str, Any]:
 
 
 def markdown_report(summary: dict[str, Any]) -> str:
-    parts = ["# churnOS weekly", "", summary.get("headline", ""), "", "## Metrics", ""]
+    parts = ["# CapEcon weekly", "", summary.get("headline", ""), "", "## Metrics", ""]
     for p in summary.get("pins") or []:
         parts.append(f"- **{p.get('label', p.get('name'))}:** {p.get('display', '—')}")
     parts += ["", "## Decisions", ""]

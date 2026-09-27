@@ -1,7 +1,7 @@
 """
 Page 0: Business Model Configuration
 ======================================
-The unified input screen : define your business so churnOS can reason about it.
+The unified input screen : define your business so CapEcon can reason about it.
 """
 
 import streamlit as st
@@ -30,7 +30,7 @@ with st.expander("Concept Playbook: How to use this page"):
 
 st.markdown(
     '<p style="max-width: 700px; margin-bottom: 2rem;">'
-    'Define your business archetype. churnOS will propagate these inputs through the '
+    'Define your business archetype. CapEcon will propagate these inputs through the '
     'full causal chain : from acquisition cost to lifetime value : so every dashboard '
     'reflects <em>your</em> economics.'
     '</p>',

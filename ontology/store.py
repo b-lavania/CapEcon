@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 STORE_DIR = Path(__file__).resolve().parent.parent / "data" / "records"
-DB_PATH = STORE_DIR / "churnos.sqlite"
+DB_PATH = STORE_DIR / "capecon.sqlite"
 
 
 def _ensure_dir(store_dir: Path) -> Path:
@@ -19,7 +19,7 @@ def _ensure_dir(store_dir: Path) -> Path:
 
 def db_path(store_dir: Path | None = None) -> Path:
     d = _ensure_dir(store_dir or STORE_DIR)
-    return d / "churnos.sqlite"
+    return d / "capecon.sqlite"
 
 
 def connect(store_dir: Path | None = None) -> sqlite3.Connection:

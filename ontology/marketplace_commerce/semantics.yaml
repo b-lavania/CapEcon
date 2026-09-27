@@ -89,3 +89,32 @@ decision:
     severely_over_cap:
       commercial_action: hold_sku
       rationale: "Agent cost is a multiple of the take. Stop routing new demand here."
+
+# OPTIONAL: Standards export sections (ADDED IN v2.0 for interoperability)
+# These sections are used ONLY for exporting to external standards (Policy Cards, ADP)
+# They do NOT affect CapEcon's internal decision logic or proprietary features.
+
+policy_card_export:
+  enabled: false  # Set to true to enable Policy Card export
+  export_format: policy_card  # Output format for external tools
+  include_regulatory_crosswalk: true  # Include EU AI Act, NIST, ISO mappings
+
+regulatory_mapping:
+  # OPTIONAL: Crosswalk to regulatory frameworks (for Policy Card export)
+  # This does NOT change CapEcon's internal semantics or verdict logic
+  eu_ai_act:
+    category: "limited_risk"  # Marketplace assist is typically limited-risk
+    risk_level: "limited"
+  nist_ai_rmf:
+    category: "govern"
+    functions: ["govern", "measure"]
+  iso_42001:
+    category: "aims"
+    controls: ["quality_management"]
+
+evidence_requirements:
+  # OPTIONAL: Evidence requirements for external standards validation
+  # This does NOT change CapEcon's internal evidence handling
+  min_verified_share: 0.40  # Placeholder - customize based on your marketplace requirements
+  requires_experiment_id: false  # Marketplace workflows typically don't require experiments
+  evidence_types: ["simulated", "associational"]  # Marketplace focuses on simulated/associational
