@@ -1,0 +1,2 @@
+{"trade_id":"TRD-001","strategy_id":"mom-1","compute_cost_usd":0.05,"pnl_usd":12.5,"latency_ms":40,"occurred_at":"2026-02-04T15:00:00Z","success":true}
+{"trade_id":"TRD-002","strategy_id":"mom-1","compute_cost_usd":0.06,"pnl_usd":-3.0,"latency_ms":55,"occurred_at":"2026-02-04T15:01:00Z","success":false}

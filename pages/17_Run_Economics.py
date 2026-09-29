@@ -40,6 +40,18 @@ st.caption("Synthetic teaching data — see docs/honesty.md")
 st.page_link("pages/38_Math_Lab_Packaging.py", label="Lab · Packaging (demand curve) →")
 
 ws = require_workspace(st.session_state, page_label="Run Economics")
+_src = ws.meta.get("data_source")
+if _src in ("rl", "macro", "abm", "finance"):
+    st.caption(
+        f"Figures include an ingested `{_src}` sim export (`claim_type: simulated`), not billing telemetry."
+    )
+if (
+    _src == "finance"
+    and "pnl_usd" in ws.outcomes.columns
+    and ws.outcomes["pnl_usd"].notna().any()
+):
+    _pnl = float(ws.outcomes["pnl_usd"].sum())
+    st.caption(f"Finance export blotter PnL sum: ${_pnl:,.2f} (caption only; not a VaR).")
 
 billing_options = ["b2b_subscription", "usage_based"]
 current = ws.profile.get("billing_model", "b2b_subscription")
@@ -50,12 +62,15 @@ view_profile["billing_model"] = billing
 margins = seat_margins(ws.runs, ws.seats, view_profile)
 neg_share = margins["margin_negative"].mean() * 100 if len(margins) else 0
 
-c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("CPSO", resolve_metric("cost_per_successful_outcome", ws)["display"])
-c2.metric("Power-user margin", resolve_metric("power_user_margin_leakage", ws)["display"])
-c3.metric("Retry amplification", resolve_metric("retry_amplification_factor", ws)["display"])
-c4.metric("Unattributed spend", resolve_metric("unattributed_spend_percentage", ws)["display"])
-c5.metric("Static routing age", resolve_metric("static_decision_age_median", ws)["display"])
+_show_reward = _src == "rl" and "reward" in ws.runs.columns
+_cols = st.columns(6 if _show_reward else 5)
+_cols[0].metric("CPSO", resolve_metric("cost_per_successful_outcome", ws)["display"])
+_cols[1].metric("Power-user margin", resolve_metric("power_user_margin_leakage", ws)["display"])
+_cols[2].metric("Retry amplification", resolve_metric("retry_amplification_factor", ws)["display"])
+_cols[3].metric("Unattributed spend", resolve_metric("unattributed_spend_percentage", ws)["display"])
+_cols[4].metric("Static routing age", resolve_metric("static_decision_age_median", ws)["display"])
+if _show_reward:
+    _cols[5].metric("Reward per $", resolve_metric("reward_per_dollar", ws)["display"])
 
 section_kicker("CPSO trend")
 fig_cpso = cpso_trend_line(ws)

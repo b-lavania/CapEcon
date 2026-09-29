@@ -1617,7 +1617,7 @@
         <div class="honesty-chip">
           <span class="honesty-chip-kicker">Synthetic demo</span>
           <span class="honesty-chip-body">This is a teaching warehouse you clone and run locally (authored priors, not
-            production telemetry).</span>
+            production telemetry). The warehouse stays synthetic unless you overlay a file on Data Connect.</span>
         </div>
       </div>
 
@@ -1651,6 +1651,7 @@
           <div class="principle-title">Traces</div>
           <div class="join-col-body">
             <p>Tools: LangSmith, Langfuse, Braintrust, OTel GenAI JSONL (prompts scrubbed).</p>
+            <p>Also: market, workflow, RL, macro, ABM, and finance exports, mapped into the same join.</p>
             <p><strong>Sees</strong> spans, tokens, evals, latency, retries.</p>
             <p class="join-miss"><strong>Misses</strong> whether the paying account churned, and whether a successful run was a verified outcome.</p>
           </div>
@@ -1743,34 +1744,35 @@
       <div class="honesty-chip">
         <span class="honesty-chip-kicker">Synthetic teaching model</span>
         <span class="honesty-chip-body">The warehouse scaffolds the join, and economics use synthetic runs and seat priors
-          today. When you have files, Data Connect overlays OTel GenAI JSONL, Langfuse exports, or CSVs into the same
-          Workspace schema (metadata only: prompt bodies are scrubbed), with no live LangSmith or ChartMogul connector
-          in this demo.</span>
+          today. When you have files, Data Connect overlays OTel GenAI JSONL, Langfuse exports, CSVs, plus market and
+          workflow experiment files (and RL, macro, ABM, finance fixtures) into the same Workspace schema (metadata
+          only: prompt bodies are scrubbed), with no live LangSmith or ChartMogul connector in this demo.</span>
       </div>
 
       <details class="faq-details">
         <summary>Common questions</summary>
         <p class="faq-item"><strong>Can’t I join this in Looker/dbt?</strong> You can SQL the join, but CapEcon’s IP is the
           exception taxonomy, YAML policy, and auditable decision record.</p>
-        <p class="faq-item"><strong>Is this observability?</strong> No: keep LangSmith or your OTel pipeline for traces,
-          while CapEcon consumes trace-shaped facts and emits decisions.</p>
+        <p class="faq-item"><strong>Is this observability?</strong> No: keep LangSmith or your OTel pipeline for traces;
+          simulators stay in their repos; CapEcon consumes the export and emits decisions.</p>
         <p class="faq-item"><strong>Do I need OpenTelemetry?</strong> Prefer OTel GenAI attributes when you can (tokens,
           model, agent id), and Langfuse export also works; full nested OTLP protobuf JSON is not the path today.</p>
-        <p class="faq-item"><strong>Do you replace my stack?</strong> No: ingest later via Data Connect, and decide now on
-          the teaching model.</p>
+        <p class="faq-item"><strong>Do you replace my stack?</strong> No: Data Connect also accepts market and workflow
+          exports (among others), and CapEcon decides on the join. Magentic Marketplace, HARK, and Econojax do not run
+          inside CapEcon.</p>
       </details>
     </section>
 
     <section class="features-section">
       <h2>Setup → The call → Price → Learn</h2>
       <p class="section-intro">The warehouse is synthetic by default, and Data Connect shows the path to real exports
-        (OTel GenAI JSONL, Langfuse, CSV, Vision) without claiming live connectors.</p>
+        (OTel GenAI JSONL, Langfuse, CSV, Vision, market export, workflow export) without claiming live connectors.</p>
       <div class="feature-grid-5">
         <div class="feature-col">
           <span class="feature-kicker">Setup</span>
           <ul class="feature-list">
             <li>Product Profile (presets switch ontology and priors)</li>
-            <li>Data Connect: OTel GenAI JSONL (prompts scrubbed), Langfuse, CSV, Vision</li>
+            <li>Data Connect: OTel GenAI JSONL (prompts scrubbed), Langfuse, CSV, Vision, market export, workflow export</li>
             <li>Outcome Definition (verified success, not login)</li>
           </ul>
         </div>
@@ -1779,13 +1781,13 @@
           <ul class="feature-list">
             <li>Version Gate, Decision Inbox, Radar</li>
             <li>Activation, Trust, Connectors, Subgraph, Version Compare</li>
-            <li>Marketplace Radar and Clinical Radar on matching presets</li>
+            <li>Marketplace Radar and Clinical Radar on matching presets, including after a market export</li>
           </ul>
         </div>
         <div class="feature-col">
           <span class="feature-kicker">Price</span>
           <ul class="feature-list">
-            <li>Run Economics: CPSO, WTP caps, power-user margin leakage (<a href="#cpso">defs</a>)</li>
+            <li>Run Economics: CPSO, WTP caps, power-user margin leakage, and reward per dollar when an RL export is loaded (<a href="#cpso">defs</a>)</li>
             <li>Math Lab · Packaging (demand curve teaching)</li>
           </ul>
         </div>

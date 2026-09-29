@@ -1,0 +1,2 @@
+{"household_id":"HH-001","tier":"standard","scenario_start":"2026-01-01T00:00:00Z","scenario_end":"2026-03-01T00:00:00Z","welfare_proxy_usd":250,"runtime_cost_usd":3.2,"success":true}
+{"household_id":"HH-002","tier":"growth","scenario_start":"2026-01-01T00:00:00Z","scenario_end":"2026-03-01T00:00:00Z","welfare_proxy_usd":180,"runtime_cost_usd":2.8,"success":true}

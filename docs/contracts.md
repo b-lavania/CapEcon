@@ -22,8 +22,9 @@ Without #1 you have observability. Without #3 you have product analytics. With a
 | `approvals` | if there's HITL | Dismiss / confirm |
 | `connector_events`, `routing_decisions` | multi-agent / tools | Handoffs, blast radius |
 | `eval_results`, `capability_versions` | Version Gate | Eval delta, canary |
+| `agent_transactions` | Marketplace Radar | Agent-assisted GMV, take, inference cost |
 
-Column names follow the empty frames in `core/workspace.py` and the generator. Adapters in `data/adapters/` map other people's exports onto those frames. **Data Connect** is the UI for that.
+Column names follow the empty frames in `core/workspace.py` and the generator. Adapters in `data/adapters/` map other people's exports onto those frames. **Data Connect** is the UI for that. Market / RL / macro / ABM / finance exports stay `claim_type: simulated` even after ingest (they are not ChartMogul NRR). See [`adapters.md`](adapters.md).
 
 ## What comes out: GrowthDecisionRecord
 

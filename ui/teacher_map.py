@@ -248,6 +248,10 @@ def render_atlas() -> None:
             "Key insight: Radar does not run the agent. It prices leaving it live.",
         )
         render_ascii_diagram(JOIN_ASCII)
+        st.caption(
+            "Magentic Marketplace, HARK, Econojax, and similar repos simulate. "
+            "CapEcon prices the export after Data Connect overlay — it does not run those engines."
+        )
 
     with tabs[1]:
         _section_header(

@@ -61,7 +61,8 @@ SURFACE_EXPLAINERS: dict[str, dict[str, str]] = {
         "body": (
             "Agent-assisted marketplace transactions: GMV, platform take, inference cost, "
             "and net margin per workflow/seller. Cards use `platform_margin_at_risk_usd` "
-            "and throttle uneconomic agent assists."
+            "and throttle uneconomic agent assists. Same screen accepts a Data Connect "
+            "market export (simulated), not only the generated marketplace_agentic preset."
         ),
     },
     "clinical_radar": {
@@ -129,9 +130,11 @@ SURFACE_EXPLAINERS: dict[str, dict[str, str]] = {
     "data_connect": {
         "title": "What this screen is",
         "body": (
-            "Upload an OTel JSONL or Langfuse dump (prompt bodies get stripped), a Vision "
-            "bakeoff `run.json` plus historic jobs JSONL, and optional CSVs for accounts / "
-            "outcomes / subscriptions. Vision Agent is two records: bakeoff API $ is the "
+            "Upload an OTel JSONL or Langfuse dump (prompt bodies get stripped), a LangGraph "
+            "node dump, a market experiment JSONL, Vision bakeoff `run.json` plus historic "
+            "jobs, optional CSVs for accounts / outcomes / subscriptions, and (under More sim "
+            "exports) RL, macro, ABM, or finance fixtures. Sim exports keep "
+            "`claim_type: simulated`. Vision Agent is two records: bakeoff API $ is the "
             "agent floor (`estimated`); historic `price_dollars` is the move invoice. "
             "If subscriptions are missing, CM-NRR just isn't available — that's fine. "
             "There's a synthetic demo button if you don't have files yet."

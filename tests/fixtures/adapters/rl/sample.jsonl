@@ -1,0 +1,2 @@
+{"episode_id":"EP-001","agent_id":"rl-0","policy_id":"tax_policy","run_cost_usd":1.2,"reward":4.5,"n_steps":64,"started_at":"2026-02-03T00:00:00Z","success":true}
+{"episode_id":"EP-002","agent_id":"rl-1","policy_id":"tax_policy","run_cost_usd":0.8,"reward":-0.5,"n_steps":32,"started_at":"2026-02-03T01:00:00Z","success":false}

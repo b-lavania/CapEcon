@@ -227,6 +227,18 @@ def resolve_metric(name: str, workspace: Workspace, *, registry: list | None = N
             value = float(ok_runs["run_cost_usd"].sum() / n)
         display = f"${value:.3f}"
 
+    elif name == "reward_per_dollar":
+        runs = workspace.runs
+        if runs.empty or "reward" not in runs.columns:
+            value = 0.0
+            display = "—"
+        else:
+            cost = float(runs["run_cost_usd"].sum()) if "run_cost_usd" in runs.columns else 0.0
+            reward = float(runs["reward"].sum())
+            value = reward / cost if cost > 0 else 0.0
+            display = f"{value:.2f}"
+        meta = {"has_reward": "reward" in runs.columns}
+
     elif name == "contribution_margin_nrr":
         subs = getattr(workspace, "subscriptions", pd.DataFrame())
         usage = getattr(workspace, "usage_events", pd.DataFrame())

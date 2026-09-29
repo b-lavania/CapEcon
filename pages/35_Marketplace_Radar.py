@@ -35,10 +35,12 @@ txn = getattr(ws, "agent_transactions", None)
 
 if txn is None or txn.empty:
     st.info(
-        "This surface needs preset **Marketplace (agent-assisted GMV)**. "
+        "This surface needs preset **Marketplace (agent-assisted GMV)** "
+        "or a market export on Data Connect. "
         "Current warehouse has no agent transactions."
     )
     st.page_link("pages/00_Agentic_Product_Profile.py", label="Go to Product Profile", icon="⚙️")
+    st.page_link("pages/01_Data_Connect.py", label="Or load a market export on Data Connect")
     st.stop()
 
 chips = marketplace_summary_chips(ws)
@@ -142,4 +144,7 @@ with tab_econ:
         f"${shocked['net_margin_usd']:,.0f}",
         delta=f"${shocked['delta_usd']:+,.0f}",
     )
-    st.caption("Synthetic; oracle rates from pricing_oracle.yaml")
+    if ws.meta.get("data_source") == "market":
+        st.caption("Ingested market export. claim_type stays simulated; not a live marketplace.")
+    else:
+        st.caption("Synthetic; oracle rates from pricing_oracle.yaml")

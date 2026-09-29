@@ -1,4 +1,4 @@
-"""Data Connect — real ingest (OTel / CSV / Langfuse / Vision) onto the Workspace join."""
+"""Data Connect — real ingest (OTel / CSV / Langfuse / Vision / econ-world) onto the Workspace join."""
 
 from pathlib import Path
 
@@ -7,10 +7,16 @@ import streamlit as st
 
 from analytics.agentic_profile import get_preset
 from core.workspace import build_workspace, get_workspace_from_session, sync_workspace_to_session
+from data.adapters.abm import ingest_abm_export
 from data.adapters.csv import ingest_csv_table
+from data.adapters.finance import ingest_finance_export
 from data.adapters.langfuse import ingest_langfuse_export
+from data.adapters.macro import ingest_macro_export
+from data.adapters.market import ingest_market_export
 from data.adapters.otel import ingest_otel_export
+from data.adapters.rl import ingest_rl_export
 from data.adapters.vision import ingest_vision_pack
+from data.adapters.workflow import ingest_workflow_export
 from ui.decision_card import render_decision_card
 from ui.explain import page_help
 from ui.magazine import load_magazine_css, masthead, section_kicker
@@ -19,11 +25,14 @@ css_path = Path(__file__).parent.parent / "assets" / "style.css"
 if css_path.exists():
     st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
 
+FIXTURE_ROOT = Path(__file__).parent.parent / "tests" / "fixtures"
+ADAPTER_FIXTURES = FIXTURE_ROOT / "adapters"
+
 load_magazine_css()
 masthead(
     "Setup",
     "Data Connect",
-    "Upload traces, accounts, and outcomes. Prompt bodies are stripped. Synthetic demo remains available.",
+    "Upload traces, market / workflow / sim exports, accounts, and outcomes. Prompt bodies are stripped. Synthetic demo remains available.",
     cluster="setup",
 )
 page_help("data_connect")
@@ -37,18 +46,31 @@ JOIN_TABLES = [
     ("usage_events", "Serving cost"),
     ("approvals", "HITL"),
     ("eval_results", "Version Gate evals"),
+    ("agent_transactions", "Marketplace txns"),
 ]
 
 uploaded: dict[str, pd.DataFrame] = dict(st.session_state.get("uploaded_tables") or {})
 
+
+def _apply_pack(pack: dict, source: str) -> None:
+    tables = pack.get("tables") or pack
+    for key, frame in tables.items():
+        if isinstance(frame, pd.DataFrame):
+            uploaded[key] = frame
+    st.session_state["uploaded_tables"] = uploaded
+    st.session_state["ingest_source"] = source
+    if pack.get("meta"):
+        st.session_state["ingest_meta"] = pack["meta"]
+
+
 section_kicker("Traces")
 otel_file = st.file_uploader("OTel JSONL export", type=["jsonl", "json"], key="otel_up")
 langfuse_file = st.file_uploader("Langfuse JSON/JSONL export", type=["json", "jsonl"], key="lf_up")
-col_a, col_b = st.columns(2)
+langgraph_file = st.file_uploader("LangGraph node JSON", type=["json", "jsonl"], key="lg_up")
+col_a, col_b, col_c = st.columns(3)
 with col_a:
     if st.button("Load golden OTel fixture", help="tests/fixtures/golden_otel.jsonl — includes prompt fields that must be scrubbed"):
-        fixture = Path(__file__).parent.parent / "tests" / "fixtures" / "golden_otel.jsonl"
-        tables = ingest_otel_export(fixture)
+        tables = ingest_otel_export(FIXTURE_ROOT / "golden_otel.jsonl")
         uploaded["spans"] = tables["spans"]
         uploaded["runs"] = tables["runs"]
         st.session_state["uploaded_tables"] = uploaded
@@ -66,6 +88,12 @@ with col_b:
         st.session_state["ingest_source"] = "otel"
         st.success(f"{len(tables['spans'])} spans · {len(tables['runs'])} runs")
         st.rerun()
+with col_c:
+    if st.button("Load workflow fixture", help="tests/fixtures/adapters/workflow/sample.jsonl"):
+        pack = ingest_workflow_export(ADAPTER_FIXTURES / "workflow" / "sample.jsonl")
+        _apply_pack(pack, "workflow")
+        st.success(f"Workflow fixture — {len(pack['tables']['runs'])} runs, {len(pack['tables']['spans'])} spans.")
+        st.rerun()
 
 if langfuse_file is not None and st.button("Parse Langfuse export"):
     tmp = Path("/tmp/capecon_langfuse.json")
@@ -76,6 +104,14 @@ if langfuse_file is not None and st.button("Parse Langfuse export"):
     st.session_state["uploaded_tables"] = uploaded
     st.session_state["ingest_source"] = "langfuse"
     st.success(f"Langfuse — {len(tables['spans'])} spans")
+    st.rerun()
+
+if langgraph_file is not None and st.button("Parse LangGraph upload"):
+    tmp = Path("/tmp/capecon_workflow.jsonl")
+    tmp.write_bytes(langgraph_file.getvalue())
+    pack = ingest_workflow_export(tmp, kind="langgraph")
+    _apply_pack(pack, "workflow")
+    st.success(f"LangGraph — {len(pack['tables']['runs'])} runs (retries land as spans).")
     st.rerun()
 
 with st.expander("Live Langfuse pull (optional)", expanded=False):
@@ -94,6 +130,25 @@ with st.expander("Live Langfuse pull (optional)", expanded=False):
         except Exception as exc:
             st.error(str(exc))
 
+section_kicker("Market experiment")
+st.caption("Simulated Magentic / MarketAgents-shaped export. Not a live marketplace connector.")
+market_file = st.file_uploader("Market JSONL / JSON", type=["jsonl", "json"], key="market_up")
+m1, m2 = st.columns(2)
+with m1:
+    if st.button("Load market fixture", help="tests/fixtures/adapters/market/sample.jsonl"):
+        pack = ingest_market_export(ADAPTER_FIXTURES / "market" / "sample.jsonl")
+        _apply_pack(pack, "market")
+        st.success(f"Market fixture — {len(pack['tables']['agent_transactions'])} transactions.")
+        st.rerun()
+with m2:
+    if market_file is not None and st.button("Parse market upload"):
+        tmp = Path("/tmp/capecon_market.jsonl")
+        tmp.write_bytes(market_file.getvalue())
+        pack = ingest_market_export(tmp)
+        _apply_pack(pack, "market")
+        st.success(f"{len(pack['tables']['agent_transactions'])} transactions")
+        st.rerun()
+
 section_kicker("Vision Agent (two records)")
 st.caption(
     "Bakeoff `cost_usd` → agent GDR floor (`estimated`). Historic `price_dollars` → "
@@ -107,8 +162,7 @@ with v_load:
         "Load Vision fixtures",
         help="tests/fixtures/vision_bakeoff_run.json + vision_historic_jobs.jsonl",
     ):
-        root = Path(__file__).parent.parent / "tests" / "fixtures"
-        pack = ingest_vision_pack(root / "vision_bakeoff_run.json", root / "vision_historic_jobs.jsonl")
+        pack = ingest_vision_pack(FIXTURE_ROOT / "vision_bakeoff_run.json", FIXTURE_ROOT / "vision_historic_jobs.jsonl")
         uploaded["runs"] = pack["tables"]["runs"]
         uploaded["usage_events"] = pack["tables"]["usage_events"]
         st.session_state["uploaded_tables"] = uploaded
@@ -180,6 +234,76 @@ for table, label in csv_specs:
         except Exception as exc:
             st.error(f"{table}: {exc}")
 
+with st.expander("More sim exports (RL, macro, ABM, finance)", expanded=False):
+    st.caption("Simulated exports only. claim_type stays simulated. No upstream simulator is installed.")
+    rl_file = st.file_uploader("RL episode JSONL", type=["jsonl", "json"], key="rl_up")
+    r1, r2 = st.columns(2)
+    with r1:
+        if st.button("Load RL fixture"):
+            pack = ingest_rl_export(ADAPTER_FIXTURES / "rl" / "sample.jsonl")
+            _apply_pack(pack, "rl")
+            st.success(f"RL — {len(pack['tables']['runs'])} episodes")
+            st.rerun()
+    with r2:
+        if rl_file is not None and st.button("Parse RL upload"):
+            tmp = Path("/tmp/capecon_rl.jsonl")
+            tmp.write_bytes(rl_file.getvalue())
+            pack = ingest_rl_export(tmp)
+            _apply_pack(pack, "rl")
+            st.success(f"{len(pack['tables']['runs'])} episodes")
+            st.rerun()
+
+    macro_file = st.file_uploader("Macro period JSONL", type=["jsonl", "json"], key="macro_up")
+    a1, a2 = st.columns(2)
+    with a1:
+        if st.button("Load macro fixture"):
+            pack = ingest_macro_export(ADAPTER_FIXTURES / "macro" / "sample.jsonl")
+            _apply_pack(pack, "macro")
+            st.success(f"Macro — {len(pack['tables']['outcomes'])} periods")
+            st.rerun()
+    with a2:
+        if macro_file is not None and st.button("Parse macro upload"):
+            tmp = Path("/tmp/capecon_macro.jsonl")
+            tmp.write_bytes(macro_file.getvalue())
+            pack = ingest_macro_export(tmp)
+            _apply_pack(pack, "macro")
+            st.success(f"{len(pack['tables']['outcomes'])} periods")
+            st.rerun()
+
+    abm_file = st.file_uploader("ABM scenario JSONL", type=["jsonl", "json"], key="abm_up")
+    b1, b2 = st.columns(2)
+    with b1:
+        if st.button("Load ABM fixture"):
+            pack = ingest_abm_export(ADAPTER_FIXTURES / "abm" / "sample.jsonl")
+            _apply_pack(pack, "abm")
+            st.success(f"ABM — {len(pack['tables']['accounts'])} households")
+            st.rerun()
+    with b2:
+        if abm_file is not None and st.button("Parse ABM upload"):
+            tmp = Path("/tmp/capecon_abm.jsonl")
+            tmp.write_bytes(abm_file.getvalue())
+            pack = ingest_abm_export(tmp)
+            _apply_pack(pack, "abm")
+            st.success(f"{len(pack['tables']['accounts'])} households")
+            st.rerun()
+
+    fin_file = st.file_uploader("Finance blotter JSONL", type=["jsonl", "json"], key="fin_up")
+    f1, f2 = st.columns(2)
+    with f1:
+        if st.button("Load finance fixture"):
+            pack = ingest_finance_export(ADAPTER_FIXTURES / "finance" / "sample.jsonl")
+            _apply_pack(pack, "finance")
+            st.success(f"Finance — {len(pack['tables']['runs'])} trades")
+            st.rerun()
+    with f2:
+        if fin_file is not None and st.button("Parse finance upload"):
+            tmp = Path("/tmp/capecon_finance.jsonl")
+            tmp.write_bytes(fin_file.getvalue())
+            pack = ingest_finance_export(tmp)
+            _apply_pack(pack, "finance")
+            st.success(f"{len(pack['tables']['runs'])} trades")
+            st.rerun()
+
 section_kicker("Join status")
 rows = []
 for table, purpose in JOIN_TABLES:
@@ -194,7 +318,10 @@ if outcomes_df is None or outcomes_df.empty:
     st.page_link("pages/02_Outcome_Definition.py", label="Outcomes empty → Outcome Definition Kit")
 
 section_kicker("Build warehouse")
-preset = st.selectbox("Profile preset", ["assistant_heavy", "workspace_crm", "ops_mission"], index=0)
+preset_options = ["assistant_heavy", "workspace_crm", "ops_mission", "marketplace_agentic"]
+src_hint = st.session_state.get("ingest_source", "uploaded")
+default_idx = preset_options.index("marketplace_agentic") if src_hint == "market" else 0
+preset = st.selectbox("Profile preset", preset_options, index=default_idx)
 if st.button("Merge into workspace", type="primary"):
     src = st.session_state.get("ingest_source", "uploaded")
     ws = build_workspace(
@@ -212,9 +339,12 @@ if st.button("Merge into workspace", type="primary"):
     else:
         st.session_state["growth_records"] = []
         st.session_state.pop("quote_records", None)
+    txn_n = len(getattr(ws, "agent_transactions", []))
+    txn_bit = f", {txn_n} agent transactions" if txn_n else ""
     st.success(
         f"Workspace ready — source `{ws.meta.get('data_source')}`, "
-        f"{len(ws.runs)} runs, {len(getattr(ws, 'spans', []))} spans, {len(getattr(ws, 'outcomes', []))} outcomes."
+        f"{len(ws.runs)} runs, {len(getattr(ws, 'spans', []))} spans, "
+        f"{len(getattr(ws, 'outcomes', []))} outcomes{txn_bit}."
     )
 
 if st.button("Use synthetic demo instead"):
@@ -231,3 +361,5 @@ if ws is not None:
     st.page_link("pages/24_Version_Gate.py", label="Open Version Gate")
     if st.session_state.get("vision_pack"):
         st.page_link("pages/19_Decision_Inbox.py", label="Open Decision Inbox (quoting-agent GDR)")
+    if not getattr(ws, "agent_transactions", pd.DataFrame()).empty:
+        st.page_link("pages/35_Marketplace_Radar.py", label="Open Marketplace Radar")

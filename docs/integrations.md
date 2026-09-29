@@ -13,6 +13,9 @@ I will not auto-act. Order of operations, on purpose:
 | LaunchDarkly / Split / Statsig | Recommend weights. They still own the flag. |
 | PagerDuty / Opsgenie | Destructive + `requires_review` can open an incident |
 | Langfuse / LangSmith / OTel | We ingest. We don't replace. |
+| Magentic Marketplace / EconAgent / HARK / TwinMarket / Econojax | We ingest **exports**. We do not run those simulators. |
+
+File adapters live under `data/adapters/` (market, workflow, rl, macro, abm, finance, plus OTel / Langfuse / CSV / Vision). Each returns Workspace-shaped tables with provenance and `claim_type`. Prefer routing new framework work through those tables so CPSO and Radar stay honest. Contract and fixtures: [`adapters.md`](adapters.md).
 
 Wire URLs on **CONFIG → Integrations**. Invocations get a row in the SQLite audit table. Delivery to a real Slack webhook is on you — the page logs the intent.
 

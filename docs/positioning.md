@@ -4,6 +4,8 @@ I don't want CapEcon to be an agent runtime. LangGraph, CrewAI, and a dozen othe
 
 What's missing is the join: traces × verified outcomes × trust × what it cost to serve. From that join you should be able to answer, for a capability or a version, **ship, hold, throttle, roll back, or make a human look**. I will not let a correlation dress up as a cause. That's what `claim_type` is for.
 
+Magentic Marketplace, EconAgent, HARK, Econojax, TwinMarket, and similar repos **simulate**. CapEcon sits **after** those runs: you export a file, overlay it on Data Connect, and get a priceable GrowthDecisionRecord. We do not vendor or execute those simulators. See [adapters.md](adapters.md).
+
 The screen I care about first is **Version Gate**. "Did this change make things better or worse?" If that sentence isn't true on someone's data, the rest of the pages are decoration.
 
 ## What actually goes wrong

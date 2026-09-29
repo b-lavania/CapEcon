@@ -206,7 +206,18 @@ def build_workspace(
 
         agentic = ingest_otel_into_agentic(agentic, profile, seed=seed, otel_path=otel_path)
 
-    if data_source in ("uploaded", "otel", "langfuse", "vision") and uploaded_tables:
+    if data_source in (
+        "uploaded",
+        "otel",
+        "langfuse",
+        "vision",
+        "market",
+        "workflow",
+        "rl",
+        "macro",
+        "abm",
+        "finance",
+    ) and uploaded_tables:
         agentic = _merge_uploaded(agentic, uploaded_tables)
         runs = agentic["runs"]
 
@@ -232,8 +243,16 @@ def build_workspace(
         )
     eval_results = pd.DataFrame(eval_rows) if eval_rows else EMPTY_EVAL_RESULTS.copy()
 
+    uploaded_txn = None
+    if uploaded_tables and isinstance(uploaded_tables.get("agent_transactions"), pd.DataFrame):
+        cand = uploaded_tables["agent_transactions"]
+        if not cand.empty:
+            uploaded_txn = cand
+
     agent_transactions = pd.DataFrame()
-    if profile.get("preset_id") == "marketplace_agentic":
+    if uploaded_txn is not None:
+        agent_transactions = uploaded_txn.copy()
+    elif profile.get("preset_id") == "marketplace_agentic":
         from data.marketplace_agentic_generator import generate_agent_transactions
 
         agent_transactions = generate_agent_transactions(

@@ -76,11 +76,30 @@ What's missing is the join: **traces × verified outcomes × trust × what it co
 
 I don't want prompt text in this system. Adapters scrub content keys; `tests/fixtures/golden_otel.jsonl` fails the build if a prompt column survives ingest.
 
+## Related work (simulators vs CapEcon)
+
+These projects **simulate** markets, macro agents, RL economies, or ABMs. CapEcon **prices and decides** after you export a file and overlay it on Data Connect. See [`docs/adapters.md`](docs/adapters.md).
+
+| Repository | Role relative to CapEcon |
+| --- | --- |
+| [microsoft/multi-agent-marketplace](https://github.com/microsoft/multi-agent-marketplace) | Market experiment exports → `market` adapter |
+| [marketagents-ai/MarketAgents](https://github.com/marketagents-ai/MarketAgents) | Double-auction / coordination exports → `market` |
+| [tsinghua-fib-lab/ACL24-EconAgent](https://github.com/tsinghua-fib-lab/ACL24-EconAgent) | Macro period aggregates → `macro` |
+| [sethkarten/LLM-Economist](https://github.com/sethkarten/LLM-Economist) | Mechanism / policy sims → `macro` |
+| [FreedomIntelligence/TwinMarket](https://github.com/FreedomIntelligence/TwinMarket) | Financial blotter shape → `finance` |
+| [ponseko/econojax](https://github.com/ponseko/econojax) | RL episode logs → `rl` |
+| [econ-ark/HARK](https://github.com/econ-ark/HARK) | Heterogeneous-agent scenarios → `abm` |
+| [scikit-agent/scikit-agent](https://github.com/scikit-agent/scikit-agent) | ABM / MAS toolkit → `abm` |
+| [salesforce/ai-economist](https://github.com/salesforce/ai-economist) | Two-level RL policy sims → `rl` |
+| [FreedomIntelligence/Awesome-Econ-World-Models](https://github.com/FreedomIntelligence/Awesome-Econ-World-Models) | Discovery index only |
+
+CapEcon does not vendor or run those repos.
+
 ---
 
 ## Data Connect, including Vision (two records)
 
-**Data Connect** is where real files land: OTel JSONL, Langfuse export, CSVs for accounts/outcomes/subscriptions/usage, and now a **Vision Agent** pack.
+**Data Connect** is where real files land: OTel JSONL, Langfuse export, LangGraph node dumps, market experiment JSONL, CSVs for accounts/outcomes/subscriptions/usage, Vision Agent pack, and (under More sim exports) RL / macro / ABM / finance fixtures.
 
 That last one matters because it's the first non-synthetic path where agent API cost and customer invoice are both real numbers. Putting them on one GDR is a category error:
 
@@ -200,7 +219,7 @@ If you want to play with policy: change the `agent_runtime` destructive action f
 
 CI: [.github/workflows/ci.yml](.github/workflows/ci.yml)
 
-Further reading: [Information architecture](docs/information_architecture.md) | [Architecture (join)](docs/architecture.md) | [Why this shape](docs/positioning.md) | [Methodology](docs/methodology.md) | [Honesty](docs/honesty.md) | [What to ingest](docs/contracts.md) | [Outcomes](docs/outcome_contract.md) | [API / hooks](docs/integrations.md) | [Slice 2 audit](docs/slice2_build_audit.md) | [Ontology](ontology/README.md) | [Migration Guide (v1→v2.0)](docs/MIGRATION_GUIDE.md) | [Examples](docs/examples/)
+Further reading: [Information architecture](docs/information_architecture.md) | [Architecture (join)](docs/architecture.md) | [Why this shape](docs/positioning.md) | [Methodology](docs/methodology.md) | [Honesty](docs/honesty.md) | [What to ingest](docs/contracts.md) | [Adapters](docs/adapters.md) | [Outcomes](docs/outcome_contract.md) | [API / hooks](docs/integrations.md) | [Slice 2 audit](docs/slice2_build_audit.md) | [Ontology](ontology/README.md) | [Migration Guide (v1→v2.0)](docs/MIGRATION_GUIDE.md) | [Examples](docs/examples/)
 
 ---
 
@@ -232,7 +251,7 @@ CapEcon/
 │   ├── agentic_generator.py        # synthetic agentic warehouse
 │   ├── clinical_generator.py       # openmed_v22 clinical_runs
 │   ├── case_studies/               # authored capability catalogs
-│   └── adapters/                   # OTel, Langfuse, CSV, Vision (scrubs prompts)
+│   └── adapters/                   # OTel, Langfuse, CSV, Vision, market/workflow/rl/macro/abm/finance
 ├── standards/                      # NEW in v2.0 - standard exporters
 │   ├── opendone.py                 # OpenDone exporter (subprocess bridge)
 │   ├── opentrajectory.py           # OpenTrajectory exporter (pure Python)
