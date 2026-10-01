@@ -241,11 +241,13 @@ COMMERCIAL_ACTIONS = [
     "cut_credits",
     "kill_all_inclusive",
     "reallocate",
+    "dynamic_cascade",
+    "spot_audit_hitl",
 ]
 
 ACTIONS = OPS_ACTIONS + COMMERCIAL_ACTIONS
 
-COMMERCIAL_OWNER_ROLES = ["packaging", "finance", "deal_desk"]
+COMMERCIAL_OWNER_ROLES = ["packaging", "finance", "deal_desk", "platform", "operations"]
 
 
 def get_category(key: str) -> dict[str, Any]:

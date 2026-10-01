@@ -152,3 +152,51 @@ if tier:
         if tier_list
         else f"Tier **{tier}** selected."
     )
+
+section_kicker("Pricing archetype comparison")
+st.caption(
+    "Four archetypes modelled at synthetic volume distribution. "
+    "Source: analytics/packaging_sensitivity.py :: archetype_cohort_matrix(). "
+    "Claim: simulated (teaching)."
+)
+from analytics.packaging_sensitivity import archetype_cohort_matrix, archetype_summary
+
+med_outcomes = float(
+    ws.profile.get("priors", {}).get(
+        "outcomes_per_seat_month",
+        max(1.0, (ws.runs["success"].sum() / max(len(ws.seats), 1)) if not ws.runs.empty else 8.0),
+    )
+)
+arpa = float(ws.profile.get("priors", {}).get("seat_arpu_monthly", 49.99))
+
+archetype_cols = st.columns(4)
+summary = archetype_summary(floor_usd, arpa, med_outcomes, target_margin)
+labels = ["Seat-Based", "Pure Outcome", "Hybrid", "SLA-Backed"]
+keys = ["seat_based", "outcome_based", "hybrid", "sla_backed"]
+for col, label, key in zip(archetype_cols, labels, keys):
+    arch = summary[key]
+    col.metric(label, f"${arch['margin_usd']:,.2f}/mo margin", help=arch.get("note", ""))
+
+section_kicker("Cohort gross margin by usage decile")
+matrix_df = archetype_cohort_matrix(floor_usd, arpa, med_outcomes)
+fig_matrix = go.Figure()
+for arch in ["seat_based_margin", "outcome_based_margin", "hybrid_margin", "sla_margin"]:
+    fig_matrix.add_trace(
+        go.Bar(
+            x=matrix_df["decile"],
+            y=matrix_df[arch],
+            name=arch.replace("_margin", "").replace("_", " ").title(),
+        )
+    )
+fig_matrix.update_layout(
+    barmode="group",
+    xaxis_title="Usage Decile",
+    yaxis_title="Gross Margin USD/mo",
+    height=350,
+)
+st.plotly_chart(fig_matrix, use_container_width=True)
+st.caption(
+    "Negative seat-based margin at high deciles = power-user subsidy. "
+    "Outcome-based pricing restores monotonic margin growth."
+)
+

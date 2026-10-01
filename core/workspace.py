@@ -97,6 +97,7 @@ class Workspace:
     # Agentic challenges (dummy-seeded)
     catastrophic_events: pd.DataFrame = field(default_factory=pd.DataFrame)
     routing_decisions: pd.DataFrame = field(default_factory=pd.DataFrame)
+    routing_log: pd.DataFrame = field(default_factory=pd.DataFrame)
     spend_by_step: pd.DataFrame = field(default_factory=pd.DataFrame)
     jevons_elasticity: pd.DataFrame = field(default_factory=pd.DataFrame)
     feature_flag_assignments: pd.DataFrame = field(default_factory=pd.DataFrame)

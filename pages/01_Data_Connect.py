@@ -304,6 +304,27 @@ with st.expander("More sim exports (RL, macro, ABM, finance)", expanded=False):
             st.success(f"{len(pack['tables']['runs'])} trades")
             st.rerun()
 
+    tok_file = st.file_uploader("Token routing JSONL (RouteLLM / FrugalGPT)", type=["jsonl", "json"], key="tok_up")
+    t1, t2 = st.columns(2)
+    with t1:
+        if st.button("Load routing fixture"):
+            from data.adapters.token_econ import ingest_token_econ_export
+
+            pack = ingest_token_econ_export(ADAPTER_FIXTURES / "token_econ" / "routellm_cascade.jsonl")
+            _apply_pack(pack, "token_econ")
+            st.success(f"Routing — {len(pack['tables']['runs'])} queries")
+            st.rerun()
+    with t2:
+        if tok_file is not None and st.button("Parse routing upload"):
+            from data.adapters.token_econ import ingest_token_econ_export
+
+            tmp = Path("/tmp/capecon_token_econ.jsonl")
+            tmp.write_bytes(tok_file.getvalue())
+            pack = ingest_token_econ_export(tmp)
+            _apply_pack(pack, "token_econ")
+            st.success(f"{len(pack['tables']['runs'])} queries")
+            st.rerun()
+
 section_kicker("Join status")
 rows = []
 for table, purpose in JOIN_TABLES:
@@ -318,9 +339,14 @@ if outcomes_df is None or outcomes_df.empty:
     st.page_link("pages/02_Outcome_Definition.py", label="Outcomes empty → Outcome Definition Kit")
 
 section_kicker("Build warehouse")
-preset_options = ["assistant_heavy", "workspace_crm", "ops_mission", "marketplace_agentic"]
+preset_options = ["assistant_heavy", "workspace_crm", "ops_mission", "marketplace_agentic", "agentic_commerce", "frugal_router"]
 src_hint = st.session_state.get("ingest_source", "uploaded")
-default_idx = preset_options.index("marketplace_agentic") if src_hint == "market" else 0
+if src_hint == "token_econ":
+    default_idx = preset_options.index("frugal_router")
+elif src_hint == "market":
+    default_idx = preset_options.index("agentic_commerce")
+else:
+    default_idx = 0
 preset = st.selectbox("Profile preset", preset_options, index=default_idx)
 if st.button("Merge into workspace", type="primary"):
     src = st.session_state.get("ingest_source", "uploaded")

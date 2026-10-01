@@ -99,3 +99,22 @@ def test_elasticity_recovery_api_metered():
         if eps is not None:
             hits.append(abs(float(eps) - planted) < 0.45)
     assert hits and any(hits)
+
+
+def test_estimate_heterogeneous_elasticity_fallback():
+    from analytics.demand_model import estimate_heterogeneous_elasticity
+
+    panel = pd.DataFrame(
+        {
+            "sku": ["CAP-1"] * 20,
+            "price": [1.0 + i * 0.1 for i in range(20)],
+            "quantity": [100 - i * 3 for i in range(20)],
+        }
+    )
+    res = estimate_heterogeneous_elasticity(panel, min_samples=50)
+    assert "elasticity_mean" in res
+    assert res["elasticity_mean"] is not None
+    assert res["elasticity_mean"] < 0  # quantity decreases with price
+    assert res["underpowered"] is True  # n=20 < min_samples=50
+    assert "fallback" in res["method"]
+

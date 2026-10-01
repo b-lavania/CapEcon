@@ -24,6 +24,8 @@ def ingest_macro_export(path: str | Path) -> dict[str, Any]:
 def ingest_macro_records(records: list[dict[str, Any]]) -> dict[str, Any]:
     outcome_rows: list[dict[str, Any]] = []
     usage_rows: list[dict[str, Any]] = []
+    approval_rows: list[dict[str, Any]] = []
+
     for i, rec in enumerate(records):
         period = str(rec.get("period_id") or rec.get("outcome_id") or f"PERIOD-{i:04d}")
         account = str(rec.get("account_id") or rec.get("region_id") or f"MACRO-{i:03d}")
@@ -32,13 +34,18 @@ def ingest_macro_records(records: list[dict[str, Any]]) -> dict[str, Any]:
         occurred = rec.get("occurred_at") or rec.get("period_end") or "2026-01-01T00:00:00Z"
         run_id = str(rec.get("agent_run_id") or f"MACRO-RUN-{i:04d}")
         success = as_bool(rec.get("success"), value > 0)
+
+        agent_type = str(rec.get("agent_type") or "macro_agent")
+        action_type = str(rec.get("action_type") or "")
+        price_target = as_float(rec.get("price_target_usd"), None)
+
         outcome_rows.append(
             {
                 "outcome_id": period,
                 "account_id": account,
                 "end_user_id": str(rec.get("end_user_id") or account),
                 "agent_run_id": run_id,
-                "outcome_type": str(rec.get("outcome_type") or "macro_period"),
+                "outcome_type": str(rec.get("outcome_type") or f"macro_{agent_type}"),
                 "success": success,
                 "verified": as_bool(rec.get("verified"), True),
                 "verified_by": "deterministic_stage",
@@ -46,6 +53,9 @@ def ingest_macro_records(records: list[dict[str, Any]]) -> dict[str, Any]:
                 "days_since_signup": int(rec.get("days_since_signup") or 0),
                 "outcome_value_usd": value,
                 "list_price_per_outcome_usd": None,
+                "agent_type": agent_type,
+                "action_type": action_type,
+                "price_target_usd": price_target,
             }
         )
         usage_rows.append(
@@ -59,10 +69,29 @@ def ingest_macro_records(records: list[dict[str, Any]]) -> dict[str, Any]:
                 "recorded_at": occurred,
             }
         )
+
+        human_override = rec.get("human_override")
+        if human_override:
+            approval_rows.append(
+                {
+                    "approval_id": f"APPR-MACRO-{i:04d}",
+                    "run_id": run_id,
+                    "seat_id": account,
+                    "decision": "override",
+                    "decided_at": occurred,
+                    "agent_outcome": str(rec.get("agent_action") or action_type),
+                    "human_outcome": str(human_override),
+                }
+            )
+
+    tables: dict[str, Any] = {
+        "outcomes": align_frame(outcome_rows, OUTCOMES_COLUMNS),
+        "usage_events": align_frame(usage_rows, USAGE_COLUMNS),
+    }
+    if approval_rows:
+        tables["approvals"] = pd.DataFrame(approval_rows)
+
     return {
-        "tables": {
-            "outcomes": align_frame(outcome_rows, OUTCOMES_COLUMNS),
-            "usage_events": align_frame(usage_rows, USAGE_COLUMNS),
-        },
+        "tables": tables,
         "meta": stamp_provenance("macro", claim_type="simulated"),
     }

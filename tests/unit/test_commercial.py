@@ -271,3 +271,52 @@ def test_sentence_says_who_to_ask():
         {"pricing_mode": "product_sku", "floor_usd": 0.1, "cap_usd": 0.5}
     )
     assert "No commercial action" in commercial_sentence(quiet)
+
+
+def test_token_bloat_and_agency_deficit_commercial_resolution():
+    bloat = resolve_commercial_action(
+        {"pricing_mode": "product_sku", "floor_usd": 0.5, "cap_usd": 1.0, "token_bloat": True}
+    )
+    assert bloat["price_signal"] == "token_bloat"
+    assert bloat["commercial_action"] == "dynamic_cascade"
+    assert bloat["commercial_owner_role"] == "platform"
+
+    deficit = resolve_commercial_action(
+        {"pricing_mode": "internal_budget", "floor_usd": 0.5, "cap_usd": 1.0, "agency_deficit": True}
+    )
+    assert deficit["price_signal"] == "agency_deficit"
+    assert deficit["commercial_action"] == "spot_audit_hitl"
+    assert deficit["commercial_owner_role"] == "operations"
+
+
+def test_agentic_commerce_gdr_validates_schema():
+    record = {
+        "record_id": "gdr_commerce_0001",
+        "vertical": "agentic_commerce",
+        "schema_version": "1.0.0",
+        "ontology_version": "agentic_commerce_v1",
+        "evaluated_at": "2026-09-30T12:00:00+00:00",
+        "evaluator_id": "test_commerce",
+        "subject": {"entity_type": "seller", "seller_id": "SLR-001"},
+        "exceptions": [],
+        "economics": {
+            "primary_metric_usd": 500.0,
+            "primary_metric_label": "platform_net_margin_usd",
+            "currency": "USD",
+            "pricing_mode": "marketplace_take",
+            "floor_usd": 0.50,
+            "verification_cost_usd": 0.10,
+            "agency_surplus_usd": 12.0,
+            "token_mopt": 0.002,
+        },
+        "decision": {
+            "verdict": "healthy",
+            "recommended_action": "ship",
+            "commercial_action": "dynamic_cascade",
+            "commercial_owner_role": "platform",
+            "price_signal": "token_bloat",
+        },
+    }
+    errors = validate_record(record, "agentic_commerce")
+    assert errors == [], f"Validation errors: {errors}"
+

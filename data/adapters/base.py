@@ -21,10 +21,11 @@ EVALUATOR_IDS = {
     "macro": "capecon_macro_adapter",
     "abm": "capecon_abm_adapter",
     "finance": "capecon_finance_adapter",
+    "token_econ": "capecon_token_econ_adapter",
 }
 
 INGEST_SOURCES = frozenset(
-    {"uploaded", "otel", "langfuse", "vision", "market", "workflow", "rl", "macro", "abm", "finance"}
+    {"uploaded", "otel", "langfuse", "vision", "market", "workflow", "rl", "macro", "abm", "finance", "token_econ"}
 )
 
 RUNS_COLUMNS = [
@@ -96,6 +97,21 @@ AGENT_TXN_COLUMNS = [
     "verified",
     "verified_by",
     "success",
+]
+
+ROUTING_COLUMNS = [
+    "run_id",
+    "router_model",
+    "selected_tier",
+    "prompt_tokens",
+    "completion_tokens",
+    "cached_tokens",
+    "cost_usd",
+    "latency_ms",
+    "cache_hit",
+    "cascade_step_index",
+    "verification_status",
+    "recorded_at",
 ]
 
 

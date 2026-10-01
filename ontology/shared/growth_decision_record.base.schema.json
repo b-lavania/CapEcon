@@ -17,7 +17,7 @@
     "record_id": { "type": "string" },
     "vertical": {
       "type": "string",
-      "enum": ["capability_lifecycle", "agent_runtime", "orchestration", "eval_governance", "marketplace_commerce", "clinical_runtime"]
+      "enum": ["capability_lifecycle", "agent_runtime", "orchestration", "eval_governance", "marketplace_commerce", "clinical_runtime", "agentic_commerce"]
     },
     "schema_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
     "ontology_version": { "type": "string" },

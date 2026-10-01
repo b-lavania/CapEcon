@@ -28,6 +28,8 @@ PRICE_SIGNALS = (
     "flat_bucket_over_cap",
     "severely_over_cap",
     "over_cap",
+    "token_bloat",
+    "agency_deficit",
 )
 
 COMMERCIAL_OWNERS = {
@@ -37,6 +39,8 @@ COMMERCIAL_OWNERS = {
     "cut_credits": "packaging",
     "kill_all_inclusive": "packaging",
     "reallocate": "platform",
+    "dynamic_cascade": "platform",
+    "spot_audit_hitl": "operations",
 }
 
 _FLAT_BILLING = frozenset({"b2b_subscription", "seat_based", "flat"})
@@ -104,6 +108,14 @@ def _default_commercial_action_map() -> dict[str, dict[str, Any]]:
             "commercial_action": "split_tier",
             "rationale": "Floor breaches the cap — fence the expensive cohort.",
         },
+        "token_bloat": {
+            "commercial_action": "dynamic_cascade",
+            "rationale": "Token spend saturated with negligible lift — down-route to cheaper tier.",
+        },
+        "agency_deficit": {
+            "commercial_action": "spot_audit_hitl",
+            "rationale": "Review labor exceeds savings vs human baseline — spot-check to reduce verification tax.",
+        },
     }
 
 
@@ -162,6 +174,14 @@ def resolve_price_signal(
     references = [r for r in (cap, charged, baseline) if r is not None]
     if not references:
         return {"price_signal": "unpriceable", "detail": "floor exists but no cap, list, or baseline to compare it against"}
+
+    if economics.get("price_signal") in ("token_bloat", "agency_deficit"):
+        sig = economics["price_signal"]
+        return {"price_signal": sig, "detail": economics.get("detail", f"{sig} detected")}
+    if economics.get("token_bloat"):
+        return {"price_signal": "token_bloat", "detail": "saturated MOPT with elevated token cost"}
+    if economics.get("agency_deficit"):
+        return {"price_signal": "agency_deficit", "detail": "verification and inference exceed human baseline"}
 
     over_cap = cap is not None and floor > float(cap)
 

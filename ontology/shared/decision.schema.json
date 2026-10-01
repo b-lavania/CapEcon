@@ -18,11 +18,15 @@
         "unpriceable",
         "within_policy",
         "mesh_leak",
+        "below_tier_list",
+        "list_below_demand_opt",
         "below_floor",
         "over_baseline",
         "flat_bucket_over_cap",
         "severely_over_cap",
         "over_cap",
+        "token_bloat",
+        "agency_deficit",
         null
       ]
     },
@@ -35,13 +39,15 @@
         "cut_credits",
         "kill_all_inclusive",
         "reallocate",
+        "dynamic_cascade",
+        "spot_audit_hitl",
         null
       ]
     },
     "commercial_rationale": { "type": "string" },
     "commercial_owner_role": {
       "type": "string",
-      "enum": ["packaging", "finance", "deal_desk", "platform"]
+      "enum": ["packaging", "finance", "deal_desk", "platform", "operations"]
     }
   }
 }

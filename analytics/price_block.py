@@ -24,8 +24,8 @@ COST_BASIS_RANK = {
 _INTERNAL_PRESETS = frozenset(
     {"assistant_heavy", "workspace_crm", "ops_mission", "openmed_v22"}
 )
-_MARKETPLACE_PRESETS = frozenset({"marketplace_agentic"})
-_SKU_PRESETS = frozenset({"api_metered"})
+_MARKETPLACE_PRESETS = frozenset({"marketplace_agentic", "agentic_commerce"})
+_SKU_PRESETS = frozenset({"api_metered", "frugal_router"})
 
 
 def primary_metric_label(
@@ -80,7 +80,7 @@ def pricing_mode_for_profile(profile: dict[str, Any] | None) -> str:
     preset = profile.get("preset_id")
     vertical = profile.get("ontology_vertical")
     billing = profile.get("billing_model")
-    if preset in _MARKETPLACE_PRESETS or vertical == "marketplace_commerce":
+    if preset in _MARKETPLACE_PRESETS or vertical in ("marketplace_commerce", "agentic_commerce"):
         return "marketplace_take"
     if preset in _SKU_PRESETS:
         return "product_sku"

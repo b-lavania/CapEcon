@@ -198,6 +198,73 @@ PRESETS: dict[str, dict[str, Any]] = {
             "review_minutes_per_approval": 12.0,
         },
     },
+    "agentic_commerce": {
+        "preset_id": "agentic_commerce",
+        "label": "Agentic Commerce — autonomous negotiation & checkout",
+        "ontology_vertical": "agentic_commerce",
+        "ontology_version": "agentic_commerce_v1",
+        "billing_model": "usage_based",
+        "pricing_mode": "marketplace_take",
+        "default_model": "gpt-4o",
+        "max_loops_threshold": 6,
+        "cache_hit_rate": 0.55,
+        "description": (
+            "Two-sided marketplace where AI agents negotiate, quote, and checkout autonomously. "
+            "Platform take must cover inference cost plus negotiation labor overhead."
+        ),
+        "priors": {
+            "n_seats": 400,
+            "n_capabilities": 6,
+            "activation_rate": 0.65,
+            "weekly_habit_rate": 0.55,
+            "approval_fatigue_rate": 0.10,
+            "trust_incident_rate": 0.03,
+            "connector_error_rate": 0.08,
+            "run_cost_per_success": 0.45,
+            "seat_arpu_monthly": 0.0,
+            "monthly_churn_base": 0.05,
+            "revenue_per_1k_tokens": 0.0,
+            "take_rate": 0.10,
+            "agent_assist_share": 0.70,
+            "max_negotiation_discount": 0.15,
+            "policy_cpso_cap": 0.15,
+            "reviewer_loaded_hourly_usd": 75.0,
+            "review_minutes_per_approval": 2.0,
+        },
+    },
+    "frugal_router": {
+        "preset_id": "frugal_router",
+        "label": "Cost-Optimized Router — model cascade & caching",
+        "ontology_vertical": "agent_runtime",
+        "ontology_version": "agent_runtime_v1",
+        "billing_model": "usage_based",
+        "pricing_mode": "product_sku",
+        "default_model": "flash_lite",
+        "max_loops_threshold": 3,
+        "cache_hit_rate": 0.80,
+        "description": (
+            "High-volume API product relying on RouteLLM-style model cascades and aggressive caching. "
+            "Token cost management is the primary margin lever."
+        ),
+        "priors": {
+            "n_seats": 2000,
+            "n_capabilities": 8,
+            "activation_rate": 0.70,
+            "weekly_habit_rate": 0.60,
+            "approval_fatigue_rate": 0.05,
+            "trust_incident_rate": 0.02,
+            "connector_error_rate": 0.05,
+            "run_cost_per_success": 0.008,
+            "seat_arpu_monthly": 0.0,
+            "monthly_churn_base": 0.09,
+            "revenue_per_1k_tokens": 0.01,
+            "policy_cpso_cap": 0.02,
+            "budget_cap_per_outcome_usd": 0.05,
+            "human_baseline_usd": 0.0,
+            "reviewer_loaded_hourly_usd": 0.0,
+            "review_minutes_per_approval": 0.0,
+        },
+    },
 }
 
 

@@ -1,0 +1,92 @@
+vertical: agentic_commerce
+ontology_version: agentic_commerce_v1
+taxonomy_module: ontology.exception_taxonomy
+
+subject:
+  capability_id: "Autonomous marketplace agent (quote, negotiate, checkout)"
+  seller_id: "Platform seller account"
+  workspace_id: "Marketplace tenant"
+
+decision.verdict:
+  healthy: "Take margin positive, no pricing anomalies"
+  leaking: "Negotiation discount eroding platform revenue"
+  destructive: "Pricing collusion risk or predatory undercutting detected"
+  uneconomic: "Inference cost exceeds platform take at current GMV"
+  underpowered: "Insufficient transaction volume for reliable signal"
+  needs_review: "Mixed or ambiguous pricing signals"
+
+decision.recommended_action:
+  ship: "Promote capability / raise traffic"
+  hold: "Freeze rollout; gather evidence"
+  throttle: "Cap traffic or credit budget"
+  shadow: "Run offline without user-visible effects"
+  rollback: "Revert to last known-good version"
+  kill: "Remove from product surface"
+  experiment: "Force governed test before further ship"
+  revise: "Prompt/tool/policy change; re-enter eval"
+
+economics.primary_metric_label: platform_net_margin_usd
+
+classification:
+  thresholds:
+    negotiation_slippage:
+      max_discount_rate: 0.20
+    take_rate_squeeze:
+      min_net_margin_pct: 0.02
+    bid_ask_spread_anomaly:
+      max_spread_to_gmv_ratio: 0.40
+    inference_over_take:
+      max_inference_take_ratio: 0.50
+
+decision:
+  verdict_default: needs_review
+  verdict_rules:
+    - verdict: destructive
+      when_any_category: [bid_ask_spread_anomaly]
+    - verdict: uneconomic
+      when_any_category: [inference_over_take, take_rate_squeeze]
+    - verdict: leaking
+      when_any_category: [negotiation_slippage]
+    - verdict: underpowered
+      when_exception_count_lt: 1
+    - verdict: needs_review
+      default: true
+
+  action_map:
+    healthy:
+      recommended_action: ship
+      requires_review: false
+      rationale: "Marketplace agent operating within take and inference policy."
+    leaking:
+      recommended_action: throttle
+      requires_review: false
+      rationale: "Agent conceding too much — tighten negotiation policy bounds."
+    destructive:
+      recommended_action: hold
+      requires_review: true
+      rationale: "Pricing anomaly may indicate collusion or manipulation — human review."
+    uneconomic:
+      recommended_action: hold
+      requires_review: false
+      rationale: "Platform net margin below floor — review inference model tier."
+    underpowered:
+      recommended_action: hold
+      requires_review: false
+      rationale: "Insufficient volume — gather more transactions."
+    needs_review:
+      recommended_action: hold
+      requires_review: true
+      rationale: "Mixed marketplace signals — human must confirm."
+
+  commercial_action_map:
+    within_policy:
+      commercial_action: null
+    inference_over_take:
+      commercial_action: dynamic_cascade
+      rationale: "Inference eats take margin — down-route to cheaper model."
+    take_rate_squeeze:
+      commercial_action: raise_list
+      rationale: "Expand take rate or raise minimum transaction fee."
+    token_bloat:
+      commercial_action: dynamic_cascade
+      rationale: "Negotiation agent over-spending tokens per transaction."

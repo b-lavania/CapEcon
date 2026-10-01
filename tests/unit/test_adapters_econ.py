@@ -79,3 +79,29 @@ def test_macro_abm_finance_fixtures_parse():
     fin = ingest_finance_export(FIXTURES / "finance" / "sample.jsonl")
     assert "pnl_usd" in fin["tables"]["outcomes"].columns
     assert "latency_ms" in fin["tables"]["runs"].columns
+
+
+def test_market_magentic_negotiation_fixture():
+    pack = ingest_market_export(FIXTURES / "market" / "magentic_negotiation.jsonl")
+    txns = pack["tables"]["agent_transactions"]
+    assert len(txns) == 2
+    assert "negotiation_rounds" in txns.columns
+    assert "initial_bid_usd" in txns.columns
+    assert "final_bid_usd" in txns.columns
+    assert "negotiation_discount" in txns.columns
+    assert txns.iloc[0]["negotiation_rounds"] == 3
+    assert txns.iloc[0]["negotiation_discount"] == 0.1429
+
+
+def test_macro_wonderecon_round_fixture():
+    pack = ingest_macro_export(FIXTURES / "macro" / "wonderecon_round.jsonl")
+    assert len(pack["tables"]["outcomes"]) == 2
+    outcomes = pack["tables"]["outcomes"]
+    assert "agent_type" in outcomes.columns
+    assert "price_target_usd" in outcomes.columns
+    assert outcomes.iloc[0]["agent_type"] == "household"
+    assert "approvals" in pack["tables"]
+    approvals = pack["tables"]["approvals"]
+    assert len(approvals) == 1
+    assert approvals.iloc[0]["decision"] == "override"
+

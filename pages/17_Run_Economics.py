@@ -72,6 +72,34 @@ _cols[4].metric("Static routing age", resolve_metric("static_decision_age_median
 if _show_reward:
     _cols[5].metric("Reward per $", resolve_metric("reward_per_dollar", ws)["display"])
 
+section_kicker("Token production & agency economics")
+from analytics.token_production import cascade_opportunity, token_bloat_flags
+from analytics.agency_contract import compute_agency_surplus
+
+_tok_cols = st.columns(3)
+cascade = cascade_opportunity(ws)
+agency = compute_agency_surplus(ws)
+bloat_df = token_bloat_flags(ws)
+n_bloat = int(bloat_df["flag"].sum()) if not bloat_df.empty else 0
+
+_tok_cols[0].metric(
+    "Token bloat capabilities",
+    str(n_bloat),
+    help="Capabilities where token cost saturates without marginal outcome lift.",
+)
+_tok_cols[1].metric(
+    "Cascade savings estimate",
+    f"${cascade['savings_usd']:,.2f}",
+    help="Estimated monthly savings from down-routing saturated capabilities (simulated).",
+)
+delta_str = f"${abs(agency['agency_surplus_usd']):.3f} {'deficit' if agency['agency_deficit'] else 'surplus'}"
+_tok_cols[2].metric(
+    "Agency surplus / deficit",
+    delta_str,
+    delta=f"vs ${agency['human_baseline_usd']:.2f} baseline",
+    delta_color="inverse" if agency["agency_deficit"] else "normal",
+)
+
 section_kicker("CPSO trend")
 fig_cpso = cpso_trend_line(ws)
 if fig_cpso is not None:

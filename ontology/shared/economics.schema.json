@@ -66,6 +66,12 @@
     },
     "surplus_usd": { "type": ["number", "null"] },
     "tier_list_usd": { "type": ["number", "null"] },
-    "wtp_evidence": { "type": "object" }
+    "wtp_evidence": { "type": "object" },
+    "verification_cost_usd": { "type": ["number", "null"] },
+    "agency_surplus_usd": { "type": ["number", "null"] },
+    "token_mopt": {
+      "type": ["number", "null"],
+      "description": "Marginal outcome probability per 1k tokens"
+    }
   }
 }

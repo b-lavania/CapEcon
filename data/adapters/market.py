@@ -70,6 +70,18 @@ def ingest_market_records(records: list[dict[str, Any]]) -> dict[str, Any]:
             value = rec.get("surplus_usd")
         value_f = as_float(value, 0.0) if value is not None else None
 
+        initial_bid = as_float(rec.get("initial_bid_usd"), None)
+        final_bid = as_float(rec.get("final_bid_usd") or rec.get("agreed_price_usd"), None)
+        buyer_val = as_float(rec.get("buyer_valuation_usd"), None)
+        seller_cost = as_float(rec.get("seller_cost_usd"), None)
+        n_rounds = int(rec.get("negotiation_rounds") or rec.get("proposal_count") or 0)
+        order_type = str(rec.get("order_type") or "market")
+        spread = as_float(rec.get("bid_ask_spread_usd"), None)
+
+        neg_discount = None
+        if initial_bid is not None and final_bid is not None and initial_bid > 0:
+            neg_discount = round((initial_bid - final_bid) / initial_bid, 4)
+
         txn_rows.append(
             {
                 "transaction_id": tid,
@@ -86,6 +98,14 @@ def ingest_market_records(records: list[dict[str, Any]]) -> dict[str, Any]:
                 "verified": verified,
                 "verified_by": str(rec.get("verified_by") or "deterministic_stage"),
                 "success": success,
+                "negotiation_rounds": n_rounds,
+                "initial_bid_usd": initial_bid,
+                "final_bid_usd": final_bid,
+                "buyer_valuation_usd": buyer_val,
+                "seller_cost_usd": seller_cost,
+                "negotiation_discount": neg_discount,
+                "order_type": order_type,
+                "bid_ask_spread_usd": spread,
             }
         )
         run_rows.append(

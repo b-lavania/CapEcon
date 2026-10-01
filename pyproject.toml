@@ -97,14 +97,11 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
 
-[tool.hypothesis]
-profiles = {
-    "dev": {
-        "max_examples": 10,
-        "deadline": None,
-    },
-    "ci": {
-        "max_examples": 100,
-        "deadline": None,
-    }
-}
+[tool.hypothesis.profiles.dev]
+max_examples = 10
+deadline = 0
+
+[tool.hypothesis.profiles.ci]
+max_examples = 100
+deadline = 0
+

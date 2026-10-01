@@ -221,3 +221,74 @@ def demand_caption_for_capability(workspace: Workspace | None, capability_id: st
     if surplus is not None:
         parts.append(f"surplus-opt list ${surplus:.2f}")
     return "; ".join(parts)
+
+
+def estimate_heterogeneous_elasticity(
+    panel: pd.DataFrame,
+    feature_cols: list[str] | None = None,
+    *,
+    min_samples: int = 150,
+) -> dict[str, Any]:
+    """
+    Causal Forest DML estimate of heterogeneous price elasticity.
+    Falls back to OLS log-log when econml not installed or underpowered.
+
+    Args:
+        panel: build_demand_panel() output — columns sku, price, quantity, [control_*]
+        feature_cols: subset of control_* columns to use as heterogeneity moderators
+        min_samples: minimum rows for CausalForestDML; below this → OLS fallback
+
+    Returns dict with:
+        elasticity_mean, elasticity_std, method, claim_type, underpowered, skus
+    """
+    if panel.empty or "price" not in panel.columns or "quantity" not in panel.columns:
+        return {"elasticity_mean": None, "underpowered": True, "claim_type": "simulated", "method": "none"}
+
+    n = len(panel)
+    underpowered = n < min_samples
+
+    if not underpowered:
+        try:
+            from econml.dml import CausalForestDML
+
+            T = np.log(panel["price"].values.reshape(-1, 1))
+            Y = np.log(panel["quantity"].clip(lower=1).values)
+            X_cols = [c for c in (feature_cols or []) if c in panel.columns]
+            X = panel[X_cols].fillna(0).values if X_cols else np.ones((n, 1))
+            model = CausalForestDML(n_estimators=100, random_state=42)
+            model.fit(Y, T.ravel(), X=X)
+            effects = model.effect(X)
+            return {
+                "elasticity_mean": round(float(np.mean(effects)), 4),
+                "elasticity_std": round(float(np.std(effects)), 4),
+                "method": "CausalForestDML",
+                "claim_type": "associational",
+                "underpowered": False,
+                "skus": {},
+            }
+        except ImportError:
+            pass
+
+    import warnings
+
+    log_p = np.log(panel["price"].clip(lower=1e-6).values)
+    log_q = np.log(panel["quantity"].clip(lower=1).values)
+    if np.std(log_p) < 1e-6:
+        return {
+            "elasticity_mean": None,
+            "underpowered": True,
+            "claim_type": "simulated",
+            "method": "ols_fallback",
+            "message": "No price variation",
+        }
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        slope = float(np.cov(log_p, log_q)[0, 1] / np.var(log_p))
+    return {
+        "elasticity_mean": round(slope, 4),
+        "elasticity_std": None,
+        "method": "ols_log_log_fallback",
+        "claim_type": "simulated",
+        "underpowered": underpowered,
+    }
+
