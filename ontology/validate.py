@@ -33,6 +33,10 @@ VERTICALS = {
         "semantics": ONTOLOGY_ROOT / "clinical_runtime" / "semantics.yaml",
         "schema": ONTOLOGY_ROOT / "shared" / "growth_decision_record.base.schema.json",
     },
+    "agentic_commerce": {
+        "semantics": ONTOLOGY_ROOT / "agentic_commerce" / "semantics.yaml",
+        "schema": ONTOLOGY_ROOT / "shared" / "growth_decision_record.base.schema.json",
+    },
 }
 
 

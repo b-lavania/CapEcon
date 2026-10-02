@@ -33,7 +33,7 @@ def test_token_econ_records_direct():
     runs = pack["tables"]["runs"]
     assert len(runs) == 1
     assert runs.iloc[0]["run_id"] == "QRY-TEST-1"
-    assert runs.iloc[0]["success"] is True
+    assert bool(runs.iloc[0]["success"]) is True
     assert runs.iloc[0]["run_cost_usd"] == 0.001
 
     rlog = pack["tables"]["routing_log"]
@@ -57,3 +57,6 @@ def test_routellm_cascade_fixture_builds_workspace():
     assert len(ws.runs) >= 2
     assert hasattr(ws, "routing_log")
     assert len(ws.routing_log) == 2
+    q1 = ws.runs[ws.runs["run_id"] == "QRY-001"]
+    assert len(q1) == 1
+    assert int(q1.iloc[0]["tokens_in"]) == 320

@@ -52,6 +52,7 @@ def ingest_token_econ_records(records: list[dict[str, Any]]) -> dict[str, Any]:
                 "success": success,
                 "run_cost_usd": cost,
                 "trust_incident": False,
+                "tokens_in": p_tokens,
             }
         )
         routing_rows.append(

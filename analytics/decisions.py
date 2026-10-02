@@ -959,6 +959,76 @@ def classify_marketplace(
                 "capability_id": str(cap_id),
             })
 
+    if profile.get("ontology_vertical") == "agentic_commerce" and not assisted.empty:
+        slip_max = float(thresh.get("negotiation_slippage", {}).get("max_discount_rate", 0.20))
+        squeeze_min = float(thresh.get("take_rate_squeeze", {}).get("min_net_margin_pct", 0.02))
+        spread_max = float(thresh.get("bid_ask_spread_anomaly", {}).get("max_spread_to_gmv_ratio", 0.40))
+        infra_max = float(thresh.get("inference_over_take", {}).get("max_inference_take_ratio", 0.50))
+        for cap_id, grp in assisted.groupby("capability_id"):
+            cap_s = str(cap_id)
+            gmv = float(grp["gmv_usd"].sum()) if "gmv_usd" in grp.columns else 0.0
+            take = float(grp["platform_revenue_usd"].sum()) if "platform_revenue_usd" in grp.columns else 0.0
+            inference = (
+                float(grp["agent_inference_cost_usd"].sum())
+                if "agent_inference_cost_usd" in grp.columns
+                else 0.0
+            )
+
+            if "negotiation_discount" in grp.columns and grp["negotiation_discount"].notna().any():
+                mean_disc = float(grp["negotiation_discount"].dropna().mean())
+                if mean_disc > slip_max:
+                    exceptions.append({
+                        **base,
+                        "category": "negotiation_slippage",
+                        "title": f"Workflow {cap_s} — negotiation discount above policy",
+                        "confidence": 0.75,
+                        "rank": 1,
+                        "impact": {"cost_usd": max(0.0, gmv * mean_disc)},
+                        "capability_id": cap_s,
+                    })
+
+            if gmv > 0 and "platform_revenue_usd" in grp.columns and "agent_inference_cost_usd" in grp.columns:
+                net = (take - inference) / max(gmv, 1.0)
+                if net < squeeze_min:
+                    exceptions.append({
+                        **base,
+                        "category": "take_rate_squeeze",
+                        "title": f"Workflow {cap_s} — net margin after inference below floor",
+                        "confidence": 0.75,
+                        "rank": 1,
+                        "impact": {"cost_usd": max(0.0, -net) * gmv},
+                        "capability_id": cap_s,
+                    })
+
+            if (
+                "bid_ask_spread_usd" in grp.columns
+                and "gmv_usd" in grp.columns
+                and grp["bid_ask_spread_usd"].notna().any()
+            ):
+                spread_sum = float(grp["bid_ask_spread_usd"].fillna(0).sum())
+                spread_ratio = spread_sum / max(gmv, 1.0)
+                if spread_ratio > spread_max:
+                    exceptions.append({
+                        **base,
+                        "category": "bid_ask_spread_anomaly",
+                        "title": f"Workflow {cap_s} — bid-ask spread vs GMV above policy",
+                        "confidence": 0.75,
+                        "rank": 1,
+                        "impact": {"cost_usd": spread_sum},
+                        "capability_id": cap_s,
+                    })
+
+            if take > 0 and inference / take > infra_max:
+                exceptions.append({
+                    **base,
+                    "category": "inference_over_take",
+                    "title": f"Workflow {cap_s} — inference exceeds share of take",
+                    "confidence": 0.75,
+                    "rank": 1,
+                    "impact": {"cost_usd": inference},
+                    "capability_id": cap_s,
+                })
+
     sellers = seller_margin_table(workspace)
     if not sellers.empty:
         worst = sellers.sort_values("net_margin").head(3)

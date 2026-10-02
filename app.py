@@ -198,7 +198,7 @@ def build_nav_structure() -> dict:
         st.Page("pages/27_Subgraph_Health.py", title="Subgraph", url_path="subgraph"),
         st.Page("pages/26_Agent_Version_Compare.py", title="Version Compare", url_path="version_compare"),
     ]
-    if preset == "marketplace_agentic":
+    if preset in ("marketplace_agentic", "agentic_commerce"):
         call_pages.append(
             st.Page("pages/35_Marketplace_Radar.py", title="Marketplace Radar", url_path="marketplace_radar")
         )

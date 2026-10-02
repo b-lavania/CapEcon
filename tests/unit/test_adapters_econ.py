@@ -84,7 +84,7 @@ def test_macro_abm_finance_fixtures_parse():
 def test_market_magentic_negotiation_fixture():
     pack = ingest_market_export(FIXTURES / "market" / "magentic_negotiation.jsonl")
     txns = pack["tables"]["agent_transactions"]
-    assert len(txns) == 2
+    assert len(txns) == 3
     assert "negotiation_rounds" in txns.columns
     assert "initial_bid_usd" in txns.columns
     assert "final_bid_usd" in txns.columns
@@ -104,4 +104,51 @@ def test_macro_wonderecon_round_fixture():
     approvals = pack["tables"]["approvals"]
     assert len(approvals) == 1
     assert approvals.iloc[0]["decision"] == "override"
+
+    ws = ingest_and_build(
+        get_preset("assistant_heavy"),
+        seed=42,
+        n_sessions=500,
+        data_source="macro",
+        uploaded_tables=pack["tables"],
+    )
+    assert len(ws.approvals) > 1
+    assert (ws.approvals["decision"] == "override").any()
+
+
+def test_agentic_commerce_negotiation_emits_destructive():
+    from analytics.decisions import emit_marketplace_records
+
+    pack = ingest_market_export(FIXTURES / "market" / "magentic_negotiation.jsonl")
+    ws = ingest_and_build(
+        get_preset("agentic_commerce"),
+        seed=42,
+        n_sessions=500,
+        data_source="market",
+        uploaded_tables=pack["tables"],
+    )
+    records = emit_marketplace_records(ws, get_preset("agentic_commerce"))
+    commerce_cats = {
+        "negotiation_slippage",
+        "take_rate_squeeze",
+        "bid_ask_spread_anomaly",
+        "inference_over_take",
+    }
+    by_cap = {
+        r["subject"]["capability_id"]: r
+        for r in records
+        if r.get("subject", {}).get("capability_id")
+    }
+    assert "negotiate_assist" in by_cap
+    neg = by_cap["negotiate_assist"]
+    cats = {e["category"] for e in neg["exceptions"]}
+    assert commerce_cats.issubset(cats)
+    assert neg["decision"]["verdict"] == "destructive"
+    assert neg["decision"]["recommended_action"] == "hold"
+    assert neg["decision"]["requires_review"] is True
+    assert isinstance(neg["economics"]["verification_cost_usd"], (int, float))
+    assert isinstance(neg["economics"]["agency_surplus_usd"], (int, float))
+    if "quote_assist" in by_cap:
+        quote_cats = {e["category"] for e in by_cap["quote_assist"]["exceptions"]}
+        assert not commerce_cats.intersection(quote_cats)
 

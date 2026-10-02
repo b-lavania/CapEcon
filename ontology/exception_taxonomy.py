@@ -216,6 +216,26 @@ CATEGORIES: dict[str, dict[str, Any]] = {
         "default_severity": "medium",
         "playbook_hint": "Conversion or retention dropped after list/take change — revisit packaging before scaling traffic.",
     },
+    "negotiation_slippage": {
+        "owner_role": "platform",
+        "default_severity": "medium",
+        "playbook_hint": "Agent conceded past policy vs initial bid — tighten negotiation bounds.",
+    },
+    "take_rate_squeeze": {
+        "owner_role": "platform",
+        "default_severity": "high",
+        "playbook_hint": "Platform net margin after inference below floor — review take or model tier.",
+    },
+    "bid_ask_spread_anomaly": {
+        "owner_role": "platform",
+        "default_severity": "high",
+        "playbook_hint": "Bid-ask spread vs GMV exceeds policy — review for collusion or manipulation.",
+    },
+    "inference_over_take": {
+        "owner_role": "platform",
+        "default_severity": "high",
+        "playbook_hint": "Inference cost exceeds share of platform take — down-route or raise take.",
+    },
 }
 
 CHURN_REASON_CODES = [

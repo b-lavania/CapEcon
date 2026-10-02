@@ -14,6 +14,7 @@ from data.adapters.base import (
     load_json_or_jsonl,
     stamp_provenance,
 )
+import pandas as pd
 
 
 def ingest_macro_export(path: str | Path) -> dict[str, Any]:

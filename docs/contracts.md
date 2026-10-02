@@ -23,8 +23,9 @@ Without #1 you have observability. Without #3 you have product analytics. With a
 | `connector_events`, `routing_decisions` | multi-agent / tools | Handoffs, blast radius |
 | `eval_results`, `capability_versions` | Version Gate | Eval delta, canary |
 | `agent_transactions` | Marketplace Radar | Agent-assisted GMV, take, inference cost |
+| `routing_log` | token_econ overlay | Cascade / router telemetry. Marketplace Radar does not read it; Run Economics uses `runs` / MOPT |
 
-Column names follow the empty frames in `core/workspace.py` and the generator. Adapters in `data/adapters/` map other people's exports onto those frames. **Data Connect** is the UI for that. Market / RL / macro / ABM / finance exports stay `claim_type: simulated` even after ingest (they are not ChartMogul NRR). See [`adapters.md`](adapters.md).
+Column names follow the empty frames in `core/workspace.py` and the generator. Adapters in `data/adapters/` map other people's exports onto those frames. **Data Connect** is the UI for that. Market / RL / macro / ABM / finance exports stay `claim_type: simulated` even after ingest (they are not ChartMogul NRR). `token_econ` overlays are `associational`. See [`adapters.md`](adapters.md).
 
 ## What comes out: GrowthDecisionRecord
 

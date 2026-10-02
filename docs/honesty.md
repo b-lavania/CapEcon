@@ -6,7 +6,7 @@ CapEcon is a **synthetic teaching environment** unless you overlay files on Data
 
 | Layer | Status |
 | --- | --- |
-| Warehouse tables | Authored in `data/agentic_generator.py`. Data Connect can overlay OTel / CSV / Langfuse / Vision / market / workflow / RL / macro / ABM / finance exports. I have not run a live partner warehouse through this yet. |
+| Warehouse tables | Authored in `data/agentic_generator.py`. Data Connect can overlay OTel / CSV / Langfuse / Vision / market / workflow / RL / macro / ABM / finance / token_econ exports. I have not run a live partner warehouse through this yet. |
 | Metric formulas | Teaching definitions aligned to `docs/methodology.md` |
 | GDR exceptions | Heuristic classifiers on whatever is in the warehouse |
 | Causal claims | Only when `experiment_id` is present on a record |
@@ -16,7 +16,7 @@ CapEcon is a **synthetic teaching environment** unless you overlay files on Data
 
 - **Associational:** correlation-style signals (usage ↔ churn uplift, drift WoW). Shown with confidence, not causal verdicts.
 - **Causal gate:** `subject.experiment_id` + experiment tables. Without it, records must not claim causal harm.
-- **Simulated:** default `claim_type` when `meta.data_source` is the generator / mock OTel, or a market / RL / macro / ABM / finance fixture. Simulated market and macro numbers are not production telemetry.
+- **Simulated:** default `claim_type` when `meta.data_source` is the generator / mock OTel, or a market / RL / macro / ABM / finance fixture. Simulated market and macro numbers are not production telemetry. `token_econ` routing overlays are `associational` telemetry (not billing).
 - **Human override:** `decision.final_action` may differ from `recommended_action`; flywheel compares followed vs overridden cohorts.
 
 Every emitted GDR should carry `evidence.claim_type`. If the UI doesn't show it, that's a bug.

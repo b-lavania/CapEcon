@@ -37,7 +37,7 @@ Profile (ontology switch)  /  Data Connect (optional overlay)
 
 The loop, step by step:
 
-1. **Profile**: Pick a preset (`assistant_heavy`, `workspace_crm`, `ops_mission`, `marketplace_agentic`, `openmed_v22`, etc.). That switches the ontology vertical, the synthetic priors, and the default `pricing_mode`. If you have files, **Data Connect** first.
+1. **Profile**: Pick a preset (`assistant_heavy`, `workspace_crm`, `ops_mission`, `marketplace_agentic`, `agentic_commerce`, `frugal_router`, `openmed_v22`, etc.). That switches the ontology vertical, the synthetic priors, and the default `pricing_mode`. If you have files, **Data Connect** first.
 2. **Outcomes**: If you can't name what "verified success" means, stop and use **Outcome Definition**. Login is not an outcome.
 3. **Generate / overlay**: Build the warehouse. Synthetic by default.
 4. **Version Gate**: Should this capability version ship, hold, or roll back? Eval delta, canary SPRT, then a GDR you can drop in the Inbox. Same logic is on `POST /version-gate` if you want a CI check.
@@ -60,7 +60,7 @@ Three **pricing dialects**, no global default. The preset picks:
 
 **`cost_basis`** is per-row, and aggregates take the weakest link: `simulated < estimated < allocated < metered`. A GDR covering 1,240 runs where 300 are still token-oracle estimates must not badge itself `metered` because one row had an invoice.
 
-**Ops vs commercial** are separate axes on the same decision. `recommended_action` is runtime (`ship`, `hold`, `throttle`, `rollback`). `commercial_action` is packaging (`raise_list`, `split_tier`, `reallocate`, …). YAML picks the verb; Python computes the signal. A cheaper model holding the eval band should surface `reallocate` before anyone asks finance to raise a list price.
+**Ops vs commercial** are separate axes on the same decision. `recommended_action` is runtime (`ship`, `hold`, `throttle`, `rollback`). `commercial_action` is packaging (`raise_list`, `split_tier`, `reallocate`, `dynamic_cascade`, `spot_audit_hitl`, …). YAML picks the verb; Python computes the signal. A cheaper model holding the eval band should surface `reallocate` / `dynamic_cascade` before anyone asks finance to raise a list price.
 
 Clinical (`openmed_v22`) splits **floor** (inference + review labor per run) from **risk** (expected harm). The Radar headline stays the window total so sort order doesn't jump around.
 
@@ -78,19 +78,22 @@ I don't want prompt text in this system. Adapters scrub content keys; `tests/fix
 
 ## Related work (simulators vs CapEcon)
 
-These projects **simulate** markets, macro agents, RL economies, or ABMs. CapEcon **prices and decides** after you export a file and overlay it on Data Connect. See [`docs/adapters.md`](docs/adapters.md).
+These projects **simulate** markets, macro agents, RL economies, ABMs, or routing cascades. CapEcon **prices and decides** after you export a file and overlay it on Data Connect. See [`docs/adapters.md`](docs/adapters.md).
 
 | Repository | Role relative to CapEcon |
 | --- | --- |
-| [microsoft/multi-agent-marketplace](https://github.com/microsoft/multi-agent-marketplace) | Market experiment exports → `market` adapter |
+| [microsoft/multi-agent-marketplace](https://github.com/microsoft/multi-agent-marketplace) | Market / negotiation exports → `market` adapter (`agentic_commerce` preset) |
 | [marketagents-ai/MarketAgents](https://github.com/marketagents-ai/MarketAgents) | Double-auction / coordination exports → `market` |
 | [tsinghua-fib-lab/ACL24-EconAgent](https://github.com/tsinghua-fib-lab/ACL24-EconAgent) | Macro period aggregates → `macro` |
 | [sethkarten/LLM-Economist](https://github.com/sethkarten/LLM-Economist) | Mechanism / policy sims → `macro` |
+| [Planet-300894/WonderEcon](https://github.com/Planet-300894/WonderEcon) | Multi-market round states → `macro` |
 | [FreedomIntelligence/TwinMarket](https://github.com/FreedomIntelligence/TwinMarket) | Financial blotter shape → `finance` |
 | [ponseko/econojax](https://github.com/ponseko/econojax) | RL episode logs → `rl` |
 | [econ-ark/HARK](https://github.com/econ-ark/HARK) | Heterogeneous-agent scenarios → `abm` |
 | [scikit-agent/scikit-agent](https://github.com/scikit-agent/scikit-agent) | ABM / MAS toolkit → `abm` |
 | [salesforce/ai-economist](https://github.com/salesforce/ai-economist) | Two-level RL policy sims → `rl` |
+| [lm-sys/RouteLLM](https://github.com/lm-sys/RouteLLM) | Cascade / router telemetry → `token_econ` (`frugal_router` preset) |
+| [SuDIS-ZJU/Token-Economics](https://github.com/SuDIS-ZJU/Token-Economics) | Production-function theory only (MOPT / bloat in analytics; no vendored runtime) |
 | [FreedomIntelligence/Awesome-Econ-World-Models](https://github.com/FreedomIntelligence/Awesome-Econ-World-Models) | Discovery index only |
 
 CapEcon does not vendor or run those repos.
@@ -99,9 +102,11 @@ CapEcon does not vendor or run those repos.
 
 ## Data Connect, including Vision (two records)
 
-**Data Connect** is where real files land: OTel JSONL, Langfuse export, LangGraph node dumps, market experiment JSONL, CSVs for accounts/outcomes/subscriptions/usage, Vision Agent pack, and (under More sim exports) RL / macro / ABM / finance fixtures.
+**Data Connect** is where real files land: OTel JSONL, Langfuse export, LangGraph node dumps, market experiment JSONL (including Magentic-shaped negotiation fields), CSVs for accounts/outcomes/subscriptions/usage, Vision Agent pack, RouteLLM-style routing logs (`token_econ` → `runs` + `routing_log`), and (under More sim exports) RL / macro / ABM / finance fixtures.
 
-That last one matters because it's the first non-synthetic path where agent API cost and customer invoice are both real numbers. Putting them on one GDR is a category error:
+Presets that pair with those overlays: `marketplace_agentic` / `agentic_commerce` for market exports (Marketplace Radar), `frugal_router` for `token_econ` (Run Economics token-bloat / cascade chips). Overlay claim types stay honest: market/macro sims are `simulated`; routing telemetry is `associational`.
+
+That Vision path matters because it's the first non-synthetic path where agent API cost and customer invoice are both real numbers. Putting them on one GDR is a category error:
 
 | Source | Field | Record | Basis |
 | --- | --- | --- | --- |
@@ -130,13 +135,13 @@ What you tune in `semantics.yaml`:
 - `decision.action_map`: verdict → `recommended_action` + `requires_review`
 - `decision.commercial_action_map`: price signal → `commercial_action` (clinical YAML routes to `reallocate`, not `raise_list`)
 
-The ontology has a few verticals: `capability_lifecycle`, `agent_runtime`, `marketplace_commerce`, `clinical_runtime`, `orchestration`, `eval_governance`. Details in [`ontology/README.md`](ontology/README.md).
+The ontology has a few verticals: `capability_lifecycle`, `agent_runtime`, `marketplace_commerce`, `agentic_commerce`, `clinical_runtime`, `orchestration`, `eval_governance`. Details in [`ontology/README.md`](ontology/README.md).
 
 ---
 
 ## What's here and what's not
 
-**The main thing** is the agentic rebuild: taxonomy, YAML semantics, JSON Schema for the GDR, price block, ranked Radar, Outcome Flywheel. Around that I added the pieces you actually need if someone shows up with traces: Data Connect adapters (OTel / Langfuse / CSV / Vision; prompt bodies get dropped), Version Gate, Decision Inbox, Subgraph Health, Clinical Radar (`openmed_v22`), Executive Summary, a tiny FastAPI in `service/`, and SQLite behind the old JSONL store. None of that replaces LangSmith or Stripe. It sits on top of the join.
+**The main thing** is the agentic rebuild: taxonomy, YAML semantics, JSON Schema for the GDR, price block, ranked Radar, Outcome Flywheel. Around that I added the pieces you actually need if someone shows up with traces: Data Connect adapters (OTel / Langfuse / CSV / Vision / market / workflow / rl / macro / abm / finance / token_econ; prompt bodies get dropped), Version Gate, Decision Inbox, Subgraph Health, Marketplace Radar (`marketplace_agentic`, `agentic_commerce`), Clinical Radar (`openmed_v22`), Executive Summary, a tiny FastAPI in `service/`, and SQLite behind the old JSONL store. None of that replaces LangSmith or Stripe. It sits on top of the join.
 
 **The legacy simulator pages** are still here, under the Legacy nav. Retention, unit economics, marketplace liquidity, CRO, all of it. I didn't delete anything. Those pages use the old customer/transaction model and they still work. They're reference.
 
@@ -251,7 +256,7 @@ CapEcon/
 │   ├── agentic_generator.py        # synthetic agentic warehouse
 │   ├── clinical_generator.py       # openmed_v22 clinical_runs
 │   ├── case_studies/               # authored capability catalogs
-│   └── adapters/                   # OTel, Langfuse, CSV, Vision, market/workflow/rl/macro/abm/finance
+│   └── adapters/                   # OTel, Langfuse, CSV, Vision, market/workflow/rl/macro/abm/finance/token_econ
 ├── standards/                      # NEW in v2.0 - standard exporters
 │   ├── opendone.py                 # OpenDone exporter (subprocess bridge)
 │   ├── opentrajectory.py           # OpenTrajectory exporter (pure Python)
@@ -319,7 +324,7 @@ CapEcon v2.0 adds support for exporting to external standards for interoperabili
 - HITL queueing (Erlang-C formula)
 - Exception taxonomy (15+ categories)
 - Value ledger (demand-side economics)
-- Data Connect adapters (OTel, Langfuse, Vision)
+- Data Connect adapters (OTel, Langfuse, Vision, market, token_econ, …)
 
 These features are **100% preserved** and not replaced by standards.
 
@@ -453,7 +458,8 @@ CapEcon's unique value comes from its proprietary features that are not availabl
 - **OTel adapter**: JSONL ingest, GenAI semantic conventions, prompt scrubbing
 - **Langfuse adapter**: JSON export, HTTP pull, trace/observation mapping
 - **Vision adapter**: Two-record system (agent GDR + move quotes)
-- **Scrubbing**: `data/adapters/scrub.py` removes prompt bodies
+- **Econ-world adapters**: `market`, `workflow`, `rl`, `macro`, `abm`, `finance`, `token_econ` (file-only; see [`docs/adapters.md`](docs/adapters.md))
+- **Scrubbing**: `data/adapters/scrub.py` removes prompt bodies; token *counts* (`prompt_tokens`, …) are kept as metadata
 
 ---
 

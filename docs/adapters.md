@@ -14,6 +14,7 @@ Those projects simulate. CapEcon prices and decides after you export a file and 
 | `macro` | EconAgent / LLM-Economist periods | `outcomes`, `usage_events` | `simulated` |
 | `abm` | HARK / scikit-agent scenario summary | `accounts`, `outcomes`, `usage_events` | `simulated` |
 | `finance` | TwinMarket-style blotter | `runs`, `outcomes` (+ `pnl_usd`, optional `latency_ms`) | `simulated` |
+| `token_econ` | RouteLLM / FrugalGPT cascade logs | `runs`, `usage_events`, `routing_log` | `associational` |
 
 Existing adapters (`otel`, `langfuse`, `csv`, `vision`) stay as they are. `workflow` may call OTel/Langfuse parsers.
 
@@ -29,6 +30,8 @@ Existing adapters (`otel`, `langfuse`, `csv`, `vision`) stay as they are. `workf
 
 Simulated market / macro / RL / ABM / finance numbers are **not** ChartMogul NRR or production billing.
 `claim_type` stays `simulated` unless the export is a real OTel/Langfuse trace with join keys (`associational`).
+`token_econ` overlays are stamped `associational` (routing telemetry, not invoices).
+Presets `agentic_commerce` and `frugal_router` price those exports; they do not run Magentic Marketplace or RouteLLM.
 `causal` still requires an experiment id on the subject.
 
 ## Fixtures

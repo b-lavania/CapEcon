@@ -69,6 +69,9 @@ ALLOWED_SPAN_COLUMNS = frozenset(
 
 def _is_content_key(key: str) -> bool:
     k = key.lower().replace("-", "_")
+    # Token *counts* are metadata (RouteLLM / FrugalGPT), not prompt bodies.
+    if k.endswith("_tokens") or k in {"tokens_in", "tokens_out", "tokens_used", "cached_tokens"}:
+        return False
     if k in CONTENT_KEYS:
         return True
     # Nested OTel attribute style: gen_ai.prompt.0.content

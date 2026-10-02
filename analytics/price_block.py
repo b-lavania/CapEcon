@@ -345,6 +345,32 @@ def fill_price_block(
     if cap is not None:
         out["cap_usd"] = round(float(cap), 4)
 
+    if workspace is not None:
+        from analytics.agency_contract import compute_agency_surplus
+        from analytics.token_production import marginal_outcome_per_token, token_bloat_flags
+
+        agency = compute_agency_surplus(workspace)
+        out["verification_cost_usd"] = agency["verification_cost_usd"]
+        out["agency_surplus_usd"] = agency["agency_surplus_usd"]
+        human_baseline = float((profile.get("priors") or {}).get("human_baseline_usd") or 0)
+        preset = profile.get("preset_id")
+        if (
+            preset in ("frugal_router", "agentic_commerce")
+            and human_baseline > 0
+            and agency.get("agency_deficit")
+        ):
+            out["agency_deficit"] = True
+
+        mopt = marginal_outcome_per_token(runs)
+        if capability_id and capability_id in mopt:
+            out["token_mopt"] = mopt[capability_id]["mopt"]
+        if preset in ("frugal_router", "agentic_commerce") and capability_id:
+            flags = token_bloat_flags(workspace)
+            if not flags.empty and (flags["capability_id"] == capability_id).any():
+                row = flags.loc[flags["capability_id"] == capability_id].iloc[0]
+                if bool(row.get("flag")):
+                    out["token_bloat"] = True
+
     out["currency"] = out.get("currency") or "USD"
     return out
 

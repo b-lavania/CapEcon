@@ -164,6 +164,14 @@ def _merge_uploaded(agentic: dict[str, Any], uploaded: dict[str, Any] | None) ->
                 else frame
             )
             continue
+        if key == "approvals" and isinstance(frame, pd.DataFrame):
+            existing = agentic.get("approvals", pd.DataFrame())
+            agentic["approvals"] = (
+                pd.concat([existing, frame], ignore_index=True, sort=False)
+                if existing is not None and len(existing)
+                else frame
+            )
+            continue
         agentic[key] = frame
     return agentic
 
@@ -218,6 +226,7 @@ def build_workspace(
         "macro",
         "abm",
         "finance",
+        "token_econ",
     ) and uploaded_tables:
         agentic = _merge_uploaded(agentic, uploaded_tables)
         runs = agentic["runs"]
@@ -311,6 +320,7 @@ def build_workspace(
         usage_events=agentic.get("usage_events", pd.DataFrame()),
         catastrophic_events=agentic.get("catastrophic_events", pd.DataFrame()),
         routing_decisions=agentic.get("routing_decisions", pd.DataFrame()),
+        routing_log=agentic.get("routing_log", pd.DataFrame()),
         spend_by_step=agentic.get("spend_by_step", pd.DataFrame()),
         jevons_elasticity=agentic.get("jevons_elasticity", pd.DataFrame()),
         feature_flag_assignments=agentic.get("feature_flag_assignments", pd.DataFrame()),
@@ -358,6 +368,7 @@ def workspace_to_dict(ws: Workspace) -> dict[str, Any]:
         "usage_events": ws.usage_events,
         "catastrophic_events": ws.catastrophic_events,
         "routing_decisions": ws.routing_decisions,
+        "routing_log": ws.routing_log,
         "spend_by_step": ws.spend_by_step,
         "jevons_elasticity": ws.jevons_elasticity,
         "feature_flag_assignments": ws.feature_flag_assignments,
@@ -407,6 +418,7 @@ def workspace_from_dict(data: dict[str, Any]) -> Workspace:
         usage_events=data.get("usage_events", pd.DataFrame()),
         catastrophic_events=data.get("catastrophic_events", pd.DataFrame()),
         routing_decisions=data.get("routing_decisions", pd.DataFrame()),
+        routing_log=data.get("routing_log", pd.DataFrame()),
         spend_by_step=data.get("spend_by_step", pd.DataFrame()),
         jevons_elasticity=data.get("jevons_elasticity", pd.DataFrame()),
         feature_flag_assignments=data.get("feature_flag_assignments", pd.DataFrame()),
